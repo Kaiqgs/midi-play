@@ -1,3 +1,5 @@
+use async_trait::async_trait;
+
 use super::{StaffSystem, Trackeable};
 use std::ops::Range;
 
@@ -11,8 +13,9 @@ impl Track {
     }
 }
 
+#[async_trait]
 impl Trackeable for Track {
-    fn go_to(&mut self, time: u32) -> bool {
+    async fn go_to(&mut self, time: u32) -> u32 {
         unimplemented!()
     }
 

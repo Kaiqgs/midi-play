@@ -1,3 +1,5 @@
+use async_trait::async_trait;
+
 use super::MidiTrack;
 use super::SheetTrack;
 use super::Trackeable;
@@ -20,8 +22,9 @@ impl<T: SheetTransformer> TrackManager<T> {
     }
 }
 
+#[async_trait]
 impl<T: SheetTransformer> Trackeable for TrackManager<T> {
-    fn go_to(&mut self, time: u32) -> bool {
+    async fn go_to(&mut self, time: u32) -> u32 {
         unimplemented!()
     }
 

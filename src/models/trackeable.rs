@@ -1,11 +1,9 @@
 use std::ops::Range;
 
-pub trait Trackeable {
-    fn go_to(&mut self, time: u32) -> bool {
-        unimplemented!()
-    }
+use async_trait::async_trait;
 
-    fn set_loop(&mut self, range: Range<u32>) -> bool {
-        unimplemented!()
-    }
+#[async_trait]
+pub trait Trackeable {
+    async fn go_to(&mut self, time: u32) -> u32;
+    fn set_loop(&mut self, range: Range<u32>) -> bool;
 }

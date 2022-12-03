@@ -20,10 +20,10 @@ mod tests {
     fn fail_from_file_unexistent() {
         let _fromf = bad_setup();
     }
-    #[test]
-    fn go_to_beggining() {
-        //
+    #[tokio::test]
+    async fn go_to_beggining() {
         let mut sheettrack = setup();
-        assert!(sheettrack.go_to(0));
+        let beggining = sheettrack.go_to(0).await;
+        assert_eq!(beggining, 0);
     }
 }

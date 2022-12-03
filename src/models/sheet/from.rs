@@ -1,5 +1,5 @@
 use super::{Track};
-pub trait SheetTransformer {
+pub trait SheetTransformer: Send {
     fn convert(&self) -> Track;
 }
 
