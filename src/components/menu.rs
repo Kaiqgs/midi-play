@@ -1,8 +1,10 @@
 use async_trait::async_trait;
+use ggez::graphics::Image;
 
-use crate::models::{menu::StringDialogable, record::Recording};
+use crate::models::{menu::{StringDialogable, MenuError, Menu as MenuModel}, record::Recording, draw_util::DrawObject};
 
-use super::{Component, MenuModel, MenuError};
+use super::component::{Component, Drawing};
+
 pub struct Menu {}
 
 impl Menu {
@@ -11,8 +13,8 @@ impl Menu {
     }
 }
 
-impl Component for Menu {
-    fn draw() {
+impl Component<Image> for Menu {
+    fn draw(&self, canvas: DrawObject) -> Drawing<Image>{
         unimplemented!()
     }
 }

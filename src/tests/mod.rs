@@ -1,5 +1,8 @@
+#[cfg(test)]
 pub mod components;
-pub mod models;
+#[cfg(test)]
+pub mod controllers;
+#[cfg(test)]
 pub mod midiplay;
-
-pub use super::models::midi::to_sheet::MidiSheetTransformer;
+#[cfg(test)]
+pub mod models;

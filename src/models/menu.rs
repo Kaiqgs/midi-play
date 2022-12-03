@@ -6,9 +6,16 @@ use mockall::automock;
 
 use super::record::Recording;
 
+
 #[derive(Debug)]
 pub struct MenuError {
     details: String,
+}
+
+impl MenuError {
+    pub fn new(details: String) -> Self {
+        Self { details }
+    }
 }
 
 impl fmt::Display for MenuError {
@@ -23,10 +30,20 @@ impl Error for MenuError {
     }
 }
 
+impl Clone for MenuError {
+    fn clone(&self) -> Self {
+        Self {
+            details: self.details.clone(),
+        }
+    }
+}
+
+pub type StringResult = Result<String, MenuError>;
+
 #[automock(
     type Title = String;
     type Path = String;
-    type Success = (String, bool);
+    type Success = StringResult;
 )]
 pub trait Dialogable: Send {
     type Title;
@@ -38,11 +55,12 @@ pub trait Dialogable: Send {
     fn close(&mut self) -> Self::Success;
 }
 
-pub type StringDialogable = Box<dyn Dialogable<Title = String, Path = String, Success = (String, bool)>>;
+pub type StringDialogable =
+    Box<dyn Dialogable<Title = String, Path = String, Success = StringResult>>;
 
 #[async_trait]
 pub trait Menu {
-    async fn search_midi(&mut self, dialog: StringDialogable) -> Result<String, MenuError>;
+    async fn search_midi(&mut self, dialog: StringDialogable) -> StringResult;
     async fn save_recording(
         &mut self,
         dialog: StringDialogable,

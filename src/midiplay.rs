@@ -3,16 +3,7 @@ use ggez::graphics::{self, Color, DrawParam, Mesh, MeshBuilder, TextFragment};
 use ggez::mint::Point2;
 use ggez::{Context, GameResult};
 
-use crate::models::{self};
-
-pub struct AskDialog {}
-
-impl AskDialog {
-    pub fn new() -> Self {
-        AskDialog {}
-    }
-}
-
+use crate::models::pausable::Pausable;
 pub struct MidiPlay {
     // Your state here...
     width: u32,
@@ -23,7 +14,6 @@ pub struct MidiPlay {
 impl MidiPlay {
     pub fn new(width: u32, height: u32) -> MidiPlay {
         // Load/create resources such as images here.
-        
 
         MidiPlay {
             width,
@@ -41,7 +31,7 @@ impl MidiPlay {
     }
 }
 
-impl models::Pausable for MidiPlay {
+impl Pausable for MidiPlay {
     fn pause(&mut self) -> bool {
         let success = !self.pause;
         self.pause = true;

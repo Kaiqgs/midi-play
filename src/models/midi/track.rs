@@ -2,7 +2,8 @@ use std::path::Path;
 
 use async_trait::async_trait;
 
-use super::Trackeable;
+use crate::models::trackeable::Trackeable;
+
 pub struct Track {
     filepath: String,
     name: String,

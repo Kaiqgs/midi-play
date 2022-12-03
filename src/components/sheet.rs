@@ -1,5 +1,5 @@
 pub mod clef;
 pub mod staff;
 pub mod system;
-pub mod track;
-use super::Component;
+mod track;
+pub use track::Track as SheetTrackComponent;

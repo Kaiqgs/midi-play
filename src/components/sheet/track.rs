@@ -1,4 +1,9 @@
-use super::Component;
+use ggez::graphics::{Mesh, MeshBuilder};
+
+use crate::{
+    components::component::{Component, Drawing},
+    models::draw_util::DrawObject,
+};
 
 /* Draws current playing track */
 pub struct Track {
@@ -29,8 +34,9 @@ impl Track {
     // }
 }
 
-impl Component for Track {
-    fn draw() {
-        unimplemented!()
+impl Component<Mesh> for Track {
+    fn draw(&self, canvas: DrawObject) -> Drawing<Mesh> {
+        
+        return Drawing::new(MeshBuilder::new().build());
     }
 }

@@ -1,11 +1,12 @@
-use super::Component;
+use ggez::graphics::Image;
+
+use crate::{components::component::{Component, Drawing}, models::draw_util::DrawObject};
 
 /// Draws clef symbol;
-pub struct Clef {    
-}
+pub struct Clef {}
 
-impl Component for Clef {
-    fn draw() {
+impl Component<Image> for Clef {
+    fn draw(&self, canvas: DrawObject) -> Drawing<Image> {
         todo!()
     }
 }

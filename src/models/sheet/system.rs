@@ -1,5 +1,12 @@
-use super::Staff;
+use super::{staff::Staff, definition};
+
+
 pub struct StaffSystem{
-    staffs: Vec<Staff>
+    pub staffs: Vec<Staff>,
+    pub range: definition::Notes
+}
+
+impl StaffSystem {
+    
 }
 

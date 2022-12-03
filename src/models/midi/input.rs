@@ -1,4 +1,5 @@
 pub trait VirtualPianoKeyHandler {
-    fn note_on();
-    fn note_off();
+    type Comparator;
+    fn note_on(&self, comparator: Self::Comparator);
+    fn note_off(&self, comparator: Self::Comparator);
 }

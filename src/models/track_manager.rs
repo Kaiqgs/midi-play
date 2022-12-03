@@ -1,20 +1,23 @@
 use async_trait::async_trait;
 
-use super::MidiTrack;
-use super::SheetTrack;
-use super::Trackeable;
-use {super::sheet::SheetTransform, super::sheet::SheetTransformer};
-pub struct TrackManager<T: SheetTransformer> {
+use super::sheet::from::SheetTransformer;
+use super::sheet::SheetTrack;
+use super::midi::MidiTrack;
+use super::trackeable::Trackeable;
+
+pub type TransformObject = Box<dyn SheetTransformer>;
+
+pub struct TrackManager {
     midi: MidiTrack,
     sheet: SheetTrack,
     loaded: bool,
-    transformer: SheetTransform<T>,
+    transform: TransformObject,
 }
 
-impl<T: SheetTransformer> TrackManager<T> {
-    pub fn new(filepath: String, transform: T) -> Self {
+impl TrackManager {
+    pub fn new(filepath: String, transform: TransformObject) -> Self {
         TrackManager {
-            transformer: SheetTransform::new(transform),
+            transform,
             sheet: SheetTrack::new(None),
             loaded: false,
             midi: MidiTrack::new(filepath),
@@ -23,7 +26,7 @@ impl<T: SheetTransformer> TrackManager<T> {
 }
 
 #[async_trait]
-impl<T: SheetTransformer> Trackeable for TrackManager<T> {
+impl Trackeable for TrackManager {
     async fn go_to(&mut self, time: u32) -> u32 {
         unimplemented!()
     }
