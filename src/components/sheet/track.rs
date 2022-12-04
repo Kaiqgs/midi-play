@@ -1,4 +1,5 @@
-use ggez::graphics::{Mesh, MeshBuilder};
+use ggez::{graphics::{Mesh, MeshBuilder, GraphicsContext}, context::Has};
+use mockall::{automock, mock};
 
 use crate::{
     components::component::{Component, Drawing},
@@ -34,9 +35,23 @@ impl Track {
     // }
 }
 
+#[automock]
+pub trait MyGraphicsCtx {
+    fn retrieve(&self) -> &GraphicsContext;
+}
+
+
+mock!{
+    MyGraphicsContext {}
+    impl Has<GraphicsContext> for MyGraphicsContext{
+        fn retrieve(&self) -> &GraphicsContext;
+    }
+}
+
 impl Component<Mesh> for Track {
-    fn draw(&self, canvas: DrawObject) -> Drawing<Mesh> {
-        
-        return Drawing::new(MeshBuilder::new().build());
+    fn draw(&self, canvas: DrawObject, gfx: &impl Has<GraphicsContext>) -> Drawing<Mesh> {
+        let mdata = MeshBuilder::new().build();
+        let mesh = Mesh::from_data(gfx, mdata);
+        Drawing::new(mesh)
     }
 }

@@ -9,11 +9,11 @@ where
     draw: T,
 }
 
-impl Drawing<T>
+impl<T> Drawing<T>
 where
     T: Drawable,
 {
-    pub fn new(draw: T) {
+    pub fn new(draw: T) -> Self {
         Drawing { draw }
     }
 }
