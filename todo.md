@@ -1,0 +1,18 @@
+failures:
+    tests::components::menu::force_volume
+    tests::components::menu::save_empty_record
+    tests::components::menu::save_record
+    tests::components::menu::search_midi
+    tests::components::menu::search_unexistent_midi
+    tests::components::sheet::staff::draw
+    tests::controllers::midi::input::bad_note_off
+    tests::controllers::midi::input::bad_note_on
+    tests::controllers::midi::input::good_note_off
+    tests::controllers::midi::input::good_note_on
+    tests::controllers::midi::to_sheet::converts
+    tests::controllers::midi::to_sheet::converts_faulty
+    tests::controllers::playmeter::compare
+    tests::controllers::playmeter::reset
+    tests::midiplay::quit
+    tests::models::track_manager::fail_from_file_unexistent
+    tests::models::track_manager::go_to_beggining

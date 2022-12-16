@@ -1,22 +1,14 @@
-
 use std::path::Path;
 
 use crate::components::menu::Menu;
-use crate::models::menu::MenuError;
-
-use crate::models::menu::{Menu as MenuModel, MockDialogable};
+use crate::models::dialogable::MockDialogable;
+use crate::models::menu::Menu as MenuModel;
 use crate::models::record::Recording;
-
-struct Dialog {}
 
 fn setup() -> Menu {
     Menu::new()
 }
 
-#[test]
-fn create_empty() {
-    setup();
-}
 
 #[tokio::test]
 async fn force_volume() {
@@ -51,17 +43,17 @@ async fn search_midi() {
 }
 
 #[tokio::test]
-async fn fail_search_unexistent_midi() {
+async fn search_unexistent_midi() {
     let mut menu = setup();
     let diag = MockDialogable::new();
     let mut bdiag = Box::new(diag);
-    let err = MenuError::new("unexistent midi".into());
+    let err = "unexistent midi".into();
     MockDialogable::expect_open(bdiag.as_mut()).times(1);
     MockDialogable::expect_close(bdiag.as_mut())
         .return_const(Err(err))
         .times(1);
     let path = menu.search_midi(bdiag).await;
-    assert!(!path.is_ok());
+    assert!(path.is_err());
     let resultpath = path.unwrap();
     assert!(!Path::new(&resultpath).exists());
 }
@@ -89,14 +81,14 @@ async fn save_empty_record() {
     let diag = MockDialogable::new();
     let mut bdiag = Box::new(diag);
     let recording = Recording::new();
-    let err = MenuError::new("empty recording".into());
+    let err = "empty recording".into();
     //recording.push(String::from("sample record")); // Don't push anything so it fails;
     MockDialogable::expect_open(bdiag.as_mut()).times(1);
     MockDialogable::expect_close(bdiag.as_mut())
         .return_const(Err(err))
         .times(1);
     let path = menu.save_recording(bdiag, recording).await;
-    assert!(!path.is_ok());
+    assert!(path.is_err());
     let resultpath = path.unwrap();
     assert!(!Path::new(&resultpath).exists());
 }

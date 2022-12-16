@@ -1,3 +1,8 @@
 {
-  "rust-analyzer.diagnostics.warningsAsHint": ["dead_code", "unused_variables"]
+  "rust-analyzer.checkOnSave.command": "check",
+  "rust-analyzer.checkOnSave.overrideCommand": [],
+  "rust-analyzer.checkOnSave.enable": false,
+  "rust-analyzer.checkOnSave.allTargets": false,
+  "rust-analyzer.trace.extension": true,
+
 }

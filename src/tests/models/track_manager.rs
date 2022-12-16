@@ -1,18 +1,18 @@
-use crate::models::{
+use crate::{models::{
     midi::to_sheet::MidiSheetTransformer, track_manager::TrackManager, trackeable::Trackeable,
-};
+}, components::component::BuildContext};
 
-fn _setup(filepath: String) -> TrackManager {
-    let boxtransf = Box::new(MidiSheetTransformer::new());
-    TrackManager::new(filepath, boxtransf)
+fn _setup(filepath: String) -> TrackManager<MidiSheetTransformer> {
+    let mtransf = MidiSheetTransformer::new();
+    TrackManager::new(filepath, mtransf, BuildContext::default())
 }
 
-fn setup() -> TrackManager {
+fn setup() -> TrackManager<MidiSheetTransformer> {
     _setup("existing_path".into())
     //TODO: set existing path;
 }
 
-fn bad_setup() -> TrackManager {
+fn bad_setup() -> TrackManager<MidiSheetTransformer> {
     _setup("unexisting_path".into())
 }
 

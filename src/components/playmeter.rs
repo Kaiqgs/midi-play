@@ -1,27 +1,20 @@
-use ggez::graphics::Image;
+use ggez::{
+    context::Has,
+};
 
-use super::component::{Component, Drawing};
-use crate::models::{playmeter::PlayMeter as PlayMeterModel, draw_util::DrawObject};
+use super::{component::{Component, RenderUtilObject, ComponentObject}, drawing::{Drawing, self, DrawResult}};
+use crate::models::{playmeter::PlayMeter, draw_util::DrawUtil};
 
 /// Draws player performance
-pub struct PlayMeter {
-    meter: PlayMeterModel,
-}
 
-impl PlayMeter {
-    pub fn new() -> Self {
-        return PlayMeter {
-            meter: PlayMeterModel::new(),
-        };
-    }
+pub struct PlayMeterComponentData {}
 
-    pub fn load_file() -> Result<bool, String> {
+impl Component for PlayMeter {
+    fn draw(&self, canvas: RenderUtilObject) -> DrawResult {
         unimplemented!()
     }
-}
 
-impl Component<Image> for PlayMeter {
-    fn draw(&self, canvas: DrawObject) -> Drawing<Image> {
-        unimplemented!()
+    fn next(&self) -> Vec<ComponentObject> {
+        todo!()
     }
 }

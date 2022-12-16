@@ -1,23 +1,43 @@
+use std::ops::Deref;
+use std::rc::Rc;
+use std::sync::Arc;
+
 use ggez::event::EventHandler;
-use ggez::graphics::{self, Color, DrawParam, Mesh, MeshBuilder, TextFragment};
+use ggez::graphics::{self, Canvas, Color, DrawParam, Drawable, Mesh};
+
 use ggez::mint::Point2;
 use ggez::{Context, GameResult};
 
+use crate::components::component::{BuildContext, Component, ComponentObject, RenderUtilObject};
+use crate::components::draw_util::DrawUtilGG;
+use crate::components::drawing::Drawing;
+use crate::components::pallete;
+use crate::components::sheet::{definition, staff, track};
+
+use crate::components::sheet::staff_system::StaffSystemComponentData;
+use crate::models;
+use crate::models::draw_util::DrawUtil;
+use crate::models::midi::to_sheet::MidiSheetTransformer;
+use crate::models::note::Note;
 use crate::models::pausable::Pausable;
+
+use crate::models::render_util::MockRenderUtil;
+use crate::models::sheet::staff::Staff;
+use crate::models::sheet::staff_system::StaffSystem;
+use crate::models::track_manager::TrackManager;
 pub struct MidiPlay {
-    // Your state here...
-    width: u32,
-    height: u32,
+    track: TrackManager<MidiSheetTransformer>,
     pause: bool,
 }
 
 impl MidiPlay {
-    pub fn new(width: u32, height: u32) -> MidiPlay {
+    pub fn new(build: BuildContext) -> Self {
         // Load/create resources such as images here.
 
+        let track = TrackManager::new("".to_owned(), MidiSheetTransformer::new(), build);
+
         MidiPlay {
-            width,
-            height,
+            track,
             pause: false,
         }
     }
@@ -28,6 +48,47 @@ impl MidiPlay {
 
     pub async fn quit(&mut self) -> bool {
         unimplemented!();
+    }
+
+    pub fn draw_component(
+        &self,
+        component: ComponentObject,
+        canvas: RenderUtilObject,
+        gfx: &Context,
+        screen: &mut Canvas,
+    ) {
+        //let bcanvas = Box::new(canvas);
+        let dresult = component.draw(canvas);
+        let drawing = dresult.drawing;
+
+        match drawing.mesh.as_ref() {
+            Some(mesh) => {
+                screen.draw(mesh, dresult.params);
+            }
+            None => match drawing.meshbuilder.as_ref() {
+                Some(mb) => {
+                    println!("Warning: costly mesh generation;");
+                    let mesh = Mesh::from_data(gfx, mb.build());
+                    screen.draw(&mesh, dresult.params);
+                }
+                None => (),
+            },
+        }
+
+        match drawing.image.as_ref() {
+            Some(image) => {
+                screen.draw(
+                    image,
+                    dresult.params
+
+                );
+            }
+            None => (),
+        }
+
+        // if dresult.drawing.is_some_image() {
+
+        // }
     }
 }
 
@@ -47,40 +108,32 @@ impl Pausable for MidiPlay {
 
 impl EventHandler for MidiPlay {
     fn update(&mut self, _ctx: &mut Context) -> GameResult {
-        // Update code here...
         Ok(())
     }
 
     fn draw(&mut self, ctx: &mut Context) -> GameResult {
-        let mut canvas = graphics::Canvas::from_frame(ctx, Color::new(0.25, 0.25, 0.25, 1.0));
-        let welcoming = graphics::Text::new(TextFragment::new("Hello World"));
-        // let line1 = graphics::Rect::new(0.0, 5.0, 100.0, 1.0 );
-        let mb = &mut MeshBuilder::new();
+        let width = ctx.gfx.window().outer_size().width;
+        let height = ctx.gfx.window().outer_size().height;
 
-        let note_count = 88;
-        let note_length: f32 = 3.0;
+        let dgg = MockRenderUtil::new();
+        let rcanvas = RenderUtilObject::new(&dgg);
+        // let rcanvas: Rc<RenderUtilObject> = Rc::new(&dgg);
+        let mut canvas = graphics::Canvas::from_frame(ctx, pallete::LIGHTER_LIGHT);
+        canvas.set_sampler(graphics::Sampler::nearest_clamp());
 
-        for i in 0..note_count {
-            let y = f32::from(i as i16) * note_length;
-            let p0: Point2<f32> = { Point2 { x: 0.0, y: y } };
-            let p1: Point2<f32> = {
-                Point2 {
-                    x: f32::from(self.width as u16),
-                    y: y,
-                }
-            };
-            mb.line(&[p0, p1], 1.0, Color::BLACK)
-                .expect("error creating line");
+        let bsheet: ComponentObject = Arc::new(&self.track.sheet);
+        let mut stack: Vec<ComponentObject> = vec![bsheet];
+        let mut counter = 0;
+        while !stack.is_empty() {
+            let comp: ComponentObject = stack.pop().expect("err negative index");
+            let next = comp.next();
+            if next.len() > 0 {
+                stack.extend(next);
+            }
+            self.draw_component(comp.clone(), rcanvas.clone(), ctx, &mut canvas);
+            counter += 1;
         }
-
-        let mesh = Mesh::from_data(ctx, mb.build());
-        // canvas.draw(drawable, param)
-        // Draw code here...
-
-        //canvas.draw(&line1);
-
-        canvas.draw(&mesh, DrawParam::new());
-        canvas.draw(&welcoming, DrawParam::new());
+        println!("Updated[{}]", counter);
         canvas.finish(ctx)
     }
 }

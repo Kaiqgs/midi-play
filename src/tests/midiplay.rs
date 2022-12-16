@@ -1,8 +1,11 @@
+use ggez::mint::Point2;
+
+use crate::components::component::BuildContext;
 use crate::models::pausable::Pausable;
 use crate::MidiPlay;
 
 fn setup() -> MidiPlay {
-    return MidiPlay::new(192, 192);
+    MidiPlay::new(BuildContext::new(None, Point2 { x: 192, y: 192 }))
 }
 #[test]
 fn force_resume() {

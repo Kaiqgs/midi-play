@@ -1,57 +1,37 @@
-use ggez::{graphics::{Mesh, MeshBuilder, GraphicsContext}, context::Has};
-use mockall::{automock, mock};
+use ggez::{context::Has, graphics::MeshBuilder};
 
 use crate::{
-    components::component::{Component, Drawing},
-    models::draw_util::DrawObject,
+    components::{
+        component::{Component, RenderUtilObject, ComponentObject},
+        drawing::{Drawing, DrawResult},
+    },
+    models::{draw_util::DrawUtil, sheet::SheetTrack},
 };
 
 /* Draws current playing track */
-pub struct Track {
+pub struct SheetTrackComponentData {
     name: Option<String>,
     filepath: Option<String>,
     loaded: bool,
 }
 
-impl Track {
-    pub fn new() -> Self {
-        Track {
-            name: None,
-            filepath: None,
-            loaded: false,
-        }
+impl Has<SheetTrackComponentData> for SheetTrack<'_> {
+    fn retrieve(&self) -> &SheetTrackComponentData {
+        self.component_data.as_ref().unwrap()
     }
+}
 
-    pub fn load_file() -> Result<bool, String> {
+impl Component for SheetTrack<'_> {
+    fn draw(&self, canvas: RenderUtilObject) -> DrawResult {
+        // let params = DrawParam::new();
+        // match self.component_data {
+        //     Some(c) => DrawResult {params, drawing: &c.drawing},
+        //     None => DrawResult { params, drawing: &Drawing::default() },
+        // }
         unimplemented!()
     }
 
-    // pub fn go_to(&mut self, time: u32) -> bool{
-    //     unimplemented!()
-    // }
-
-    // pub fn set_loop(&mut self, range: Range<u32>) -> bool{
-    //     unimplemented!()
-    // }
-}
-
-#[automock]
-pub trait MyGraphicsCtx {
-    fn retrieve(&self) -> &GraphicsContext;
-}
-
-
-mock!{
-    MyGraphicsContext {}
-    impl Has<GraphicsContext> for MyGraphicsContext{
-        fn retrieve(&self) -> &GraphicsContext;
-    }
-}
-
-impl Component<Mesh> for Track {
-    fn draw(&self, canvas: DrawObject, gfx: &impl Has<GraphicsContext>) -> Drawing<Mesh> {
-        let mdata = MeshBuilder::new().build();
-        let mesh = Mesh::from_data(gfx, mdata);
-        Drawing::new(mesh)
+    fn next(&self) -> Vec<ComponentObject> {
+        todo!()
     }
 }

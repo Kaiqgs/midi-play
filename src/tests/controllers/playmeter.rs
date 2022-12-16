@@ -1,12 +1,7 @@
 use crate::models::playmeter::{PlayMeter, QualityMeter};
 
 fn setup() -> PlayMeter {
-    return PlayMeter::new();
-}
-
-#[test]
-fn create_empty() {
-    PlayMeter::new();
+    PlayMeter::new()
 }
 
 #[test]

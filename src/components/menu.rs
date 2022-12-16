@@ -1,31 +1,63 @@
 use async_trait::async_trait;
-use ggez::graphics::Image;
+use ggez::context::Has;
 
-use crate::models::{menu::{StringDialogable, MenuError, Menu as MenuModel}, record::Recording, draw_util::DrawObject};
+use crate::models::{
+    dialogable::StringDialogable,
+    draw_util::DrawUtil,
+    menu::{Menu as MenuModel, StringResult},
+    record::Recording,
+};
 
-use super::component::{Component, Drawing};
+use super::{component::{Component, RenderUtilObject, ComponentObject}, drawing::DrawResult};
+use super::drawing::Drawing;
 
-pub struct Menu {}
+pub struct MenuComponentData {}
 
-impl Menu {
-    pub fn new() -> Self {
-        Menu {}
+pub struct Menu {
+    component_data: MenuComponentData,
+}
+
+impl Default for Menu {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
-impl Component<Image> for Menu {
-    fn draw(&self, canvas: DrawObject) -> Drawing<Image>{
+impl Menu {
+    pub fn new() -> Self {
+        Menu {
+            component_data: MenuComponentData {},
+        }
+    }
+}
+
+impl Has<MenuComponentData> for Menu {
+    fn retrieve(&self) -> &MenuComponentData {
+        &self.component_data
+    }
+}
+
+impl Component for Menu {
+    fn draw(&self, canvas: RenderUtilObject) -> DrawResult {
         unimplemented!()
+    }
+
+    fn next(&self) -> Vec<ComponentObject> {
+        todo!()
     }
 }
 
 #[async_trait]
 impl MenuModel for Menu {
-    async fn search_midi(&mut self, dialog: StringDialogable) -> Result<String, MenuError> {
+    async fn search_midi(&mut self, dialog: StringDialogable) -> StringResult {
         unimplemented!()
     }
 
-    async fn save_recording(&mut self, dialog: StringDialogable, recording:Recording) -> Result<String, MenuError> {
+    async fn save_recording(
+        &mut self,
+        dialog: StringDialogable,
+        recording: Recording,
+    ) -> StringResult {
         unimplemented!()
     }
 

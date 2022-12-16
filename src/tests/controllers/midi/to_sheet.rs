@@ -1,8 +1,4 @@
-use crate::models::{
-    midi::{to_sheet::MidiSheetTransformer, MidiTrack},
-    sheet::{SheetTrack, from::SheetTransformer},
-    track_manager::TrackManager,
-};
+use crate::models::{midi::to_sheet::MidiSheetTransformer, sheet::from::SheetTransformer};
 
 fn setup() -> MidiSheetTransformer {
     MidiSheetTransformer::new()
