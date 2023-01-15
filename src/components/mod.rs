@@ -1,8 +1,9 @@
 pub mod component;
-pub mod menu;
-pub mod playmeter;
-pub mod sheet;
 pub mod draw_util;
-pub mod pallete;
 pub mod drawing;
+pub mod menu;
+pub mod note;
+pub mod pallete;
+pub mod playmeter;
 pub mod render_util;
+pub mod sheet;

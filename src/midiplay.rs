@@ -8,34 +8,34 @@ use ggez::graphics::{self, Canvas, Color, DrawParam, Drawable, Mesh};
 use ggez::mint::Point2;
 use ggez::{Context, GameResult};
 
-use crate::components::component::{BuildContext, Component, ComponentObject, RenderUtilObject};
-use crate::components::draw_util::DrawUtilGG;
-use crate::components::drawing::Drawing;
-use crate::components::pallete;
-use crate::components::sheet::{definition, staff, track};
+use crate::components::{
+    component::{BuildContext, Component, ComponentObject, RenderUtilObject},
+    draw_util::DrawUtilGG,
+    drawing::Drawing,
+    pallete,
+    sheet::{definition, staff, staff_system::StaffSystemComponentData, track},
+};
+use crate::models::{
+    self,
+    draw_util::DrawUtil,
+    midi::to_sheet::MidiSheetTransformer,
+    note::Note,
+    pausable::Pausable,
+    render_util::MockRenderUtil,
+    sheet::{staff::Staff, staff_system::StaffSystem},
+    track_manager::TrackManager,
+};
 
-use crate::components::sheet::staff_system::StaffSystemComponentData;
-use crate::models;
-use crate::models::draw_util::DrawUtil;
-use crate::models::midi::to_sheet::MidiSheetTransformer;
-use crate::models::note::Note;
-use crate::models::pausable::Pausable;
-
-use crate::models::render_util::MockRenderUtil;
-use crate::models::sheet::staff::Staff;
-use crate::models::sheet::staff_system::StaffSystem;
-use crate::models::track_manager::TrackManager;
-pub struct MidiPlay {
-    track: TrackManager<MidiSheetTransformer>,
+pub struct MidiPlay<'a> {
+    track: TrackManager<MidiSheetTransformer<'a>>,
     pause: bool,
 }
 
-impl MidiPlay {
-    pub fn new(build: BuildContext) -> Self {
+impl MidiPlay<'_> {
+    pub fn new(build: BuildContext, filepath: Option<String>) -> Self {
         // Load/create resources such as images here.
-
-        let track = TrackManager::new("".to_owned(), MidiSheetTransformer::new(), build);
-
+        let mtransf = MidiSheetTransformer::new(None);
+        let track = TrackManager::new(filepath, mtransf, build);
         MidiPlay {
             track,
             pause: false,
@@ -77,11 +77,7 @@ impl MidiPlay {
 
         match drawing.image.as_ref() {
             Some(image) => {
-                screen.draw(
-                    image,
-                    dresult.params
-
-                );
+                screen.draw(image, dresult.params);
             }
             None => (),
         }
@@ -92,7 +88,7 @@ impl MidiPlay {
     }
 }
 
-impl Pausable for MidiPlay {
+impl Pausable for MidiPlay<'_> {
     fn pause(&mut self) -> bool {
         let success = !self.pause;
         self.pause = true;
@@ -106,7 +102,7 @@ impl Pausable for MidiPlay {
     }
 }
 
-impl EventHandler for MidiPlay {
+impl EventHandler for MidiPlay<'_> {
     fn update(&mut self, _ctx: &mut Context) -> GameResult {
         Ok(())
     }

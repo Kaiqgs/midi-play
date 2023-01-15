@@ -4,15 +4,17 @@ use crate::components::component::BuildContext;
 use crate::models::pausable::Pausable;
 use crate::MidiPlay;
 
-fn setup() -> MidiPlay {
-    MidiPlay::new(BuildContext::new(None, Point2 { x: 192, y: 192 }))
+fn setup<'a>() -> MidiPlay<'a> {
+    MidiPlay::new(BuildContext::new(None, Point2 { x: 192, y: 192 }), None)
 }
+
 #[test]
 fn force_resume() {
     let mut midi = setup();
     assert!(!midi.resume());
     assert!(!midi.resume());
 }
+
 #[test]
 fn attempt_resume() {
     let mut midi = setup();

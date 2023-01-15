@@ -1,16 +1,23 @@
+use crate::models::{note::Note, trackeable::Trackeable};
 use std::path::Path;
-use crate::models::trackeable::Trackeable;
 
 pub struct Track {
     pub filepath: String,
     pub name: String,
+    pub loaded: bool,
+    pub bytes: Vec<u8>,
 }
 
 impl Track {
     pub fn new(filepath: String) -> Self {
-        let path = Path::new(&filepath);
+        //TODO: make ./resources not hardcoded;
+        let path = "./resources/".to_owned() + &filepath;
         let name = String::from("");
-
-        Track { filepath, name }
+        Track {
+            filepath: path,
+            name,
+            loaded: false,
+            bytes: vec![],
+        }
     }
 }

@@ -1,4 +1,6 @@
 #[cfg(test)]
+pub mod common;
+#[cfg(test)]
 pub mod components;
 #[cfg(test)]
 pub mod controllers;
@@ -6,7 +8,6 @@ pub mod controllers;
 pub mod midiplay;
 #[cfg(test)]
 pub mod models;
-
 
 /*
 Tests for MIDI Input;
