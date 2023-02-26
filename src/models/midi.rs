@@ -1,4 +1,7 @@
-pub mod input;
+mod file;
+pub mod midi_const;
+pub mod peripheral;
+pub mod playback;
+pub mod timing;
 pub mod to_sheet;
-mod track;
-pub use track::Track as MidiTrack;
+pub use file::File as MidiFile;

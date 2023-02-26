@@ -1,15 +1,19 @@
-pub struct MidiSheetTransformer<'a> {
-    pub smf: Option<midly::Smf<'a>>,
+pub struct MidiSheetTransformer {
+    pub bytes: Vec<u8>,
 }
 
-impl Default for MidiSheetTransformer<'_> {
-    fn default() -> Self {
-        Self::new(None)
+pub struct MidiSheetFromFile {
+    pub bytes: Vec<u8>,
+}
+
+impl MidiSheetTransformer {
+    pub fn new() -> Self {
+        MidiSheetTransformer { bytes: vec![] }
     }
 }
 
-impl MidiSheetTransformer<'_> {
-    pub fn new(smf: Option<midly::Smf<'_>>) -> Self {
-        MidiSheetTransformer { smf }
+impl MidiSheetFromFile {
+    pub fn new() -> Self {
+        MidiSheetFromFile { bytes: vec![] }
     }
 }

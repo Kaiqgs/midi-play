@@ -1,20 +1,13 @@
-use ggez::{
-    context::Has,
-};
+// use ggez::context::Has;
 
-use super::{component::{Component, RenderUtilObject, ComponentObject}, drawing::{Drawing, self, DrawResult}};
-use crate::models::{playmeter::PlayMeter, draw_util::DrawUtil};
+// use super::{
+//     component::{Component, ComponentObject, RenderUtilObject},
+//     drawing::{self, DrawResult, Drawing},
+// };
+// use crate::models::{draw_util::DrawUtil, playmeter::PlayMeter};
 
-/// Draws player performance
+// /// Draws player performance
 
-pub struct PlayMeterComponentData {}
+// pub struct PlayMeterComponentData {}
 
-impl Component for PlayMeter {
-    fn draw(&self, canvas: RenderUtilObject) -> DrawResult {
-        unimplemented!()
-    }
-
-    fn next(&self) -> Vec<ComponentObject> {
-        todo!()
-    }
-}
+// impl Component for PlayMeter {}

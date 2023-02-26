@@ -1,9 +1,13 @@
 pub mod component;
+pub mod component_render;
 pub mod draw_util;
 pub mod drawing;
+pub mod input;
 pub mod menu;
+pub mod midi;
 pub mod note;
 pub mod pallete;
 pub mod playmeter;
 pub mod render_util;
 pub mod sheet;
+pub mod track_manager;

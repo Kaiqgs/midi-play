@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::{cell::RefCell, path::Path};
 
 use ggez::{
     context::Has,
@@ -9,14 +9,14 @@ use ggez::{
 
 use crate::{
     components::{
-        draw_util::DrawUtilGG,
-        component::{BuildContext, Component, ComponentObject, RenderUtilObject},
-        drawing::{DrawResult, Drawing},
+        component::{BuildContext, Component, ComponentObject},
+        draw_util::DrawUtil,
+        drawing::{DrawResult, Drawing, RetrieveDrawing},
     },
-    models::{draw_util::DrawUtil, sheet::clef::Clef, note::Note},
+    models::{note::Note, render_util::RenderUtil, sheet::clef::Clef},
 };
 
-use super::definition;
+use super::sheet_component_const;
 
 /// Draws clef symbol;
 pub struct ClefComponentData {
@@ -40,11 +40,11 @@ fn image_from_optional(ctx: &Context, path: Option<String>) -> Image {
 impl ClefComponentData {
     pub fn new(note: &Note, filepath: Option<String>, build: BuildContext) -> Self {
         let mut drawing = Drawing::default();
-    
+
         match build.ctx {
             Some(ctx) => {
                 drawing.image = Some(image_from_optional(ctx, filepath.clone()));
-                DrawUtilGG::left_image(&mut drawing, build.clone(), note);
+                DrawUtil::left_image(&mut drawing, build.clone(), note);
             }
             None => (),
         };
@@ -56,18 +56,19 @@ impl ClefComponentData {
 }
 
 impl Component for Clef {
-    fn draw(&self, canvas: RenderUtilObject) -> DrawResult {
-        
-        
-        
-        
-        DrawResult {
-            params: self.component_data.drawing.params,
-            drawing: &self.component_data.drawing,
-        }
+    fn get_name(&self) -> String {
+        "[Clef]".to_string()
     }
-
-    fn next(&self) -> Vec<ComponentObject> {
-        Vec::new()
+    fn get_drawing(&self) -> RetrieveDrawing {
+        RetrieveDrawing::Ok(RefCell::new(self.component_data.drawing.clone()))
+    }
+    fn draw(&self, canvas: RenderUtil) -> DrawResult {
+        DrawResult::Draw(
+            // DrawParam::new()
+            //     .dest([0.0, 0.0])
+            //     .scale([sheet_component_const::SCALEF, sheet_component_const::SCALEF])
+            //     .z(0),
+            self.component_data.drawing.params,
+        )
     }
 }

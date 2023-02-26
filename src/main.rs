@@ -5,7 +5,12 @@ use midiplaylib::components::component::BuildContext;
 use std::path;
 
 fn main() {
-    env_logger::init();
+    env_logger::builder()
+        .format_timestamp(None)
+        .format_module_path(false)
+        .format_target(false)
+        .init();
+
     log::info!("Initted...");
     // Make a Context.
     let (ctx, event_loop) = ContextBuilder::new("midi play", "kags")
@@ -16,11 +21,9 @@ fn main() {
     // Create an instance of your event handler.
     // Usually, you should provide it with the Context object to
     // use when setting your game up.
-    let width = ctx.gfx.window().outer_size().width;
-    let height = ctx.gfx.window().outer_size().height;
-    let buildctx = BuildContext::new(Some(&ctx), Point2::from([width, height]));
-    let my_game = midiplaylib::MidiPlay::new(buildctx, None);
-
-    // Run!
-    event::run(ctx, event_loop, my_game);
+    let width = ctx.gfx.window().inner_size().width;
+    let height = ctx.gfx.window().inner_size().height;
+    let buildctx = BuildContext::new(Some(&ctx), Point2::from([width, height]), None);
+    let midi_play = midiplaylib::MidiPlay::new(buildctx, None);
+    event::run(ctx, event_loop, midi_play);
 }

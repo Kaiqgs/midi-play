@@ -1,11 +1,7 @@
-
-
-
 use ggez::glam::bool;
 use mockall::automock;
 
-use super::{menu::StringResult};
-
+use super::menu::StringResult;
 
 #[automock(
     type Title = String;

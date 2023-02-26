@@ -6,41 +6,21 @@ use ggez::{
     Context,
 };
 
-use crate::models::{draw_util::DrawUtil, note::Note};
+use crate::models::note::Note;
 
-use super::sheet::definition;
+use super::sheet::sheet_component_const::{self, Zindex};
 use super::{component::BuildContext, drawing::Drawing};
 
-pub struct DrawUtilGG {
+pub struct DrawUtil {
     width: u32,
     height: u32,
 }
 
-impl DrawUtilGG {
+impl DrawUtil {
     pub fn new(width: u32, height: u32) -> Self {
-        DrawUtilGG { width, height }
+        DrawUtil { width, height }
     }
-    pub fn horizontal_line(
-        mesh: &mut ggez::graphics::MeshBuilder,
-        level: u32,
-        canvas_width: f32,
-        color: Color,
-    ) {
-        let start = Point2::from([0.0, f32::from(level as i16)]);
-        let end = Point2::from([f32::from(canvas_width as i16), f32::from(level as i16)]);
-        mesh.line(&[start, end], definition::SCALE as f32, color);
-    }
-}
-
-fn build_mesh_if_context<'a>(ctxopt: Option<&'a Context>, mb: &'a MeshBuilder, draw: &mut Drawing) {
-    match ctxopt {
-        Some(ctx) => draw.mesh = Some(Mesh::from_data(ctx, mb.build())),
-        None => todo!(),
-    }
-}
-
-impl DrawUtil for DrawUtilGG {
-    fn staff_block<'a>(
+    pub fn staff_block<'a>(
         draw: &'a mut Drawing,
         build: BuildContext,
         notes: Vec<&Note>,
@@ -53,55 +33,66 @@ impl DrawUtil for DrawUtilGG {
                     if note.id % 2 != 0 {
                         continue; //Whites;
                     }
-                    let half_scale = (definition::SCALE / 2) as u32;
-                    let scaled_note = note.line * definition::PIX_PER_HORIZONTAL_LINE * definition::SCALE;
-                    let level  = half_scale + scaled_note - definition::SCALE;
+                    let scaled_note = note.line * sheet_component_const::NOTE_HEIGHT;
+                    let level = scaled_note;
                     let start = Point2::from([0.0, level as f32]);
-                    let end = Point2::from([build.canvas_size.x as f32, level as f32]);
-                    mb.line(&[start, end], definition::SCALE as f32, color);
+                    let end = Point2::from([build.winctx.size.x as f32, level as f32]);
+                    mb.line(&[start, end], 1.0, color);
                 }
 
                 match build.ctx {
                     Some(ctx) => draw.mesh = Some(Mesh::from_data(ctx, mb.build())),
                     None => (),
                 }
+                let mut params = DrawParam::new()
+                    .dest(Point2::from([0.0, 0.0]))
+                    .scale([sheet_component_const::SCALEF, sheet_component_const::SCALEF])
+                    .z(Zindex::Track.get());
+                draw.params = params;
             }
             None => panic!("Mandatory mesh builder;"),
         }
     }
 
-    fn left_image<'a>(draw: &'a mut Drawing, build: BuildContext, note: &'a Note) {
-        let scaled_note =  note.line * definition::SCALE * definition::PIX_PER_HORIZONTAL_LINE;
-        let ledger_padding = 2 * definition::SCALE * definition::PIX_PER_HORIZONTAL_LINE;
+    pub fn note_sheet<'a>(draw: &mut Drawing, note: &'a Note) {
+        todo!()
+    }
+
+    pub fn left_image<'a>(draw: &'a mut Drawing, build: BuildContext, note: &'a Note) {
+        //image requires manual scaling...
+        //j
+        let scaled_note =
+            note.line * sheet_component_const::SCALE * sheet_component_const::NOTE_HEIGHT;
+        let ledger_padding = 2 * sheet_component_const::SCALE * sheet_component_const::NOTE_HEIGHT;
         let mut level = scaled_note + ledger_padding;
 
         match &draw.image {
             Some(image) => {
-                let scaled_height = image.height() * definition::SCALE - definition::SCALE;
+                let scaled_height = image.height() * sheet_component_const::SCALE
+                    - sheet_component_const::SCALE / 2;
                 level -= scaled_height;
             }
             None => panic!("Mandatory image"),
         }
         let mut params = DrawParam::new()
             .dest(Point2::from([0.0, level as f32]))
-            .scale([definition::SCALE as f32, definition::SCALE as f32]);
-
+            .scale([sheet_component_const::SCALEF, sheet_component_const::SCALEF])
+            .z(Zindex::Note.get());
         draw.params = params;
-        //build.ctx
+    }
 
-        /*
-
-
-        }
-
-        let mut params = DrawParam::new()
-            .dest(Point2::from([0.0, level as f32]))
-            .scale([definition::SCALE as f32, definition::SCALE as f32]);
-
-            */
+    fn note<'a>(draw: &'a mut Drawing, build: BuildContext, note: &'a Note) {
+        todo!()
     }
 
     fn rect<'a>(draw: &'a mut Drawing, build: BuildContext, color: Color) {
         todo!()
+    }
+}
+
+fn build_mesh_if_context<'a>(ctxopt: Option<&'a Context>, mb: &'a MeshBuilder, draw: &mut Drawing) {
+    match ctxopt {
+        Some(ctx) => draw.mesh = Some(Mesh::from_data(ctx, mb.build())),
+        None => todo!(),
     }
 }

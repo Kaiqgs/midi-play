@@ -1,0 +1,15 @@
+# clippy toml settings
+clippy:
+  all: true
+  pedantic: true
+  restrictions:
+    - clippy::all
+    - clippy::pedantic
+    - clippy::nursery
+    - clippy::cargo
+    - clippy::complexity
+    - clippy::correctness
+    - clippy::perf
+    - clippy::style
+    - clippy::restriction
+    - clippy::cargo_common_metadata

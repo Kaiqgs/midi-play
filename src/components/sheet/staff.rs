@@ -1,4 +1,8 @@
-use std::{rc::Rc, sync::Arc};
+use std::{
+    cell::RefCell,
+    rc::Rc,
+    sync::{Arc, Mutex},
+};
 
 use ggez::{
     context::Has,
@@ -7,14 +11,15 @@ use ggez::{
 
 use crate::{
     components::{
-        component::{Component, ComponentObject, RenderUtilObject, BuildContext},
-        drawing::{DrawResult, Drawing},
-        pallete, draw_util::DrawUtilGG,
+        component::{BuildContext, Component, ComponentObject, MutComponentObject},
+        draw_util::DrawUtil,
+        drawing::{DrawResult, Drawing, RetrieveDrawing},
+        pallete,
     },
-    models::{draw_util::DrawUtil, sheet::staff::Staff, note::Note},
+    models::{note::Note, render_util::RenderUtil, sheet::staff::Staff},
 };
 
-use super::definition;
+use super::sheet_component_const;
 
 const LINES: i32 = 5;
 const SPACES: i32 = 4;
@@ -24,10 +29,10 @@ pub struct StaffComponentData {
 }
 
 impl StaffComponentData {
-    pub fn new(notes:Vec<&Note>, build: BuildContext) -> Self {
+    pub fn new(notes: Vec<&Note>, build: BuildContext) -> Self {
         let mut drawing = Drawing::default();
         drawing.meshbuilder = Some(MeshBuilder::new());
-        DrawUtilGG::staff_block(&mut drawing, build, notes, pallete::DARKER_LIGHT);
+        DrawUtil::staff_block(&mut drawing, build, notes, pallete::DARKER_LIGHT);
         StaffComponentData { drawing }
     }
 }
@@ -40,15 +45,23 @@ impl Default for StaffComponentData {
 
 /// Draws Staff w/ lines & spaces;
 impl Component for Staff {
-    fn draw(&self, canvas: RenderUtilObject) -> DrawResult {        
-        let params = DrawParam::new();
-        DrawResult {
-            params,
-            drawing: &self.component_data.drawing,
-        }
+    fn get_name(&self) -> String {
+        "[Staff]".to_string()
+    }
+    fn get_drawing(&self) -> RetrieveDrawing {
+        RetrieveDrawing::Ok(RefCell::new(self.component_data.drawing.clone()))
+    }
+    fn draw(&self, canvas: RenderUtil) -> DrawResult {
+        DrawResult::Draw(
+            // DrawParam::new()
+            //     .dest([0.0, 0.0])
+            //     .scale([sheet_component_const::SCALEF, sheet_component_const::SCALEF])
+            //     .z(0),
+            self.component_data.drawing.params,
+        )
     }
 
     fn next(&self) -> Vec<ComponentObject> {
-        vec![Arc::new(&self.clef)]
+        vec![&self.clef]
     }
 }

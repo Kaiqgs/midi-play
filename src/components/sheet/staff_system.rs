@@ -1,5 +1,9 @@
 use ggez::{graphics::DrawParam, Context};
-use std::{borrow::Borrow, sync::Arc};
+use std::{
+    borrow::Borrow,
+    cell::RefCell,
+    sync::{Arc, Mutex},
+};
 
 use ggez::{
     context::Has,
@@ -10,18 +14,19 @@ use ggez::{
 use crate::{
     components::drawing::{DrawResult, Drawing},
     components::{
-        component::{BuildContext, Component, ComponentObject, RenderUtilObject},
-        draw_util::DrawUtilGG,
-        drawing, pallete,
+        component::{BuildContext, Component, ComponentObject, MutComponentObject},
+        draw_util::DrawUtil,
+        drawing::{self, RetrieveDrawing},
+        pallete,
     },
     models::{
-        draw_util::DrawUtil,
         note::Note,
+        render_util::RenderUtil,
         sheet::{staff, staff_system::StaffSystem},
     },
 };
 
-use super::definition;
+use super::sheet_component_const;
 
 /// Draw systems of Staffs;
 pub struct StaffSystemComponentData {
@@ -46,7 +51,7 @@ impl StaffSystemComponentData {
         let notesref = notes.iter().map(|n| n).collect();
 
         drawing.meshbuilder = Some(MeshBuilder::new());
-        DrawUtilGG::staff_block(&mut drawing, build, notesref, pallete::LIGHT);
+        DrawUtil::staff_block(&mut drawing, build, notesref, pallete::LIGHT);
 
         StaffSystemComponentData {
             position: Point2::from([0, 0]),
@@ -57,18 +62,26 @@ impl StaffSystemComponentData {
 }
 
 impl Component for StaffSystem {
-    fn draw(&self, canvas: RenderUtilObject) -> DrawResult {
-        let params = DrawParam::new();
-        DrawResult {
-            params,
-            drawing: &self.component_data.drawing,
-        }
+    fn get_name(&self) -> String {
+        "[Staff System]".to_string()
+    }
+    fn get_drawing(&self) -> RetrieveDrawing {
+        RetrieveDrawing::Ok(RefCell::new(self.component_data.drawing.clone()))
+    }
+    fn draw(&self, canvas: RenderUtil) -> DrawResult {
+        DrawResult::Draw(
+            // DrawParam::new()
+            //     .dest([0.0, 0.0])
+            //     .scale([sheet_component_const::SCALEF, sheet_component_const::SCALEF])
+            //     .z(0),
+            self.component_data.drawing.params,
+        )
     }
 
     fn next(&self) -> Vec<ComponentObject> {
         let mut result: Vec<ComponentObject> = Vec::new();
         for staff in &self.staffs {
-            result.push(Arc::new(staff));
+            result.push(staff);
         }
         result
     }

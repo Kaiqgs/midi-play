@@ -1,31 +1,15 @@
-use crate::models::midi::MidiTrack;
-use crate::models::{midi::to_sheet::MidiSheetTransformer, sheet::from::SheetTransformer};
-use crate::tests::common::{REFERENCE_MID, REFERENCE_UNE_MID};
+use crate::models::{midi::to_sheet::MidiSheetFromFile, sheet::from::SheetFromFile};
+use crate::tests::common::{setup_log, REFERENCE_MID};
+// use crate::controllers::midi::to_sheet;
 
-fn _setup(smf: Option<midly::Smf>) -> MidiSheetTransformer {
-    MidiSheetTransformer::new(smf)
-}
-
-fn setup<'a>() -> MidiSheetTransformer<'a> {
-    _setup(Some(MidiTrack::new(REFERENCE_MID.into()).open()))
-}
-
-fn bad_setup<'a>() -> MidiSheetTransformer<'a> {
-    _setup(Some(MidiTrack::new(REFERENCE_UNE_MID.into()).open()))
+fn setup() -> MidiSheetFromFile {
+    setup_log();
+    MidiSheetFromFile::new()
 }
 
 #[test]
-fn converts() {
-    let midtrans = setup();
-    let track = midtrans.convert();
-    assert!(track.system.is_some());
-    let system = track.system.unwrap();
-    assert_ne!(system.staffs.len(), 0);
-}
-
-#[test]
-fn converts_faulty() {
-    let midtrans = bad_setup();
-    let track = midtrans.convert();
-    assert!(track.system.is_none());
+fn parse_default() {
+    let mut midi_sheet = setup();
+    let sheet_track = midi_sheet.parse(REFERENCE_MID.into());
+    assert!(sheet_track.track.len() > 0);
 }

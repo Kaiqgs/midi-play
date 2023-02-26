@@ -1,0 +1,256 @@
+
+        // iterate self.track_timing keys and check the closest one to self.tick_time
+        // return the value of that key
+        //
+        // let timing = self
+        //     .track_timing
+        //     .get(&self.component_data.closest_key)
+        //     .expect("No timing found");
+        // pos at which triggers are measured;
+        // let trigger_pos_x = canvas.winctx.size.x as f64 * definition::TRIGGER_OFFSET_RATIO
+        //     / definition::SCALE as f64;
+        //
+        // let start_trigger_to_note_off =
+        //     canvas.winctx.size.x as f64 * definition::INITIAL_NOTE_OFFSET_FROM_TRIGGER_RATIO;
+        //
+        // // How many ticks will fit in a screen pixel;
+        // let tick_to_px = self.last_track_time.tick as f64 / canvas.winctx.size.x as f64;
+        // // How many pixels will fit in a tick;
+        // let px_to_tick = canvas.winctx.size.x as f64 / self.last_track_time.tick as f64;
+        //
+        // How many seconds will fit in a screen pixel;
+        // let sec_to_px = self.last_track_time.sec as f64 / canvas.winctx.size.x as f64;
+        // // How many pixels will fit in a second;
+        // let px_to_sec = canvas.winctx.size.x as f64 / self.last_track_time.sec as f64;
+
+        // self.component_data.range = Some((1e-12, 1e-12 + sec_to_px));
+        //printout for last two variables
+        // debug!(
+        //     "tick_to_window_width: {}, window_width_to_tick: {}",
+        //     tick_to_px, px_to_tick
+        // );
+
+        //micro to second
+        // let delta_sec = canvas.delta.as_millis() as f64 / 1000.0;
+        // let delta_tick = delta_sec / timing.sec_per_tick;
+        // let delta_px = delta_tick * tick_to_px;
+        // self.component_data.update = ClockFloat {
+        //     sec: delta_sec,
+        //     tick: delta_tick,
+        // };
+        // debug!(
+        //     "Update time: delta_sec: {}, delta_tick: {}",
+        //     self.component_data.update.sec, self.component_data.update.tick
+        // );
+        // debug!(
+        //     "Cur    time: sec: {}, tick: {}",
+        //     self.time.sec, self.time.tick
+        // );
+        //
+        // self.time.sec += self.component_data.update.sec;
+        // self.time.tick += self.component_data.update.tick;
+
+        //     self.component_data.playback.note_on(note);
+        //     self.component_data.playback.note_on(note);
+        //TODO put computation in here and store math ;)
+
+        // let mut count_visible: u32 = 0;
+        // let mut count_all: u32 = 0;
+        // let initial_note_offset_from_trigger =
+        //     canvas.winctx.size.x as f64 * definition::INITIAL_NOTE_OFFSET_FROM_TRIGGER_RATIO;
+        // let trigger_pos_x = canvas.winctx.size.x as f64 * definition::TRIGGER_OFFSET_RATIO
+        //     / definition::SCALE as f64;
+        //
+        // let tick_to_window_width = self.last_track_time.tick as f64 / canvas.winctx.size.x as f64;
+        // let percentage_position = self.time.tick / self.last_track_time.tick as f64;
+        // let tick_render_length = self.last_track_time.tick as f64 * canvas.winctx.track.get_zoom();
+        // let tick_render_to_window_width = tick_render_length / canvas.winctx.size.x as f64;
+        // let tick_render_round_length = tick_render_length.round() as u32;
+        // let resolution =
+        //     tick_render_length / canvas.winctx.size.x as f64 * (definition::SCALE as f64);
+        // let mut time_now: Option<u32> = None;
+
+        central_logic(self, canvas);
+        for (track_index, track) in self.track.iter().enumerate() {
+            for (note_index, note) in track.iter().enumerate() {
+                // let note_offset_x =
+                //     trigger_pos_x as f64 + initial_note_offset_from_trigger as f64 + 1.0
+                //         - (self.time.tick as f64);
+                // let note_offset_x_u32 = note_offset_x.round() as u32;
+                // // let start_render = sub_u32(self.tick_time as u32, tick_render_round_length);
+                // let start_render = (self.time.tick - tick_render_length).clamp(0.0, self.time.tick);
+                // let finish_render = self.last_track_time.tick as f64 + tick_render_length;
+                // let finish_render = self.time.tick + tick_render_length;
+                // count_all += 1;
+                // let note_time = note.time.tick as f64 + note_offset_x;
+                //
+                // if self.component_data.render_all
+                //     || note_time >= start_render && note_time < finish_render
+                // {
+                //     let scaled_x = (note.time.tick as f64 / resolution) + note_offset_x;
+                //     let target_diff = (trigger_pos_x - scaled_x).abs();
+                //     let is_target_hit = target_diff < definition::TRIGGER_RANGE as f64;
+                //     if is_target_hit {
+                //         debug!("Target hit");
+                //         match note.on {
+                //             Some(note_state) => {
+                //                 if note_state {
+                //                     let pairs = &self.track_pairs[track_index];
+                //                     let note_end_index = pairs[&note_index];
+                //                     let note_end = &track[note_end_index];
+                //                     //TODO change track_iming.get(0) to
+                //                     //track_timing.get(latest_tick)
+                //                     let timing = self.track_timing.get(&0).expect("No timing");
+                //                     self.component_data
+                //                         .playback
+                //                         .note(note, note_end)
+                //                         .expect("Note on failed");
+                //                 }
+                //             }
+                //             None => warn!("Note without information"),
+                //         }
+                //         time_now = Some(note.time.tick);
+                //     }
+                //     count_visible += 1;
+                // }
+            }
+        }
+        
+
+	// let width = canvas.winctx.size.x;
+        // let n_fit_notes = width / definition::PIX_PER_HORIZONTAL_LINE;
+        //Override drawing;
+        let drawing = Drawing::new_mesh(MeshBuilder::new());
+        let drawing_reference = DrawingReference::new(drawing);
+        self.component_data.drawing.swap(&drawing_reference);
+        let mut drawing = self.component_data.drawing.borrow_mut();
+        // let mut render_util: Vec<&Note> = vec![];
+        if let Some(mut mb) = drawing.meshbuilder.as_mut() {
+            let mut count_visible: u32 = 0;
+            let mut count_all: u32 = 0;
+
+            let initial_note_offset_from_trigger =
+                canvas.winctx.size.x as f64 * definition::INITIAL_NOTE_OFFSET_FROM_TRIGGER_RATIO;
+            let trigger_pos_x = canvas.winctx.size.x as f64 * definition::TRIGGER_OFFSET_RATIO
+                / definition::SCALE as f64;
+            let tick_to_px = self.last_track_time.tick as f64 / canvas.winctx.size.x as f64;
+            let percentage_position = self.time.tick / self.last_track_time.tick as f64;
+            let tick_render_length =
+                self.last_track_time.tick as f64 * canvas.winctx.track.get_zoom();
+            // let tick_render_to_window_width = tick_render_length / canvas.winctx.size.x as f64;
+            let tick_render_round_length = tick_render_length.round() as u32;
+            let resolution =
+                tick_render_length / canvas.winctx.size.x as f64 * (definition::SCALE as f64);
+            mb.line(
+                &[
+                    Point2 {
+                        x: trigger_pos_x as f32,
+                        y: 0.0,
+                    },
+                    Point2 {
+                        x: trigger_pos_x as f32,
+                        y: canvas.winctx.size.y as f32,
+                    },
+                ],
+                1.0,
+                Color::YELLOW,
+            );
+            trace!(
+                "LastTick@={}, tick2width={}, resolution={}",
+                self.last_track_time.tick,
+                tick_to_px,
+                resolution
+            );
+            // mb.rectangle(
+            //     DrawMode::Fill(FillOptions::default()),
+            //     Rect::new(0.0, 0.0, 100.0, 100.0),
+            //     Color::BLUE,
+            // );
+            trace!("SheetTrack render: {}x tracks.", self.track.len());
+            for track in self.track.iter() {
+                for note in track.iter() {
+                    let note_offset_x =
+                        trigger_pos_x as f64 + initial_note_offset_from_trigger as f64 + 1.0
+                            - (self.time.tick as f64);
+                    let note_offset_x_u32 = note_offset_x.round() as u32;
+                    // let start_render = sub_u32(self.tick_time as u32, tick_render_round_length);
+                    let start_render =
+                        (self.time.tick - tick_render_length).clamp(0.0, self.time.tick);
+                    let finish_render = self.last_track_time.tick as f64 + tick_render_length;
+                    let finish_render = self.time.tick + tick_render_length;
+                    count_all += 1;
+                    let note_time = note.time as f64 + note_offset_x;
+
+                    if self.component_data.render_all
+                        || note_time >= start_render && note_time < finish_render
+                    {
+                        let scaled_x = (note.time as f64 / resolution) + note_offset_x;
+                        let target_diff = (trigger_pos_x - scaled_x).abs();
+                        let is_target_hit = target_diff < 0.5;
+                        let scaled_note = note.line * definition::NOTE_HEIGHT;
+                        let mut color = Color::new(1.0, 0.0, 0.0, 0.5);
+                        if !note.on.unwrap_or(true) {
+                            color = Color::new(0.0, 0.0, 1.0, 0.5);
+                        }
+                        if is_target_hit {
+                            color = Color::new(0.0, 1.0, 0.0, 0.5);
+                            // self.component_data.playback.note_on(note);
+                        }
+
+                        trace!(
+                            "rendering: note={}, state={}, time={}, x={}, y={}, scale={}",
+                            note.id,
+                            note.on.unwrap_or(true),
+                            note.time,
+                            scaled_x,
+                            scaled_note,
+                            definition::SCALE
+                        );
+
+                        mb.rectangle(
+                            DrawMode::Fill(FillOptions::default()),
+                            Rect::new((scaled_x - 1.0) as f32, (scaled_note - 1) as f32, 1.0, 1.0),
+                            color,
+                        );
+                        mb.rectangle(
+                            DrawMode::Fill(FillOptions::default()),
+                            Rect::new((scaled_x + 1.0) as f32, (scaled_note - 1) as f32, 1.0, 1.0),
+                            color,
+                        );
+                        mb.rectangle(
+                            DrawMode::Fill(FillOptions::default()),
+                            Rect::new(scaled_x as f32, scaled_note as f32, 1.0, 1.0),
+                            color,
+                        );
+                        mb.rectangle(
+                            DrawMode::Fill(FillOptions::default()),
+                            Rect::new(scaled_x as f32, (scaled_note - 2) as f32, 1.0, 1.0),
+                            color,
+                        );
+
+                        count_visible += 1;
+                    }
+                }
+            }
+            let mesh_data = mb.build();
+            debug!(
+                "rendering: {}x visible {}x total [ver={}, idx={}]",
+                count_visible,
+                count_all,
+                mesh_data.vertices.len(),
+                mesh_data.indices.len()
+            );
+            drawing.meshbuilder = Some(mb.to_owned());
+            DrawResult::Draw(
+                DrawParam::new()
+                    .dest([0.0, 0.0])
+                    .scale([definition::SCALE as f32, definition::SCALE as f32])
+                    .z(1),
+            )
+        } else {
+            warn!("meshbuilder should've been set");
+            DrawResult::Skip
+        }
+        // let drawing = self.drawing;
+    }
+

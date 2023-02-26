@@ -1,56 +1,81 @@
-use ggez::Context;
-
-use crate::components::sheet::clef::ClefComponentData;
+use crate::models::render_util::RenderUtil;
+use crate::components::component::BuildContext;
 use crate::models::sheet::SheetTrack;
-use std::rc::Rc;
-use std::sync::Arc;
+use std::collections::HashMap;
 
-use crate::components::component::{BuildContext, Component};
-use crate::components::sheet::staff_system::StaffSystemComponentData;
+use super::clock::Clock;
+use super::midi::peripheral::MidiPeripheral;
+use super::note::Note;
+use super::sheet::from::SheetFromFile;
+use super::sheet::sheet_const;
 
-use super::midi::MidiTrack;
-use super::sheet::clef::Clef;
-use super::sheet::from::SheetTransformer;
-
-use super::sheet::staff::Staff;
 use super::sheet::staff_system::StaffSystem;
+use super::sheet::track_window_ctx::TrackWindowContext;
 
-fn get_track(filepath: Option<String>) -> Option<MidiTrack> {
-    match filepath {
-        Some(fpath) => Some(MidiTrack::new_read(fpath)),
-        None => None,
-    }
+pub struct TrackManager {
+    pub filepath: Option<String>,
+    pub system: StaffSystem,
+    pub sheet_track: SheetTrack,
+    pub parser: Box<dyn SheetFromFile>,
+    pub tick_time: f64,
 }
 
-pub struct TrackManager<T>
-where
-    T: SheetTransformer,
-{
-    pub midi: Option<MidiTrack>,
-    pub sheet: StaffSystem,
-    // TODO: create sheet track that display notes;
-    //pub sheet_track: SheetTrack,
-    // pub sheet: ESheetTrack,
-    pub loaded: bool,
-    pub transform: T,
-}
+impl TrackManager {
+    pub fn new(
+        filepath: Option<String>,
+        parser: Box<dyn SheetFromFile>,
+        build: BuildContext,
+    ) -> Self {
+        let staves_for_sheet = StaffSystem::default_staff(build.clone());
+        let staff_for_sheet = StaffSystem::new(staves_for_sheet, None, build.clone());
 
-impl<M> TrackManager<M>
-where
-    M: SheetTransformer,
-{
-    pub fn new(filepath: Option<String>, transform: M, build: BuildContext) -> Self {
-        let staffsys = StaffSystem::new(None, None, build);
+        let staves = StaffSystem::default_staff(build.clone());
+        let staff = StaffSystem::new(staves, None, build);
+        let sheet_track =
+            SheetTrack::new(staff_for_sheet, None, vec![], vec![], HashMap::new(), None);
         TrackManager {
-            transform,
-            sheet: staffsys,
-            loaded: false,
-            midi: get_track(filepath),
+            filepath,
+            parser,
+            system: staff,
+            sheet_track,
+            tick_time: 0.0,
         }
     }
 
-    pub fn set_track(&mut self, filepath: Option<String>) -> bool {
-        self.midi = get_track(filepath);
-        false
+    pub fn set_track(
+        &mut self,
+        optional_path: Option<String>,
+        canvas: RenderUtil,
+        peripheral: MidiPeripheral,
+    ) -> Result<TrackWindowContext, ()> {
+        self.filepath = optional_path.clone();
+        //TODO update render_range here
+        match optional_path {
+            Some(path) => {
+                let mut sheet_track = self.parser.parse(path);
+                let render_range = sheet_track.compute_render_range(canvas);
+                let ctx = TrackWindowContext::new(None, Some(render_range));
+                self.sheet_track = sheet_track;
+                self.sheet_track.component_data.playback = peripheral;
+
+                //.resume
+                // self.sheet_track.component_data.playback.open(playback.note_tx.unwrap().clone());
+                let mut note_start = Note::new(sheet_const::E, 4);
+                note_start.time = Clock { tick: 0, sec: 0.0 };
+                note_start.on = Some(true);
+                let mut note_end = Note::new(sheet_const::E, 4);
+                note_end.time = Clock {
+                    tick: 1000,
+                    sec: 1.0,
+                };
+                note_end.on = Some(false);
+                self.sheet_track
+                    .component_data
+                    .playback
+                    .note(&note_start, &note_end);
+                return Ok(ctx);
+            }
+            None => Err(()),
+        }
     }
 }

@@ -1,4 +1,8 @@
-use std::{rc::Rc, sync::Arc};
+use std::{
+    cell::{Cell, RefCell},
+    rc::Rc,
+    sync::{Arc, Mutex, RwLock},
+};
 
 use ggez::{
     context::Has,
@@ -6,26 +10,68 @@ use ggez::{
     mint::Point2,
     Context,
 };
+use log::debug;
 
-use crate::models::{draw_util::DrawUtil, render_util::RenderUtil};
-
-use super::drawing::{DrawResult, Drawing};
+use super::drawing::{DrawError, DrawResult, Drawing, DrawingReference, RetrieveDrawing};
+use crate::models::{render_util::RenderUtil, sheet::track_window_ctx::TrackWindowContext};
 
 pub trait Component {
-    fn draw(&self, canvas: RenderUtilObject) -> DrawResult;
+    fn get_name(&self) -> String {
+        String::from("[Component]")
+    }
+
+    fn update(&mut self, canvas: RenderUtil) {
+        ()
+    }
+    fn draw(&self, canvas: RenderUtil) -> DrawResult {
+        DrawResult::Skip
+    }
+    fn get_new_drawing(&self) -> Drawing {
+        Drawing::default()
+    }
+    fn get_drawing(&self) -> RetrieveDrawing {
+        RetrieveDrawing::Ok(DrawingReference::new(self.get_new_drawing()))
+    }
     fn next(&self) -> Vec<ComponentObject> {
         Vec::new()
     }
 }
 
+pub struct WindowContext {
+    pub size: Point2<u32>,
+    pub track: TrackWindowContext,
+}
+
+impl WindowContext {
+    pub fn new(size: Point2<u32>, trackwinctx: Option<TrackWindowContext>) -> Self {
+        WindowContext {
+            size,
+            track: trackwinctx.unwrap_or(TrackWindowContext::default()),
+        }
+    }
+}
+
+impl Clone for WindowContext {
+    fn clone(&self) -> Self {
+        WindowContext::new(self.size, Some(self.track.clone()))
+    }
+}
+
 pub struct BuildContext<'a> {
     pub ctx: Option<&'a Context>,
-    pub canvas_size: Point2<u32>,
+    pub winctx: WindowContext,
 }
 
 impl<'a> BuildContext<'a> {
-    pub fn new(ctx: Option<&'a Context>, canvas_size: Point2<u32>) -> Self {
-        BuildContext { ctx, canvas_size }
+    pub fn new(
+        ctx: Option<&'a Context>,
+        canvas_size: Point2<u32>,
+        trackwinctx: Option<TrackWindowContext>,
+    ) -> Self {
+        BuildContext {
+            ctx,
+            winctx: WindowContext::new(canvas_size, trackwinctx),
+        }
     }
 }
 
@@ -33,7 +79,7 @@ impl Clone for BuildContext<'_> {
     fn clone(&self) -> Self {
         Self {
             ctx: self.ctx.clone(),
-            canvas_size: self.canvas_size.clone(),
+            winctx: self.winctx.clone(),
         }
     }
 }
@@ -42,10 +88,10 @@ impl Default for BuildContext<'_> {
     fn default() -> Self {
         BuildContext {
             ctx: None,
-            canvas_size: Point2 { x: 0, y: 0 },
+            winctx: WindowContext::new(Point2 { x: 0, y: 0 }, None::<TrackWindowContext>),
         }
     }
 }
 
-pub type RenderUtilObject<'a> = Rc<&'a dyn RenderUtil>;
-pub type ComponentObject<'a> = Arc<&'a dyn Component>;
+pub type ComponentObject<'a> = &'a dyn Component;
+pub type MutComponentObject<'a> = &'a mut dyn Component;

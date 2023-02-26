@@ -3,13 +3,15 @@ use ggez::context::Has;
 
 use crate::models::{
     dialogable::StringDialogable,
-    draw_util::DrawUtil,
     menu::{Menu as MenuModel, StringResult},
     record::Recording,
 };
 
-use super::{component::{Component, RenderUtilObject, ComponentObject}, drawing::DrawResult};
 use super::drawing::Drawing;
+use super::{
+    component::{Component, ComponentObject},
+    drawing::DrawResult,
+};
 
 pub struct MenuComponentData {}
 
@@ -37,15 +39,7 @@ impl Has<MenuComponentData> for Menu {
     }
 }
 
-impl Component for Menu {
-    fn draw(&self, canvas: RenderUtilObject) -> DrawResult {
-        unimplemented!()
-    }
-
-    fn next(&self) -> Vec<ComponentObject> {
-        todo!()
-    }
-}
+// impl Component for Menu {}
 
 #[async_trait]
 impl MenuModel for Menu {

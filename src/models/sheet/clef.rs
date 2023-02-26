@@ -3,7 +3,7 @@ use crate::{
     models::note::Note,
 };
 
-use super::definition;
+use super::sheet_const;
 
 pub struct Clef {
     pub note: Note,
@@ -27,7 +27,7 @@ impl Clef {
 
     pub fn new_bass(component_data: Option<ClefComponentData>) -> Self {
         Clef::new(
-            Note::new(definition::G, 2),
+            Note::new(sheet_const::G, 2),
             Some("Bass / F".into()),
             component_data,
         )
@@ -35,7 +35,7 @@ impl Clef {
 
     pub fn new_treble(component_data: Option<ClefComponentData>) -> Self {
         Clef::new(
-            Note::new(definition::E, 4),
+            Note::new(sheet_const::E, 4),
             Some("Treble / G".into()),
             component_data,
         )
