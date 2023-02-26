@@ -1,7 +1,4 @@
-use std::{
-    collections::HashSet,
-    sync::{mpsc::Sender, Mutex},
-};
+use std::sync::mpsc::Sender;
 
 use midir::MidiOutputConnection;
 

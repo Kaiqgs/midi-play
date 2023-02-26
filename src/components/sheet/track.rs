@@ -1,30 +1,17 @@
-use std::{
-    borrow::Borrow,
-    cell::{Cell, RefCell},
-    sync::RwLock,
-};
-
 use ggez::{
-    context::Has,
-    graphics::{
-        Color, DrawMode, DrawParam, FillOptions, MeshBuilder, PxScale, Rect, StrokeOptions, Text,
-    },
+    graphics::{Color, DrawMode, DrawParam, FillOptions, MeshBuilder, PxScale, Rect, Text},
     mint::Point2,
 };
-use log::{debug, info, trace, warn};
+use log::{debug, warn};
 
 use crate::{
     components::{
-        component::{BuildContext, Component, ComponentObject, WindowContext},
+        component::{BuildContext, Component, WindowContext},
         drawing::{DrawResult, Drawing, DrawingReference, RetrieveDrawing},
-        sheet::sheet_component_const::{self, SCALE},
+        sheet::sheet_component_const::{self},
     },
     models::{
-        clock::{Clock, ClockFloat},
-        midi::{peripheral::MidiPeripheral, playback::MidiPlayback},
-        note::Note,
-        render_util::RenderUtil,
-        sheet::sheet_const,
+        clock::ClockFloat, midi::peripheral::MidiPeripheral, render_util::RenderUtil,
         sheet::SheetTrack,
     },
 };
@@ -44,7 +31,7 @@ pub struct SheetTrackComponentData {
 
 impl SheetTrackComponentData {
     pub fn new(drawing: Drawing, build: BuildContext) -> Self {
-        let mut playback = MidiPeripheral::new(String::from("<SheetTrack Playback>"));
+        let playback = MidiPeripheral::new(String::from("<SheetTrack Playback>"));
 
         SheetTrackComponentData {
             drawing: DrawingReference::new(drawing),
@@ -100,9 +87,9 @@ impl Component for SheetTrack {
         let last_sec = self.last_track_time.sec as f64;
 
         let tick_to_px = last_tick / width_px;
-        let px_to_tick = width_px / last_tick;
-        let sec_to_px = last_sec / width_px;
-        let px_to_sec = width_px / last_sec;
+        let _px_to_tick = width_px / last_tick;
+        let _sec_to_px = last_sec / width_px;
+        let _px_to_sec = width_px / last_sec;
 
         let global_note_offset_px =
             width_px * sheet_component_const::NOTE_OFFSET_RATIO * canvas.winctx.track.get_zoom();
@@ -259,7 +246,7 @@ impl Component for SheetTrack {
         drawing.text = Some(text);
     }
 
-    fn draw(&self, canvas: RenderUtil) -> DrawResult {
+    fn draw(&self, _canvas: RenderUtil) -> DrawResult {
         DrawResult::Draw(
             DrawParam::new()
                 .dest([0.0, 0.0])

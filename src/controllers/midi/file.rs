@@ -1,14 +1,8 @@
-use crate::models::note::Note;
-use log::debug;
+use midly::Smf;
+use std::fs::{self};
 
-use midly::{
-    num::{u15, u24, u7},
-    Format, MetaMessage, MidiMessage, Smf, Timing, TrackEventKind,
-};
-use std::fs::{self, File};
+use crate::models::midi::MidiFile;
 
-use crate::models::{midi::MidiFile, trackeable::Trackeable};
-use async_trait::async_trait;
 use std::path::Path;
 
 impl MidiFile {

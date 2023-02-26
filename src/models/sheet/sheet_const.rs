@@ -1,6 +1,4 @@
 use std::{
-    char,
-    collections::HashMap,
     fmt::{Display, Formatter},
     ops::Range,
 };

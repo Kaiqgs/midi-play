@@ -2,7 +2,6 @@ use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::Path;
 
-use crate::components::component::BuildContext;
 use crate::models::clock::Clock;
 use crate::models::midi::timing::TimingInformation;
 use crate::models::midi::to_sheet::{MidiSheetFromFile, MidiSheetTransformer};
@@ -20,7 +19,7 @@ impl MidiSheetTransformer {}
 
 fn _iter_tracks() {}
 
-fn _note_change(state: bool, notes: &mut Vec<Note>, notes_on: &mut HashSet<Note>, note: &Note) {
+fn _note_change(_state: bool, notes: &mut Vec<Note>, _notes_on: &mut HashSet<Note>, note: &Note) {
     // let mut final_note: Note;
     // if state { // State is NOTE_ON
     //    // if notes_on.contains(note)
@@ -45,7 +44,7 @@ fn _parse_smf<'a>(smf: midly::Smf<'a>) -> SheetTrack {
     let head = smf.header;
     //tempo will escribe a (length, beat, quarter note) / seconds;
     let default_tempo = u24::new(120);
-    let tick_per_second = u24::new(32);
+    let _tick_per_second = u24::new(32);
     let mut tick_per_beat = u15::new(32);
     let mut timing_info = TimingInformation {
         tempo: default_tempo,
@@ -54,7 +53,7 @@ fn _parse_smf<'a>(smf: midly::Smf<'a>) -> SheetTrack {
         sec_per_tick: 0.0,
     };
     let mut timing_changes: HashMap<u32, TimingInformation> = HashMap::new();
-    let fps = 0;
+    let _fps = 0;
     let mut farthest_tick: Clock = Clock { tick: 0, sec: 0.0 };
 
     let mut track_notes: Vec<Vec<Note>> = vec![];
@@ -65,7 +64,7 @@ fn _parse_smf<'a>(smf: midly::Smf<'a>) -> SheetTrack {
 
     match head.timing {
         Timing::Metrical(tpb) => tick_per_beat = tpb,
-        Timing::Timecode(nfps, subf) => (),
+        Timing::Timecode(_nfps, _subf) => (),
     }
     match head.format {
         Format::SingleTrack => {
@@ -98,20 +97,20 @@ fn _parse_smf<'a>(smf: midly::Smf<'a>) -> SheetTrack {
         debug!("track {} has {} events", i, track.len());
         // Tempo tracks beat duration in secods (beat/sec);
         // A beat is a 1/4 step;
-        let mut bpm = u24::new(120);
+        let _bpm = u24::new(120);
         let (mut dd, mut nn, mut cc, mut bb) = (0, 0, 0, 0);
         let mut key_sign_val: i8 = 0;
         let mut key_sign_bool = false;
         let mut midi_port = u7::new(0);
         let mut notes: Vec<Note> = Vec::new();
-        let mut notes_off: Vec<Note> = Vec::new();
+        let _notes_off: Vec<Note> = Vec::new();
         let mut time_tick: u32 = 0;
         let mut time_sec: f64 = 0.0;
         let mut note_pairer: HashMap<Note, usize> = HashMap::new();
         let mut note_pairs: HashMap<usize, usize> = HashMap::new();
         // let mut time_sig_changes: Vec<(u32, (u8, u8))> = Vec::new();
 
-        for (event) in track {
+        for event in track {
             // ticks_per_quarter = <PPQ from the header>
             // µs_per_quarter = <Tempo in latest Set Tempo event>
             // µs_per_tick = µs_per_quarter / ticks_per_quarter
@@ -140,7 +139,7 @@ fn _parse_smf<'a>(smf: midly::Smf<'a>) -> SheetTrack {
                             },
                             false,
                         );
-                        if (note_pairer.contains_key(&note)) {
+                        if note_pairer.contains_key(&note) {
                             match note_pairer.get(&note) {
                                 Some(note_on) => {
                                     note_pairs.insert(note_on.clone(), notes.len());
@@ -176,14 +175,17 @@ fn _parse_smf<'a>(smf: midly::Smf<'a>) -> SheetTrack {
                         note_on_count += 1;
                         // _note_change(true, &mut notes, &mut notes_on, &note);
                     }
-                    MidiMessage::Aftertouch { key, vel } => (),
-                    MidiMessage::Controller { controller, value } => (),
-                    MidiMessage::ProgramChange { program } => (),
-                    MidiMessage::ChannelAftertouch { vel } => (),
-                    MidiMessage::PitchBend { bend } => (),
+                    MidiMessage::Aftertouch { key: _, vel: _ } => (),
+                    MidiMessage::Controller {
+                        controller: _,
+                        value: _,
+                    } => (),
+                    MidiMessage::ProgramChange { program: _ } => (),
+                    MidiMessage::ChannelAftertouch { vel: _ } => (),
+                    MidiMessage::PitchBend { bend: _ } => (),
                 },
-                TrackEventKind::SysEx(d) => (),
-                TrackEventKind::Escape(d) => (),
+                TrackEventKind::SysEx(_d) => (),
+                TrackEventKind::Escape(_d) => (),
                 TrackEventKind::Meta(meta) => match meta {
                     MetaMessage::EndOfTrack => break,
                     MetaMessage::TrackNumber(_) => (),

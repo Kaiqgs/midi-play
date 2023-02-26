@@ -1,10 +1,6 @@
-use std::{
-    cell::{Cell, RefCell},
-    sync::{Mutex, RwLock},
-};
+use std::cell::RefCell;
 
 use ggez::graphics::{Color, DrawParam, Image, Mesh, MeshBuilder, Text};
-use log::debug;
 
 pub struct Drawing {
     pub params: DrawParam,

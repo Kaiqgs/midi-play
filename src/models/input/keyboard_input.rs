@@ -1,10 +1,4 @@
-use std::{collections::HashMap, num, ops::Index};
-
 use ggez::input::keyboard::KeyCode;
-
-use crate::models::{note::Note, sheet::sheet_const};
-
-use super::input::MidiPlayInput;
 
 pub(crate) const NUMERIC_KEY_CODE: [KeyCode; 10] = [
     KeyCode::Key0,

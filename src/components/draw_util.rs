@@ -1,7 +1,7 @@
 use core::panic;
 
 use ggez::{
-    graphics::{Color, DrawParam, Image, Mesh, MeshBuilder},
+    graphics::{Color, DrawParam, Mesh, MeshBuilder},
     mint::Point2,
     Context,
 };
@@ -44,7 +44,7 @@ impl DrawUtil {
                     Some(ctx) => draw.mesh = Some(Mesh::from_data(ctx, mb.build())),
                     None => (),
                 }
-                let mut params = DrawParam::new()
+                let params = DrawParam::new()
                     .dest(Point2::from([0.0, 0.0]))
                     .scale([sheet_component_const::SCALEF, sheet_component_const::SCALEF])
                     .z(Zindex::Track.get());
@@ -54,11 +54,11 @@ impl DrawUtil {
         }
     }
 
-    pub fn note_sheet<'a>(draw: &mut Drawing, note: &'a Note) {
+    pub fn note_sheet<'a>(_draw: &mut Drawing, _note: &'a Note) {
         todo!()
     }
 
-    pub fn left_image<'a>(draw: &'a mut Drawing, build: BuildContext, note: &'a Note) {
+    pub fn left_image<'a>(draw: &'a mut Drawing, _build: BuildContext, note: &'a Note) {
         //image requires manual scaling...
         //j
         let scaled_note =
@@ -74,18 +74,18 @@ impl DrawUtil {
             }
             None => panic!("Mandatory image"),
         }
-        let mut params = DrawParam::new()
+        let params = DrawParam::new()
             .dest(Point2::from([0.0, level as f32]))
             .scale([sheet_component_const::SCALEF, sheet_component_const::SCALEF])
             .z(Zindex::Note.get());
         draw.params = params;
     }
 
-    fn note<'a>(draw: &'a mut Drawing, build: BuildContext, note: &'a Note) {
+    fn note<'a>(_draw: &'a mut Drawing, _build: BuildContext, _note: &'a Note) {
         todo!()
     }
 
-    fn rect<'a>(draw: &'a mut Drawing, build: BuildContext, color: Color) {
+    fn rect<'a>(_draw: &'a mut Drawing, _build: BuildContext, _color: Color) {
         todo!()
     }
 }

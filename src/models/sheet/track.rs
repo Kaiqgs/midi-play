@@ -4,9 +4,7 @@ use ggez::graphics::MeshBuilder;
 
 use crate::{
     components::{
-        component::BuildContext,
-        drawing::{Drawing, DrawingReference},
-        sheet::track::SheetTrackComponentData,
+        component::BuildContext, drawing::Drawing, sheet::track::SheetTrackComponentData,
     },
     models::{
         clock::{Clock, ClockFloat},

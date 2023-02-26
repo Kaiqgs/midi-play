@@ -2,12 +2,9 @@ use ggez::{
     graphics::{Canvas, DrawParam, Image, Mesh, MeshBuilder, Text},
     Context,
 };
-use log::{info, trace};
+use log::trace;
 
-use super::{
-    component::{BuildContext, WindowContext},
-    drawing::DrawingReference,
-};
+use super::{component::WindowContext, drawing::DrawingReference};
 
 fn draw_mesh_builder(
     mesh_builder: &Option<MeshBuilder>,
@@ -50,7 +47,7 @@ fn draw_mesh(
     }
 }
 
-fn draw_image(image: &Option<Image>, gfx: &Context, canvas: &mut Canvas, params: DrawParam) {
+fn draw_image(image: &Option<Image>, _gfx: &Context, canvas: &mut Canvas, params: DrawParam) {
     match image.as_ref() {
         Some(image) => {
             canvas.draw(image, params);
@@ -59,7 +56,7 @@ fn draw_image(image: &Option<Image>, gfx: &Context, canvas: &mut Canvas, params:
     }
 }
 
-fn draw_text(text: &Option<Text>, gfx: &Context, canvas: &mut Canvas, params: DrawParam) {
+fn draw_text(text: &Option<Text>, _gfx: &Context, canvas: &mut Canvas, _params: DrawParam) {
     match text.as_ref() {
         Some(text) => {
             canvas.draw(text, DrawParam::new());
@@ -73,7 +70,7 @@ pub(crate) fn render_drawing(
     params: DrawParam,
     canvas: &mut Canvas,
     gfx: &Context,
-    winctx: &WindowContext,
+    _winctx: &WindowContext,
 ) {
     let drawing = drawing_ref.borrow();
     draw_mesh(&drawing.mesh, &drawing.meshbuilder, gfx, canvas, params);

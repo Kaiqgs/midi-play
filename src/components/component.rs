@@ -1,18 +1,6 @@
-use std::{
-    cell::{Cell, RefCell},
-    rc::Rc,
-    sync::{Arc, Mutex, RwLock},
-};
+use ggez::{mint::Point2, Context};
 
-use ggez::{
-    context::Has,
-    graphics::{Color, DrawParam, Image, MeshBuilder, Text},
-    mint::Point2,
-    Context,
-};
-use log::debug;
-
-use super::drawing::{DrawError, DrawResult, Drawing, DrawingReference, RetrieveDrawing};
+use super::drawing::{DrawResult, Drawing, DrawingReference, RetrieveDrawing};
 use crate::models::{render_util::RenderUtil, sheet::track_window_ctx::TrackWindowContext};
 
 pub trait Component {
@@ -20,10 +8,10 @@ pub trait Component {
         String::from("[Component]")
     }
 
-    fn update(&mut self, canvas: RenderUtil) {
+    fn update(&mut self, _canvas: RenderUtil) {
         ()
     }
-    fn draw(&self, canvas: RenderUtil) -> DrawResult {
+    fn draw(&self, _canvas: RenderUtil) -> DrawResult {
         DrawResult::Skip
     }
     fn get_new_drawing(&self) -> Drawing {

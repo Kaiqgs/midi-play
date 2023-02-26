@@ -2,23 +2,21 @@ use crate::{
     components::sheet::sheet_component_const::Zindex,
     models::sheet::{sheet_const::Accidentals, virtual_piano::VirtualPiano},
 };
-use std::borrow::BorrowMut;
 
 use ggez::{
-    graphics::{Color, DrawMode, DrawParam, FillOptions, Mesh, MeshBuilder, Rect, Text},
+    graphics::{DrawMode, DrawParam, MeshBuilder, Rect, Text},
     mint::Point2,
 };
-use log::{debug, info, trace};
+use log::trace;
 
 use crate::{
     components::{
         component::Component,
         drawing::{DrawResult, Drawing, DrawingReference, RetrieveDrawing},
         pallete,
-        sheet::sheet_component_const::{self, TRIGGER_WIDTH},
+        sheet::sheet_component_const,
     },
     models::sheet::sheet_const,
-    models::sheet::staff_system::StaffSystem,
 };
 
 pub struct VirtualPianoComponentData {
@@ -38,7 +36,7 @@ impl Component for VirtualPiano {
         "[Virtual Piano]".to_string()
     }
 
-    fn update(&mut self, canvas: crate::models::render_util::RenderUtil) {
+    fn update(&mut self, _canvas: crate::models::render_util::RenderUtil) {
         ()
     }
 
@@ -48,8 +46,8 @@ impl Component for VirtualPiano {
 
     fn draw(&self, canvas: crate::models::render_util::RenderUtil) -> DrawResult {
         // return DrawResult::Skip;
-        let mut drawing = Drawing::new_mesh(MeshBuilder::new());
-        let mut text = Text::new("Virtual Piano");
+        let drawing = Drawing::new_mesh(MeshBuilder::new());
+        let text = Text::new("Virtual Piano");
         let drawing_reference = DrawingReference::new(drawing);
         self.component_data.drawing.swap(&drawing_reference);
         let mut drawing = self.component_data.drawing.borrow_mut();
@@ -60,7 +58,7 @@ impl Component for VirtualPiano {
         const WHITE_WIDTH_PX: u32 = 15;
         const PIANO_SPACING_PX: u32 = 3;
 
-        if let Some(mut mb) = drawing.meshbuilder.as_mut() {
+        if let Some(mb) = drawing.meshbuilder.as_mut() {
             let canvas_width = canvas.winctx.size.x as f32 / sheet_component_const::SCALEF;
             let canvas_height = canvas.winctx.size.y as f32 / sheet_component_const::SCALEF;
             let position = canvas_width / 4.0;

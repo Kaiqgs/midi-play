@@ -1,4 +1,4 @@
-use crate::models::midi::{peripheral::MidiPeripheral, playback::MidiPlayback};
+use crate::models::midi::peripheral::MidiPeripheral;
 use std::{
     sync::mpsc::Sender,
     thread::{self, sleep},

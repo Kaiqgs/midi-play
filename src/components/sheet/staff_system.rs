@@ -1,32 +1,17 @@
-use ggez::{graphics::DrawParam, Context};
-use std::{
-    borrow::Borrow,
-    cell::RefCell,
-    sync::{Arc, Mutex},
-};
+use std::cell::RefCell;
 
-use ggez::{
-    context::Has,
-    graphics::{Color, MeshBuilder},
-    mint::Point2,
-};
+use ggez::{graphics::MeshBuilder, mint::Point2};
 
 use crate::{
     components::drawing::{DrawResult, Drawing},
     components::{
-        component::{BuildContext, Component, ComponentObject, MutComponentObject},
+        component::{BuildContext, Component, ComponentObject},
         draw_util::DrawUtil,
-        drawing::{self, RetrieveDrawing},
+        drawing::RetrieveDrawing,
         pallete,
     },
-    models::{
-        note::Note,
-        render_util::RenderUtil,
-        sheet::{staff, staff_system::StaffSystem},
-    },
+    models::{note::Note, render_util::RenderUtil, sheet::staff_system::StaffSystem},
 };
-
-use super::sheet_component_const;
 
 /// Draw systems of Staffs;
 pub struct StaffSystemComponentData {
@@ -68,7 +53,7 @@ impl Component for StaffSystem {
     fn get_drawing(&self) -> RetrieveDrawing {
         RetrieveDrawing::Ok(RefCell::new(self.component_data.drawing.clone()))
     }
-    fn draw(&self, canvas: RenderUtil) -> DrawResult {
+    fn draw(&self, _canvas: RenderUtil) -> DrawResult {
         DrawResult::Draw(
             // DrawParam::new()
             //     .dest([0.0, 0.0])

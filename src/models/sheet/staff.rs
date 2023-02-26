@@ -1,5 +1,3 @@
-use std::{cell::Cell, ops::Range};
-
 use crate::{
     components::{component::BuildContext, sheet::staff::StaffComponentData},
     models::note::Note,

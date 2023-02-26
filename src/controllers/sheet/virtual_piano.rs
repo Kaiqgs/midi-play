@@ -11,11 +11,11 @@ impl<Q> VirtualPianoKeyHandler<Q> for VirtualPiano
 where
     Q: QualityMeter,
 {
-    fn note_on(&self, comparator: Q) {
+    fn note_on(&self, _comparator: Q) {
         unimplemented!()
     }
 
-    fn note_off(&self, comparator: Q) {
+    fn note_off(&self, _comparator: Q) {
         unimplemented!()
     }
 }

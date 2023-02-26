@@ -1,25 +1,16 @@
-use std::{
-    cell::RefCell,
-    rc::Rc,
-    sync::{Arc, Mutex},
-};
+use std::cell::RefCell;
 
-use ggez::{
-    context::Has,
-    graphics::{DrawParam, MeshBuilder},
-};
+use ggez::graphics::MeshBuilder;
 
 use crate::{
     components::{
-        component::{BuildContext, Component, ComponentObject, MutComponentObject},
+        component::{BuildContext, Component, ComponentObject},
         draw_util::DrawUtil,
         drawing::{DrawResult, Drawing, RetrieveDrawing},
         pallete,
     },
     models::{note::Note, render_util::RenderUtil, sheet::staff::Staff},
 };
-
-use super::sheet_component_const;
 
 const LINES: i32 = 5;
 const SPACES: i32 = 4;
@@ -51,7 +42,7 @@ impl Component for Staff {
     fn get_drawing(&self) -> RetrieveDrawing {
         RetrieveDrawing::Ok(RefCell::new(self.component_data.drawing.clone()))
     }
-    fn draw(&self, canvas: RenderUtil) -> DrawResult {
+    fn draw(&self, _canvas: RenderUtil) -> DrawResult {
         DrawResult::Draw(
             // DrawParam::new()
             //     .dest([0.0, 0.0])

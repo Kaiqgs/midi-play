@@ -1,7 +1,4 @@
-use crate::models::{
-    midi::{peripheral::MidiPeripheral, playback::MidiPlayback},
-    sheet::virtual_piano::VirtualPiano,
-};
+use crate::models::{midi::peripheral::MidiPeripheral, sheet::virtual_piano::VirtualPiano};
 
 use super::keyboard_input::KeyboardInputSource;
 
@@ -14,7 +11,7 @@ pub struct InputManager {
 
 impl InputManager {
     pub fn new(playback: Option<MidiPeripheral>) -> Self {
-        let mut default = MidiPeripheral::new("<Input Peripheral>".into());
+        let default = MidiPeripheral::new("<Input Peripheral>".into());
         InputManager {
             playback: playback.unwrap_or(default),
             keyboard: KeyboardInputSource::new(),

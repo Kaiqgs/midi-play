@@ -1,20 +1,15 @@
 use std::{
     collections::HashSet,
     error::Error,
-    sync::{Arc, Mutex},
-    thread::{self, sleep},
-    time::Duration,
+    thread::{self},
 };
 
 use log::{debug, info};
-use midir::{MidiOutput, MidiOutputConnection};
+use midir::MidiOutput;
 
 use crate::models::midi::playback::MidiPlayback;
 use crate::models::{
-    midi::{
-        playback::{NOTE_OFF, NOTE_ON},
-        timing::TimingInformation,
-    },
+    midi::playback::{NOTE_OFF, NOTE_ON},
     note::Note,
 };
 
@@ -24,7 +19,7 @@ impl MidiPlayback {
         self.note_tx = Some(tx.clone());
         let conn_name = playback_name.clone();
         let output_name = playback_name.clone();
-        let reader_thread = thread::Builder::new()
+        let _reader_thread = thread::Builder::new()
             .name(playback_name.clone())
             .spawn(move || {
                 let midi_output =

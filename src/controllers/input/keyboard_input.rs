@@ -49,7 +49,7 @@ impl KeyboardInputSource {
             KeyCode::RControl => {
                 self.ctrl_down = false;
             }
-            (other) => {
+            _other => {
                 return self.handle_key_change(key_code, false);
             }
         };
@@ -132,7 +132,7 @@ impl KeyboardInputSource {
             KeyCode::RControl => {
                 self.ctrl_down = true;
             }
-            (other) => {
+            _other => {
                 return self.handle_key_change(key_code, true);
             }
         };

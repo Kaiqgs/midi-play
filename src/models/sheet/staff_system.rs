@@ -1,16 +1,7 @@
-use std::{
-    ops::{Deref, DerefMut, Range},
-    rc::Rc,
-    sync::Arc,
-};
-
-use ggez::Context;
-
 use crate::{
     components::{
         component::BuildContext,
-        drawing::Drawing,
-        sheet::{clef::ClefComponentData, staff, staff_system::StaffSystemComponentData},
+        sheet::{clef::ClefComponentData, staff_system::StaffSystemComponentData},
     },
     models::note::Note,
 };
@@ -26,7 +17,7 @@ pub struct StaffSystem {
 impl StaffSystem {
     pub fn new(
         staffs: Vec<Staff>,
-        data: Option<StaffSystemComponentData>,
+        _data: Option<StaffSystemComponentData>,
         build: BuildContext,
     ) -> Self {
         let staffdata = StaffSystemComponentData::new(None, build);

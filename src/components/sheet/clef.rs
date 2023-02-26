@@ -1,22 +1,18 @@
 use std::{cell::RefCell, path::Path};
 
 use ggez::{
-    context::Has,
-    graphics::{self, Color, DrawParam, Image, MeshBuilder},
-    mint::Point2,
+    graphics::{Color, Image},
     Context,
 };
 
 use crate::{
     components::{
-        component::{BuildContext, Component, ComponentObject},
+        component::{BuildContext, Component},
         draw_util::DrawUtil,
         drawing::{DrawResult, Drawing, RetrieveDrawing},
     },
     models::{note::Note, render_util::RenderUtil, sheet::clef::Clef},
 };
-
-use super::sheet_component_const;
 
 /// Draws clef symbol;
 pub struct ClefComponentData {
@@ -62,7 +58,7 @@ impl Component for Clef {
     fn get_drawing(&self) -> RetrieveDrawing {
         RetrieveDrawing::Ok(RefCell::new(self.component_data.drawing.clone()))
     }
-    fn draw(&self, canvas: RenderUtil) -> DrawResult {
+    fn draw(&self, _canvas: RenderUtil) -> DrawResult {
         DrawResult::Draw(
             // DrawParam::new()
             //     .dest([0.0, 0.0])

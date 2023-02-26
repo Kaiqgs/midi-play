@@ -4,7 +4,7 @@ use super::{
     midi::midi_const,
     sheet::sheet_const::{self, Accidentals},
 };
-use crate::{components::note, models::clock::Clock};
+use crate::models::clock::Clock;
 use core::hash::Hash;
 use std::hash::Hasher;
 

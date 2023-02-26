@@ -6,4 +6,4 @@ pub(crate) const TOP_PIECE: u16 = 0b010_000_000;
 pub(crate) const UNIT: u16 = 0b010_101_010;
 // pub(crate) const UNIT: u16 = CENTER_PIECE + BOTTOM_PIECE + TOP_PIECE;
 
-pub fn draw_format(mb: &mut MeshBuilder, form: u16) {}
+pub fn draw_format(_mb: &mut MeshBuilder, _form: u16) {}

@@ -1,22 +1,19 @@
 use std::time::Duration;
 
 use ggez::event::EventHandler;
-use ggez::graphics::{DrawParam, Mesh, MeshBuilder};
-use ggez::graphics::Canvas;
 use ggez::graphics;
+use ggez::graphics::Canvas;
+use ggez::graphics::{DrawParam, Mesh, MeshBuilder};
 use ggez::input::keyboard;
 use ggez::winit::event::VirtualKeyCode;
 
-use crate::components::component::{MutComponentObject, WindowContext};
+use crate::components::component::WindowContext;
 use crate::components::component_render;
-use crate::components::drawing::{self, DrawResult, DrawingReference, RetrieveDrawing};
+use crate::components::drawing::{DrawResult, RetrieveDrawing};
 use crate::components::sheet::sheet_component_const::Zindex;
 use crate::components::{
     component::{BuildContext, Component, ComponentObject},
-    draw_util::DrawUtil,
-    drawing::Drawing,
     pallete,
-    sheet::{sheet_component_const, staff, staff_system::StaffSystemComponentData, track},
 };
 use crate::models::input::input::MidiPlayInput;
 use crate::models::input::input_manager::InputManager;
@@ -25,14 +22,7 @@ use crate::models::midi::playback::MidiPlayback;
 use crate::models::midi::to_sheet::MidiSheetFromFile;
 use crate::models::render_util::RenderUtil;
 use crate::models::sheet::from::SheetFromFile;
-use crate::models::{
-    self,
-    midi::to_sheet::MidiSheetTransformer,
-    note::Note,
-    pausable::Pausable,
-    sheet::{staff::Staff, staff_system::StaffSystem},
-    track_manager::TrackManager,
-};
+use crate::models::{pausable::Pausable, track_manager::TrackManager};
 use ggez::mint::Point2;
 use ggez::{Context, GameError, GameResult};
 use log::{debug, info, trace, warn};
@@ -69,7 +59,7 @@ impl MidiPlay {
                 buildctx.winctx.track = track_window_context;
                 info!("Track Context Loaded");
             }
-            Err(e) => {
+            Err(_e) => {
                 warn!("Error loading track");
             }
         }
@@ -87,7 +77,7 @@ impl MidiPlay {
         newm
     }
 
-    pub async fn pick_track(&mut self, filepath: &str) -> bool {
+    pub async fn pick_track(&mut self, _filepath: &str) -> bool {
         unimplemented!();
     }
 
@@ -174,19 +164,19 @@ impl EventHandler for MidiPlay {
         _origin: ggez::event::ErrorOrigin,
         _e: GameError,
     ) -> bool {
-        self.playback.close();
+        self.playback.close().expect("Failed to close playback");
         debug!("Error! and handle playback close");
         false
     }
     fn quit_event(&mut self, _ctx: &mut Context) -> Result<bool, GameError> {
-        self.playback.close();
+        self.playback.close().expect("Failed to close playback");
         debug!("Quitting and handle playback close");
         Ok(false)
     }
 
     fn key_down_event(
         &mut self,
-        ctx: &mut Context,
+        _ctx: &mut Context,
         input: keyboard::KeyInput,
         _repeated: bool,
     ) -> Result<(), GameError> {
@@ -258,12 +248,12 @@ impl EventHandler for MidiPlay {
         let meshdata = Mesh::from_data(ctx, mb.build());
         canvas.draw(&meshdata, DrawParam::new().z(Zindex::Debug.get()));
 
-        let mut track_manager_obj: ComponentObject = &self.track;
-        let mut input_manager_obj: ComponentObject = &self.input;
+        let track_manager_obj: ComponentObject = &self.track;
+        let input_manager_obj: ComponentObject = &self.input;
         let mut stack: Vec<ComponentObject> = vec![track_manager_obj, input_manager_obj];
         let mut counter = 0;
         while !stack.is_empty() {
-            let mut comp: ComponentObject = stack.pop().expect("err negative index");
+            let comp: ComponentObject = stack.pop().expect("err negative index");
             let next: Vec<ComponentObject> = comp.next();
             if next.len() > 0 {
                 stack.extend(next);

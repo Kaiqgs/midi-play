@@ -1,5 +1,5 @@
 use crate::{
-    components::component::{self, Component, ComponentObject},
+    components::component::{Component, ComponentObject},
     models::input::input_manager::InputManager,
 };
 

@@ -1,5 +1,4 @@
-use crate::models::{config, note::Note, trackeable::Trackeable};
-use std::path::Path;
+use crate::models::config;
 
 pub struct File {
     pub filepath: String,
