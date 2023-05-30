@@ -1,36 +1,20 @@
-use std::{cell::RefCell, path::Path};
+use std::cell::RefCell;
 
-use ggez::{
-    graphics::{Color, Image},
-    Context,
-};
-
+use crate::components::util::image_from_optional;
+use crate::models::build_context::BuildContext;
+use crate::models::game_mode::NOTES_MASK;
 use crate::{
     components::{
-        component::{BuildContext, Component},
+        component::Component,
         draw_util::DrawUtil,
-        drawing::{DrawResult, Drawing, RetrieveDrawing},
+        drawing::{DrawResult, Drawing, DrawingReference, RetrieveDrawing},
     },
-    models::{note::Note, render_util::RenderUtil, sheet::clef::Clef},
+    models::{draw_state::DrawState, note::Note, render_util::RenderUtil, sheet::clef::Clef},
 };
 
 /// Draws clef symbol;
 pub struct ClefComponentData {
-    filepath: Option<String>,
-    drawing: Drawing,
-}
-
-fn image_from_optional(ctx: &Context, path: Option<String>) -> Image {
-    match path {
-        Some(filepath) => {
-            let imres = Image::from_path(ctx, Path::new(&filepath));
-            match imres {
-                Ok(image) => image,
-                Err(_) => todo!(),
-            }
-        }
-        None => Image::from_solid(ctx, 128, Color::GREEN),
-    }
+    drawing: DrawingReference,
 }
 
 impl ClefComponentData {
@@ -39,14 +23,13 @@ impl ClefComponentData {
 
         match build.ctx {
             Some(ctx) => {
-                drawing.image = Some(image_from_optional(ctx, filepath.clone()));
-                DrawUtil::left_image(&mut drawing, build.clone(), note);
+                drawing.image = Some(image_from_optional(&ctx, filepath.clone()));
+                DrawUtil::left_image(&mut drawing, &build.winctx, note);
             }
             None => (),
         };
         ClefComponentData {
-            filepath: filepath.clone(),
-            drawing,
+            drawing: RefCell::new(drawing),
         }
     }
 }
@@ -56,15 +39,18 @@ impl Component for Clef {
         "[Clef]".to_string()
     }
     fn get_drawing(&self) -> RetrieveDrawing {
-        RetrieveDrawing::Ok(RefCell::new(self.component_data.drawing.clone()))
+        RetrieveDrawing::Ok(self.component_data.drawing.clone())
     }
-    fn draw(&self, _canvas: RenderUtil) -> DrawResult {
-        DrawResult::Draw(
-            // DrawParam::new()
-            //     .dest([0.0, 0.0])
-            //     .scale([sheet_component_const::SCALEF, sheet_component_const::SCALEF])
-            //     .z(0),
-            self.component_data.drawing.params,
-        )
+    fn draw(&self, reutil: RenderUtil) -> DrawResult {
+        if reutil.winctx.state == DrawState::ScaleChange {
+            let mut drawing = self.component_data.drawing.borrow_mut();
+            let params = DrawUtil::left_image(&mut drawing, reutil.winctx, &self.note);
+            return DrawResult::Draw(params);
+        }
+        let drawing = self.component_data.drawing.borrow();
+        DrawResult::Draw(drawing.params)
+    }
+    fn get_mask(&self) -> crate::models::bit_mode::BitMask {
+        NOTES_MASK
     }
 }

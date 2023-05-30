@@ -1,11 +1,13 @@
-use crate::models::playmeter::{PlayMeter, QualityMeter};
+use crate::models::{note::Note, playmeter::PlayMeter};
 
-impl QualityMeter for PlayMeter {
-    fn compare(&mut self, _expected: u32, _received: u32) -> f64 {
-        unimplemented!()
+impl PlayMeter {
+    pub fn measure(&self, input: &Note, expected: &Note) -> f64 {
+        (input.time.sec - expected.time.sec) / 100.0
+            + (self.average_quality - self.average_quality / 100.0)
     }
 
-    fn reset(&mut self) -> bool {
-        unimplemented!()
+    pub fn capture(&mut self, input: Vec<Note>, track: Vec<Note>) {
+        self.unpaired_track_pool.extend(input);
+        self.unpaired_input_pool.extend(track);
     }
 }

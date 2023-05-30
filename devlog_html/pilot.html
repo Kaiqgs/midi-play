@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="date" content="2023-03-07" scheme="YYYY-MM-DD">
+        <meta name="viewport" content="width=device-width" />
+        <title>pilot</title>
+        <link rel="stylesheet" href="style.css" type="text/css"
+         media="screen" title="no title" charset="utf-8">
+        <link rel="stylesheet" href="pygmentize.css" type="text/css"
+         media="screen" title="no title" charset="utf-8">
+    </head>
+    <body>
+
+<hr />
+<p>title: this is a short introduction<br />
+author: Kaique dos Santos<br />
+date: March 4, 2023</p>
+<hr />
+<h4>you don&rsquo;t need a story.</h4>
+<p>Rhythm games are so great in fact, that you don&rsquo;t even need a story. They do be different, don&rsquo;t they?<br />
+It feels instinctive. Flickering lights and colors, the high-pitched fast paced sound keeps you alert, and present in the moment.<br />
+It has got to have something to do with some dopamine neurotransmitter thing.<br />
+I really wouldn&rsquo;t be able to tell you.</p>
+<h4>how come</h4>
+<p>I&rsquo;ve never been very good at this game genre, I just like playing.<br />
+¯\_(ツ)_/¯\<br />
+But like a scientist trying to maximize the pulp size of a fruit, I couldn&rsquo;t stop thinking about how come no one mix piano and rhythm games before.<br />
+It&rsquo;s a natural fit. You can&rsquo;t play piano without rhythm&hellip;\<br />
+Would it be possible to make a rhythm game that teaches you how to play the piano while having fun?<br />
+I can say right away it wouldn&rsquo;t make sense to have Osu teach me music theory in their tutorials.<br />
+But what if you could first play the piano game for the fun of its rhythm and tempo, and then later on, you could learn music theory.\<br />
+Can you make the learning piano experience more gamified, whilst not affecting the gameplay?</p>
+<h4>let&rsquo;s talk content</h4>
+<p>If you&rsquo;re creating a piano learning app, you&rsquo;d need to fund teachers and record snippets of music theory and how to perform certain techniques.<br />
+That&rsquo;s why this project is a rhythm game, not a piano learning app.</p>
+<p>I prefer going the other way &lsquo;round this problem, I want to rely on the community to create content and to give feedback on other&rsquo;s people play through.<br />
+That&rsquo;s why this game is going to be open source, I&rsquo;ll be taking suggestions and feedback from the community.<br />
+Making it easier for contributions, bug reports, content creation, and much more.</p>
+<h4>what&rsquo;s the plan</h4>
+<p>Play any of your .mid files.\<br />
+Use practice mode to loop specific difficult parts you&rsquo;re having trouble with.<br />
+Slow down the tempo, so you can learn at your own pace.\<br />
+When you&rsquo;re ready to tackle the song in full, you can play it in ranking mode, having your score go into the leaderboards.\<br />
+A replay system, so you can watch other people&rsquo;s play through and learn from them.</p>
+<h4>for the tech</h4>
+<p>I&rsquo;m picking the rust language because I wanted to learn it. Although I&rsquo;m not sure whether this is the best choice.\<br />
+ggez is the game framework of choice, I&rsquo;ve seen something about it&rsquo; being portable to the web and mobile, but I haven&rsquo;t put any effort into that.\<br />
+I&rsquo;m using the midly crate to parse .mid files, midir to play midi files.\<br />
+And the voices inside my head to tell me what to do.</p>
+<h4>what&rsquo;s the progress</h4>
+<p>Let&rsquo;s cut to the chase, I&rsquo;ve been working on this for a few months now, and I&rsquo;m starting to wrap on the core gameplay.\<br />
+Here&rsquo;s what I got:</p>
+<ul>
+<li>PC keyboard input (mostly for debugging);</li>
+<li>a buggy midi file parsing;</li>
+<li>for midi playback;<ul>
+<li>input playback;<ul>
+<li>for the notes you play;</li>
+</ul>
+</li>
+<li>song playback;<ul>
+<li>for the notes you&rsquo;re supposed to play;</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>note hit detection;</li>
+<li>a dumb note hit scoring system.</li>
+</ul>
+<p>No UI or menu system yet, I&rsquo;m focusing on the core gameplay first.<br />
+Up next is Piano input and improve the scoring system.</p>
+<h4>wrap up</h4>
+<p>You defo need to see what&rsquo;s coming up. Stay tuned as we plan for releasing.<br />
+Follow us on itch, as well as the youtube channel and github repo.\<br />
+Share your thoughts, suggestions, and especially feedback.<br />
+Don&rsquo;t forget to keep on piano-ing!</p>
+
+    </body>
+</html>

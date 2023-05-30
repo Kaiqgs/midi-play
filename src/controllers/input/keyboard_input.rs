@@ -7,7 +7,7 @@ use crate::models::{
     },
     midi::midi_const,
     note::Note,
-    sheet::sheet_const::{self, Accidentals},
+    sheet::sheet_const::{self, Accidentals}, game_mode::GameMode, game_track::EMPTY_TRACK,
 };
 use ggez::input::keyboard::KeyCode;
 use log::info;
@@ -49,6 +49,39 @@ impl KeyboardInputSource {
             KeyCode::RControl => {
                 self.ctrl_down = false;
             }
+            KeyCode::Space => {
+                return Some(MidiPlayInput::PauseStart(None));
+            },
+            KeyCode::Escape => {
+                return Some(MidiPlayInput::Restart);
+            },
+            KeyCode::Home => {
+                return Some(MidiPlayInput::ModeChange(GameMode::Menu));
+            },
+            KeyCode::Insert => {
+                return Some(MidiPlayInput::ModeChange(GameMode::Library));
+            },
+            KeyCode::F5 => {
+                return Some(MidiPlayInput::ModeChange(GameMode::Play(EMPTY_TRACK)));
+            },
+            KeyCode::Right => {
+                return Some(MidiPlayInput::NextOption);
+            },
+            KeyCode::Left => {
+                return Some(MidiPlayInput::PreviousOption);
+            },
+            KeyCode::Down => {
+                return Some(MidiPlayInput::NextOption);
+            },
+            KeyCode::Up => {
+                return Some(MidiPlayInput::PreviousOption);
+            },
+            KeyCode::Return => {
+                return Some(MidiPlayInput::SelectOption);
+            },
+            KeyCode::Back => {
+                return Some(MidiPlayInput::BackOption);
+            },
             _other => {
                 return self.handle_key_change(key_code, false);
             }
@@ -91,7 +124,7 @@ impl KeyboardInputSource {
                 let note = Note::from_note(
                     note_id,
                     Some(on),
-                    Some(accidental),
+                    Some(accidental.clone()),
                     None,
                     Some(midi_id),
                     None,

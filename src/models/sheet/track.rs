@@ -2,10 +2,9 @@ use std::collections::HashMap;
 
 use ggez::graphics::MeshBuilder;
 
+use crate::models::build_context::BuildContext;
 use crate::{
-    components::{
-        component::BuildContext, drawing::Drawing, sheet::track::SheetTrackComponentData,
-    },
+    components::{drawing::Drawing, sheet::track::SheetTrackComponentData},
     models::{
         clock::{Clock, ClockFloat},
         midi::timing::TimingInformation,
@@ -23,6 +22,7 @@ pub struct Track {
     pub track_timing: HashMap<u32, TimingInformation>,
     pub component_data: SheetTrackComponentData,
     pub time: ClockFloat,
+    pub reported: Vec<Note>,
 }
 
 impl Track {
@@ -50,10 +50,8 @@ impl Track {
             track_pairs,
             track_timing,
             last_track_time: last_tick.unwrap_or(Clock { sec: 0.0, tick: 0 }),
-            time: ClockFloat {
-                sec: 0.0,
-                tick: 0.0,
-            },
+            time: ClockFloat::new(),
+            reported: Vec::new(),
         }
     }
 }

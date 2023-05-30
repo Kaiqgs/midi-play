@@ -1,4 +1,4 @@
-use crate::components::component::BuildContext;
+use crate::models::build_context::BuildContext;
 use crate::models::render_util::RenderUtil;
 use crate::models::sheet::SheetTrack;
 use std::collections::HashMap;
@@ -45,7 +45,7 @@ impl TrackManager {
     pub fn set_track(
         &mut self,
         optional_path: Option<String>,
-        canvas: RenderUtil,
+        reutil: RenderUtil,
         peripheral: MidiPeripheral,
     ) -> Result<TrackWindowContext, ()> {
         self.filepath = optional_path.clone();
@@ -53,11 +53,14 @@ impl TrackManager {
         match optional_path {
             Some(path) => {
                 let mut sheet_track = self.parser.parse(path);
-                let render_range = sheet_track.compute_render_range(canvas);
-                let ctx = TrackWindowContext::new(None, Some(render_range));
+                let render_range = sheet_track.compute_render_range(reutil);
+                let ctx = TrackWindowContext::new(
+                    sheet_track.track_pairs.len(),
+                    None,
+                    Some(render_range),
+                );
                 self.sheet_track = sheet_track;
                 self.sheet_track.component_data.playback = peripheral;
-
                 //.resume
                 // self.sheet_track.component_data.playback.open(playback.note_tx.unwrap().clone());
                 let mut note_start = Note::new(sheet_const::E, 4);
@@ -72,10 +75,14 @@ impl TrackManager {
                 self.sheet_track
                     .component_data
                     .playback
-                    .note(&note_start, &note_end);
+                    .note(&note_start, &note_end)
+                    .expect("Failed to send note");
                 return Ok(ctx);
             }
-            None => Err(()),
+            None => {
+                self.sheet_track.component_data.playback = peripheral;
+                Ok(TrackWindowContext::new(0, None, None))
+            },
         }
     }
 }

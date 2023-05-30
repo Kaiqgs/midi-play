@@ -98,10 +98,10 @@ fn _parse_smf<'a>(smf: midly::Smf<'a>) -> SheetTrack {
         // Tempo tracks beat duration in secods (beat/sec);
         // A beat is a 1/4 step;
         let _bpm = u24::new(120);
-        let (mut dd, mut nn, mut cc, mut bb) = (0, 0, 0, 0);
-        let mut key_sign_val: i8 = 0;
-        let mut key_sign_bool = false;
-        let mut midi_port = u7::new(0);
+        let (mut _dd, mut _nn, mut _cc, mut _bb) = (0, 0, 0, 0);
+        let mut _key_sign_val: i8 = 0;
+        let mut _key_sign_bool = false;
+        let mut _midi_port = u7::new(0);
         let mut notes: Vec<Note> = Vec::new();
         let _notes_off: Vec<Note> = Vec::new();
         let mut time_tick: u32 = 0;
@@ -199,7 +199,7 @@ fn _parse_smf<'a>(smf: midly::Smf<'a>) -> SheetTrack {
                     MetaMessage::ProgramName(_) => (),
                     MetaMessage::DeviceName(_) => (),
                     MetaMessage::MidiChannel(_) => (),
-                    MetaMessage::MidiPort(port) => midi_port = port,
+                    MetaMessage::MidiPort(port) => _midi_port = port,
                     MetaMessage::Tempo(newtempo) => {
                         //Tempo is Quarter notes in microseconds
                         let us_per_tick = newtempo.as_int() as f64 / tick_per_beat.as_int() as f64;
@@ -219,11 +219,11 @@ fn _parse_smf<'a>(smf: midly::Smf<'a>) -> SheetTrack {
                     MetaMessage::SmpteOffset(_) => (),
                     MetaMessage::TimeSignature(ndd, nnn, ncc, nbb) => {
                         debug!("TimeSignature changed: {} {} {} {}", ndd, nnn, ncc, nbb);
-                        (dd, nn, cc, bb) = (ndd, nnn, ncc, nbb);
+                        (_dd, _nn, _cc, _bb) = (ndd, nnn, ncc, nbb);
                     }
                     MetaMessage::KeySignature(sign, signb) => {
-                        key_sign_val = sign;
-                        key_sign_bool = signb;
+                        _key_sign_val = sign;
+                        _key_sign_bool = signb;
                     }
                     MetaMessage::SequencerSpecific(_) => (),
                     MetaMessage::Unknown(_, _) => (),

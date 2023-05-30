@@ -1,12 +1,14 @@
-pub(crate) const SCALE: u32 = 4;
-pub(crate) const SCALEFF: f64 = SCALE as f64;
-pub(crate) const SCALEF: f32 = SCALE as f32;
+pub(crate) const SCALE: f32 = 2.69;
+// pub(crate) const SCALEFF: f64 = SCALE as f64;
+pub const SCALEF: f32 = 4.0;
+pub(crate) const YOFFSET: u32 = 0;
 pub(crate) const NOTE_HEIGHT: u32 = 3;
 pub(crate) const TRIGGER_OFFSET_RATIO: f64 = 0.2;
 pub(crate) const NOTE_OFFSET_RATIO: f64 = TRIGGER_OFFSET_RATIO + 0.1;
 pub(crate) const TRIGER_NOTE_DIFF_RATIO: f64 = NOTE_OFFSET_RATIO - TRIGGER_OFFSET_RATIO;
-pub(crate) const TRIGGER_WIDTH: u32 = 1;
+pub(crate) const _TRIGGER_WIDTH: u32 = 1;
 pub(crate) const TRIGGER_RANGE: f32 = 0.5;
+
 
 pub enum ThreeWideKey {
     UpDown,
@@ -44,6 +46,8 @@ pub enum Zindex {
     VirtualPiano,
     Note,
     Trigger,
+    GameTrack,
+    TrackLibrary,
 }
 
 impl Zindex {

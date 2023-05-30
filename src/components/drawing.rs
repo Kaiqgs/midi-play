@@ -7,11 +7,12 @@ pub struct Drawing {
     pub image: Option<Image>,
     pub width: Option<u32>,
     pub height: Option<u32>,
-
     pub color: Option<Color>,
     pub mesh: Option<Mesh>,
     pub meshbuilder: Option<MeshBuilder>,
     pub text: Option<Text>,
+    pub texts_params: Vec<DrawParam>,
+    pub texts: Vec<Text>,
 }
 
 impl Drawing {
@@ -41,6 +42,8 @@ impl Clone for Drawing {
             width: self.width.clone(),
             height: self.height.clone(),
             mesh: self.mesh.clone(),
+            texts: self.texts.clone(),
+            texts_params: self.texts_params.clone(),
         }
     }
 }
@@ -55,6 +58,8 @@ impl Default for Drawing {
             width: Default::default(),
             height: Default::default(),
             mesh: Default::default(),
+            texts: Default::default(),
+            texts_params: Default::default(),
         }
     }
 }

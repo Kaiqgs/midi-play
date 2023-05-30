@@ -16,5 +16,8 @@ ggez = "0.8.1"
 mockall = "0.11.3"
 midir = "0.8.0"
 midly = "*"
+itertools = "0.10.5"
 tokio = { version = "1.22.0", features = ["rt", "macros"] }
 async-trait = "0.1.59"
+sha2 = "0.10.6"
+rfd = "0.11.4"

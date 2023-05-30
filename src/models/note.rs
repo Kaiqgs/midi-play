@@ -6,8 +6,9 @@ use super::{
 };
 use crate::models::clock::Clock;
 use core::hash::Hash;
-use std::hash::Hasher;
+use std::{hash::Hasher, time::Duration};
 
+#[derive(Debug)]
 pub struct Note {
     pub id: u32,   // index + octave * 12
     pub line: u32, // position in height;
@@ -16,6 +17,8 @@ pub struct Note {
     pub naturality: Accidentals,
     pub velocity: u32,
     pub on: Option<bool>,
+    pub channel: u8,
+    pub trigger: Option<Duration>,
 }
 
 impl Note {
@@ -46,7 +49,27 @@ impl Note {
             naturality: opt_nat.unwrap_or(Accidentals::Natural),
             velocity: opt_velocity.unwrap_or(if opt_on.unwrap_or(false) { 100 } else { 0 }),
             on: opt_on,
+            channel: 0,
+            trigger: None,
         }
+    }
+
+    pub fn eq_to_input(&self, input: &Note) -> bool {
+        self.id == input.id
+            && self.on == input.on
+            && self.trigger.is_some() == input.trigger.is_some()
+    }
+
+    pub fn channel(&self, channel: u8) -> Self {
+        let mut this = self.clone();
+        this.channel = channel;
+        this
+    }
+
+    pub fn trigger(&self, time: Duration) -> Self {
+        let mut this = self.clone();
+        this.trigger = Some(time);
+        this
     }
 
     pub fn from_range(note_start: u32, note_end: u32) -> Vec<Self> {
@@ -96,19 +119,6 @@ impl Note {
             Some(intkey),
             Some(vel),
         );
-        //
-        // let id = intkey - sheet_const::MIDI_OFFSET;
-        // let is_on = on && vel > 0;
-        // let is_off = !on && vel == 0;
-        // Note {
-        //     id,
-        //     midi: intkey,
-        //     line: sheet_const::LAST_NOTE - id,
-        //     time,
-        //     naturality,
-        //     velocity: vel,
-        //     on: Some(on),
-        // }
     }
 }
 
@@ -119,9 +129,11 @@ impl Clone for Note {
             line: self.line,
             midi: self.midi,
             time: self.time.clone(),
-            naturality: self.naturality,
+            naturality: self.naturality.clone(),
             velocity: self.velocity,
             on: self.on,
+            channel: self.channel,
+            trigger: self.trigger.clone(),
         }
     }
 }
@@ -130,12 +142,13 @@ impl Eq for Note {}
 
 impl PartialEq for Note {
     fn eq(&self, other: &Self) -> bool {
-        self.id == other.id
+        self.id == other.id && self.channel == other.channel
     }
 }
 
 impl Hash for Note {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.id.hash(state);
+        self.channel.hash(state);
     }
 }

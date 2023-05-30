@@ -1,8 +1,4 @@
-use std::{
-    collections::HashSet,
-    error::Error,
-    thread::{self},
-};
+use std::{collections::HashSet, error::Error, thread};
 
 use log::{debug, info};
 use midir::MidiOutput;
@@ -52,16 +48,30 @@ impl MidiPlayback {
                         Some(note_state) => {
                             if note_state && !on_notes.contains(&note) {
                                 conn_out
-                                    .send(&[NOTE_ON, note.midi as u8, note.velocity as u8])
+                                    .send(&[
+                                        NOTE_ON + note.channel,
+                                        note.midi as u8,
+                                        note.velocity as u8,
+                                    ])
                                     .expect("Failed to send note on");
                                 let insert_success = on_notes.insert(note.clone());
-                                info!("Note on: {}, success: {}", note.midi, insert_success);
+                                info!(
+                                    "Note on: {}, channel: {}, success: {}",
+                                    note.midi, note.channel, insert_success
+                                );
                             } else if !note_state && on_notes.contains(&note) {
                                 conn_out
-                                    .send(&[NOTE_OFF, note.midi as u8, note.velocity as u8])
+                                    .send(&[
+                                        NOTE_OFF + note.channel,
+                                        note.midi as u8,
+                                        note.velocity as u8,
+                                    ])
                                     .expect("Failed to send note off");
                                 let remove_success = on_notes.remove(&note);
-                                info!("Note off: {}, success: {}", note.midi, remove_success);
+                                info!(
+                                    "Note off: {}, channel: {}, success: {}",
+                                    note.midi, note.channel, remove_success
+                                );
                             }
                         }
                         None => (),

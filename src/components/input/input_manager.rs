@@ -8,7 +8,7 @@ impl Component for InputManager {
         "[Input Manager]".to_string()
     }
 
-    // fn update(&mut self, canvas: crate::models::render_util::RenderUtil) {
+    // fn update(&mut self, reutil: crate::models::render_util::RenderUtil) {
     // }
 
     fn next(&self) -> Vec<ComponentObject> {

@@ -1,17 +1,17 @@
-use async_trait::async_trait;
+use ggez::graphics::FontData;
 
-use super::dialogable::StringDialogable;
-use crate::models::record::Recording;
+use crate::components::menu::MenuComponentData;
 
-pub type StringResult = Result<String, String>;
+use super::build_context::BuildContext;
 
-#[async_trait]
-pub trait Menu {
-    async fn search_midi(&mut self, dialog: StringDialogable) -> StringResult;
-    async fn save_recording(
-        &mut self,
-        dialog: StringDialogable,
-        recording: Recording,
-    ) -> StringResult;
-    fn set_volume(&mut self, rate: f64) -> f64;
+pub struct Menu {
+    pub component_data: MenuComponentData,
+}
+
+impl Menu {
+    pub fn new(bctx: BuildContext, component_data: Option<MenuComponentData>) -> Self {
+        Menu {
+            component_data: component_data.unwrap_or(MenuComponentData::new()),
+        }
+    }
 }

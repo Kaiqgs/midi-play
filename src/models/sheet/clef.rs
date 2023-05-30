@@ -1,7 +1,5 @@
-use crate::{
-    components::{component::BuildContext, sheet::clef::ClefComponentData},
-    models::note::Note,
-};
+use crate::{components::sheet::clef::ClefComponentData, models::note::Note};
+use crate::models::build_context::BuildContext;
 
 use super::sheet_const;
 

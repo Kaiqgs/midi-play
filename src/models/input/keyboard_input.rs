@@ -36,6 +36,17 @@ pub(crate) const NATURAL_KEY_CODE: [KeyCode; 7] = [
     KeyCode::G,
 ];
 
+pub const NATURAL_RIGHT_KEY_CODE: [KeyCode; 7] = [
+    // KeyCode::L,// A
+    KeyCode::Semicolon,// A
+    KeyCode::N,// B
+    KeyCode::M,// C
+    KeyCode::K,// D
+    KeyCode::O,// E
+    KeyCode::J,// F 
+    KeyCode::H,// G
+];
+
 pub struct KeyboardInputSource {
     pub shift_down: bool,
     pub ctrl_down: bool,

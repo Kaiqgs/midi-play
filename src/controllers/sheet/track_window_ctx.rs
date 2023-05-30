@@ -1,13 +1,6 @@
 use crate::models::sheet::track_window_ctx::TrackWindowContext;
 
 impl TrackWindowContext {
-    pub fn new(zoom: Option<f64>, range: Option<(f64, f64)>) -> Self {
-        TrackWindowContext {
-            zoom: zoom.unwrap_or(1.0),
-            range,
-        }
-    }
-
     // get zoom
     // match with
     // p5.prototype.map = function(n, start1, stop1, start2, stop2) {
@@ -23,20 +16,5 @@ impl TrackWindowContext {
             }
             None => self.zoom,
         }
-    }
-}
-
-impl Clone for TrackWindowContext {
-    fn clone(&self) -> Self {
-        TrackWindowContext {
-            zoom: self.zoom,
-            range: self.range,
-        }
-    }
-}
-
-impl Default for TrackWindowContext {
-    fn default() -> Self {
-        TrackWindowContext::new(None, None)
     }
 }

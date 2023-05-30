@@ -1,4 +1,4 @@
-use crate::models::midi::peripheral::MidiPeripheral;
+use crate::models::{midi::peripheral::MidiPeripheral, restartable::Restartable};
 use std::{
     sync::mpsc::Sender,
     thread::{self, sleep},
@@ -15,7 +15,7 @@ impl MidiPeripheral {
         self
     }
     pub fn open(&mut self, playback: Sender<Option<Note>>) {
-        self.tick_played = 0;
+        self.restart().expect("Failed to restart peripheral");
         self.note_tx = Some(playback);
     }
 
@@ -36,9 +36,10 @@ impl MidiPeripheral {
             return Ok(());
         }
 
+        let channel = self.channel.unwrap();
         let tx = self.note_tx.as_ref().unwrap().clone();
-        let note_start = note_start.clone();
-        let note_end = note_end.clone();
+        let note_start = note_start.channel(channel);
+        let note_end = note_end.channel(channel);
         thread::Builder::new()
             .name("note".to_string())
             .spawn(move || {
@@ -48,7 +49,8 @@ impl MidiPeripheral {
                 sleep(Duration::from_micros((duration_sec * 1e6) as u64));
                 tx.send(Some(note_end.clone()))
                     .expect("Failed to send note off");
-            });
+            })
+            .expect("Failed to spawn note thread");
         Ok(())
     }
 
@@ -63,9 +65,28 @@ impl MidiPeripheral {
 
         let tx = self.note_tx.as_ref().unwrap();
         debug!("MidiPlayBack: Note on: {}", note.midi);
-        match tx.send(Some(note.clone())) {
+        match tx.send(Some(note.channel(self.channel.unwrap()))) {
             Ok(_) => Ok(()),
             Err(_) => Err(()),
         }
+    }
+
+    pub fn reuse(&self) -> Self {
+        match &self.note_tx {
+            Some(note_tx) => MidiPeripheral {
+                name: self.name.clone(),
+                channel: self.channel,
+                note_tx: Some(note_tx.clone()),
+                tick_played: 0,
+            },
+            None => panic!("Cannot reuse a MidiPlayback that has not been started"),
+        }
+    }
+}
+
+impl Restartable for MidiPeripheral {
+    fn restart(&mut self) -> Result<(), ()> {
+        self.tick_played = 0;
+        Ok(())
     }
 }

@@ -1,8 +1,6 @@
+use crate::models::build_context::BuildContext;
 use crate::{
-    components::{
-        component::BuildContext,
-        sheet::{clef::ClefComponentData, staff_system::StaffSystemComponentData},
-    },
+    components::sheet::{clef::ClefComponentData, staff_system::StaffSystemComponentData},
     models::note::Note,
 };
 

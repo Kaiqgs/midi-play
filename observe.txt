@@ -1,0 +1,2362 @@
+diff --git Cargo.lock Cargo.lock
+index 961d301..3b2d16b 100644
+--- Cargo.lock
++++ Cargo.lock
+@@ -183,0 +184,9 @@ checksum = "0d8c1fef690941d3e7788d328517591fecc684c084084702d6ff1641e993699a"
++[[package]]
++name = "block-buffer"
++version = "0.10.4"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "3078c7629b62d3f0439517fa394996acacc5cbc91c5a20d8c658e77abd503a71"
++dependencies = [
++ "generic-array",
++]
++
+@@ -528,0 +538,9 @@ dependencies = [
++[[package]]
++name = "cpufeatures"
++version = "0.2.5"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "28d997bd5e24a5928dd43e46dc529867e207907fe0b239c3477d924f7f2ca320"
++dependencies = [
++ "libc",
++]
++
+@@ -625,0 +644,10 @@ dependencies = [
++[[package]]
++name = "crypto-common"
++version = "0.1.6"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "1bfb12502f3fc46cca1bb51ac28df9d618d813cdc3d2f25b9fe775a34af26bb3"
++dependencies = [
++ "generic-array",
++ "typenum",
++]
++
+@@ -683,0 +712,10 @@ checksum = "6184e33543162437515c2e2b48714794e37845ec9851711914eec9d308f6ebe8"
++[[package]]
++name = "digest"
++version = "0.10.6"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "8168378f4e5023e7218c89c891c0fd8ecdb5e5e4f18cb78f38cf245dd021e76f"
++dependencies = [
++ "block-buffer",
++ "crypto-common",
++]
++
+@@ -940,0 +979,10 @@ dependencies = [
++[[package]]
++name = "generic-array"
++version = "0.14.6"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "bff49e947297f3312447abdca79f45f4738097cc82b06e72054d2223f601f1b9"
++dependencies = [
++ "typenum",
++ "version_check",
++]
++
+@@ -1540,0 +1589 @@ dependencies = [
++ "itertools",
+@@ -1544,0 +1594 @@ dependencies = [
++ "sha2",
+@@ -2430,0 +2481,11 @@ checksum = "ae1a47186c03a32177042e55dbc5fd5aee900b8e0069a8d70fba96a9375cd012"
++[[package]]
++name = "sha2"
++version = "0.10.6"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "82e6b795fe2e3b1e845bafcb27aa35405c4d47cdfc92af5fc8d3002f76cebdc0"
++dependencies = [
++ "cfg-if",
++ "cpufeatures",
++ "digest",
++]
++
+@@ -2743,0 +2805,6 @@ checksum = "0685c84d5d54d1c26f7d3eb96cd41550adb97baed141a761cf335d3d33bcd0ae"
++[[package]]
++name = "typenum"
++version = "1.16.0"
++source = "registry+https://github.com/rust-lang/crates.io-index"
++checksum = "497961ef93d974e23eb6f433eb5fe1b7930b659f06d12dec6fc44a8f554c0bba"
++
+diff --git Cargo.toml Cargo.toml
+index e1db705..5150389 100644
+--- Cargo.toml
++++ Cargo.toml
+@@ -18,0 +19 @@ midly = "*"
++itertools = "0.10.5"
+@@ -20 +21,2 @@ tokio = { version = "1.22.0", features = ["rt", "macros"] }
+-async-trait = "0.1.59"
+\ No newline at end of file
++async-trait = "0.1.59"
++sha2 = "0.10.6"
+diff --git backbone.md backbone.md
+deleted file mode 100644
+index c2ed23b..0000000
+--- backbone.md
++++ /dev/null
+@@ -1,32 +0,0 @@
+-To Kaique.
+-Why I need to finish this.
+-- Music is one of your passion;
+-- You will think about this everytime you touch your piano;
+-- Rhythm games + MIDI flexibility
+-
+-Notation (50%):
+-	- Sheet;
+-
+-Audio Feedback (0%):
+-	~ Midi::MidiPlayback;
+-
+-Scoring Feedback (0%):
+-	-
+-
+-Piano Input (0%):
+-
+-Load Midi File (25%):
+-	- MidiSheetFromFile;
+-	- Sheet::From;
+-
+-Save Recordings (0%):
+-	~ Record;
+-
+-
+-* done;
+-- in-place;
+-~ needs-work;
+-
+-
+-~ General ~
+-~ TrackManager;
+diff --git clippy.toml clippy.toml
+index 9bad53b..e69de29 100644
+--- clippy.toml
++++ clippy.toml
+@@ -1,15 +0,0 @@
+-# clippy toml settings
+-clippy:
+-  all: true
+-  pedantic: true
+-  restrictions:
+-    - clippy::all
+-    - clippy::pedantic
+-    - clippy::nursery
+-    - clippy::cargo
+-    - clippy::complexity
+-    - clippy::correctness
+-    - clippy::perf
+-    - clippy::style
+-    - clippy::restriction
+-    - clippy::cargo_common_metadata
+diff --git deprecated.txt deprecated.txt
+deleted file mode 100644
+index 41eea81..0000000
+--- deprecated.txt
++++ /dev/null
+@@ -1,256 +0,0 @@
+-
+-        // iterate self.track_timing keys and check the closest one to self.tick_time
+-        // return the value of that key
+-        //
+-        // let timing = self
+-        //     .track_timing
+-        //     .get(&self.component_data.closest_key)
+-        //     .expect("No timing found");
+-        // pos at which triggers are measured;
+-        // let trigger_pos_x = canvas.winctx.size.x as f64 * definition::TRIGGER_OFFSET_RATIO
+-        //     / definition::SCALE as f64;
+-        //
+-        // let start_trigger_to_note_off =
+-        //     canvas.winctx.size.x as f64 * definition::INITIAL_NOTE_OFFSET_FROM_TRIGGER_RATIO;
+-        //
+-        // // How many ticks will fit in a screen pixel;
+-        // let tick_to_px = self.last_track_time.tick as f64 / canvas.winctx.size.x as f64;
+-        // // How many pixels will fit in a tick;
+-        // let px_to_tick = canvas.winctx.size.x as f64 / self.last_track_time.tick as f64;
+-        //
+-        // How many seconds will fit in a screen pixel;
+-        // let sec_to_px = self.last_track_time.sec as f64 / canvas.winctx.size.x as f64;
+-        // // How many pixels will fit in a second;
+-        // let px_to_sec = canvas.winctx.size.x as f64 / self.last_track_time.sec as f64;
+-
+-        // self.component_data.range = Some((1e-12, 1e-12 + sec_to_px));
+-        //printout for last two variables
+-        // debug!(
+-        //     "tick_to_window_width: {}, window_width_to_tick: {}",
+-        //     tick_to_px, px_to_tick
+-        // );
+-
+-        //micro to second
+-        // let delta_sec = canvas.delta.as_millis() as f64 / 1000.0;
+-        // let delta_tick = delta_sec / timing.sec_per_tick;
+-        // let delta_px = delta_tick * tick_to_px;
+-        // self.component_data.update = ClockFloat {
+-        //     sec: delta_sec,
+-        //     tick: delta_tick,
+-        // };
+-        // debug!(
+-        //     "Update time: delta_sec: {}, delta_tick: {}",
+-        //     self.component_data.update.sec, self.component_data.update.tick
+-        // );
+-        // debug!(
+-        //     "Cur    time: sec: {}, tick: {}",
+-        //     self.time.sec, self.time.tick
+-        // );
+-        //
+-        // self.time.sec += self.component_data.update.sec;
+-        // self.time.tick += self.component_data.update.tick;
+-
+-        //     self.component_data.playback.note_on(note);
+-        //     self.component_data.playback.note_on(note);
+-        //TODO put computation in here and store math ;)
+-
+-        // let mut count_visible: u32 = 0;
+-        // let mut count_all: u32 = 0;
+-        // let initial_note_offset_from_trigger =
+-        //     canvas.winctx.size.x as f64 * definition::INITIAL_NOTE_OFFSET_FROM_TRIGGER_RATIO;
+-        // let trigger_pos_x = canvas.winctx.size.x as f64 * definition::TRIGGER_OFFSET_RATIO
+-        //     / definition::SCALE as f64;
+-        //
+-        // let tick_to_window_width = self.last_track_time.tick as f64 / canvas.winctx.size.x as f64;
+-        // let percentage_position = self.time.tick / self.last_track_time.tick as f64;
+-        // let tick_render_length = self.last_track_time.tick as f64 * canvas.winctx.track.get_zoom();
+-        // let tick_render_to_window_width = tick_render_length / canvas.winctx.size.x as f64;
+-        // let tick_render_round_length = tick_render_length.round() as u32;
+-        // let resolution =
+-        //     tick_render_length / canvas.winctx.size.x as f64 * (definition::SCALE as f64);
+-        // let mut time_now: Option<u32> = None;
+-
+-        central_logic(self, canvas);
+-        for (track_index, track) in self.track.iter().enumerate() {
+-            for (note_index, note) in track.iter().enumerate() {
+-                // let note_offset_x =
+-                //     trigger_pos_x as f64 + initial_note_offset_from_trigger as f64 + 1.0
+-                //         - (self.time.tick as f64);
+-                // let note_offset_x_u32 = note_offset_x.round() as u32;
+-                // // let start_render = sub_u32(self.tick_time as u32, tick_render_round_length);
+-                // let start_render = (self.time.tick - tick_render_length).clamp(0.0, self.time.tick);
+-                // let finish_render = self.last_track_time.tick as f64 + tick_render_length;
+-                // let finish_render = self.time.tick + tick_render_length;
+-                // count_all += 1;
+-                // let note_time = note.time.tick as f64 + note_offset_x;
+-                //
+-                // if self.component_data.render_all
+-                //     || note_time >= start_render && note_time < finish_render
+-                // {
+-                //     let scaled_x = (note.time.tick as f64 / resolution) + note_offset_x;
+-                //     let target_diff = (trigger_pos_x - scaled_x).abs();
+-                //     let is_target_hit = target_diff < definition::TRIGGER_RANGE as f64;
+-                //     if is_target_hit {
+-                //         debug!("Target hit");
+-                //         match note.on {
+-                //             Some(note_state) => {
+-                //                 if note_state {
+-                //                     let pairs = &self.track_pairs[track_index];
+-                //                     let note_end_index = pairs[&note_index];
+-                //                     let note_end = &track[note_end_index];
+-                //                     //TODO change track_iming.get(0) to
+-                //                     //track_timing.get(latest_tick)
+-                //                     let timing = self.track_timing.get(&0).expect("No timing");
+-                //                     self.component_data
+-                //                         .playback
+-                //                         .note(note, note_end)
+-                //                         .expect("Note on failed");
+-                //                 }
+-                //             }
+-                //             None => warn!("Note without information"),
+-                //         }
+-                //         time_now = Some(note.time.tick);
+-                //     }
+-                //     count_visible += 1;
+-                // }
+-            }
+-        }
+-        
+-
+-	// let width = canvas.winctx.size.x;
+-        // let n_fit_notes = width / definition::PIX_PER_HORIZONTAL_LINE;
+-        //Override drawing;
+-        let drawing = Drawing::new_mesh(MeshBuilder::new());
+-        let drawing_reference = DrawingReference::new(drawing);
+-        self.component_data.drawing.swap(&drawing_reference);
+-        let mut drawing = self.component_data.drawing.borrow_mut();
+-        // let mut render_util: Vec<&Note> = vec![];
+-        if let Some(mut mb) = drawing.meshbuilder.as_mut() {
+-            let mut count_visible: u32 = 0;
+-            let mut count_all: u32 = 0;
+-
+-            let initial_note_offset_from_trigger =
+-                canvas.winctx.size.x as f64 * definition::INITIAL_NOTE_OFFSET_FROM_TRIGGER_RATIO;
+-            let trigger_pos_x = canvas.winctx.size.x as f64 * definition::TRIGGER_OFFSET_RATIO
+-                / definition::SCALE as f64;
+-            let tick_to_px = self.last_track_time.tick as f64 / canvas.winctx.size.x as f64;
+-            let percentage_position = self.time.tick / self.last_track_time.tick as f64;
+-            let tick_render_length =
+-                self.last_track_time.tick as f64 * canvas.winctx.track.get_zoom();
+-            // let tick_render_to_window_width = tick_render_length / canvas.winctx.size.x as f64;
+-            let tick_render_round_length = tick_render_length.round() as u32;
+-            let resolution =
+-                tick_render_length / canvas.winctx.size.x as f64 * (definition::SCALE as f64);
+-            mb.line(
+-                &[
+-                    Point2 {
+-                        x: trigger_pos_x as f32,
+-                        y: 0.0,
+-                    },
+-                    Point2 {
+-                        x: trigger_pos_x as f32,
+-                        y: canvas.winctx.size.y as f32,
+-                    },
+-                ],
+-                1.0,
+-                Color::YELLOW,
+-            );
+-            trace!(
+-                "LastTick@={}, tick2width={}, resolution={}",
+-                self.last_track_time.tick,
+-                tick_to_px,
+-                resolution
+-            );
+-            // mb.rectangle(
+-            //     DrawMode::Fill(FillOptions::default()),
+-            //     Rect::new(0.0, 0.0, 100.0, 100.0),
+-            //     Color::BLUE,
+-            // );
+-            trace!("SheetTrack render: {}x tracks.", self.track.len());
+-            for track in self.track.iter() {
+-                for note in track.iter() {
+-                    let note_offset_x =
+-                        trigger_pos_x as f64 + initial_note_offset_from_trigger as f64 + 1.0
+-                            - (self.time.tick as f64);
+-                    let note_offset_x_u32 = note_offset_x.round() as u32;
+-                    // let start_render = sub_u32(self.tick_time as u32, tick_render_round_length);
+-                    let start_render =
+-                        (self.time.tick - tick_render_length).clamp(0.0, self.time.tick);
+-                    let finish_render = self.last_track_time.tick as f64 + tick_render_length;
+-                    let finish_render = self.time.tick + tick_render_length;
+-                    count_all += 1;
+-                    let note_time = note.time as f64 + note_offset_x;
+-
+-                    if self.component_data.render_all
+-                        || note_time >= start_render && note_time < finish_render
+-                    {
+-                        let scaled_x = (note.time as f64 / resolution) + note_offset_x;
+-                        let target_diff = (trigger_pos_x - scaled_x).abs();
+-                        let is_target_hit = target_diff < 0.5;
+-                        let scaled_note = note.line * definition::NOTE_HEIGHT;
+-                        let mut color = Color::new(1.0, 0.0, 0.0, 0.5);
+-                        if !note.on.unwrap_or(true) {
+-                            color = Color::new(0.0, 0.0, 1.0, 0.5);
+-                        }
+-                        if is_target_hit {
+-                            color = Color::new(0.0, 1.0, 0.0, 0.5);
+-                            // self.component_data.playback.note_on(note);
+-                        }
+-
+-                        trace!(
+-                            "rendering: note={}, state={}, time={}, x={}, y={}, scale={}",
+-                            note.id,
+-                            note.on.unwrap_or(true),
+-                            note.time,
+-                            scaled_x,
+-                            scaled_note,
+-                            definition::SCALE
+-                        );
+-
+-                        mb.rectangle(
+-                            DrawMode::Fill(FillOptions::default()),
+-                            Rect::new((scaled_x - 1.0) as f32, (scaled_note - 1) as f32, 1.0, 1.0),
+-                            color,
+-                        );
+-                        mb.rectangle(
+-                            DrawMode::Fill(FillOptions::default()),
+-                            Rect::new((scaled_x + 1.0) as f32, (scaled_note - 1) as f32, 1.0, 1.0),
+-                            color,
+-                        );
+-                        mb.rectangle(
+-                            DrawMode::Fill(FillOptions::default()),
+-                            Rect::new(scaled_x as f32, scaled_note as f32, 1.0, 1.0),
+-                            color,
+-                        );
+-                        mb.rectangle(
+-                            DrawMode::Fill(FillOptions::default()),
+-                            Rect::new(scaled_x as f32, (scaled_note - 2) as f32, 1.0, 1.0),
+-                            color,
+-                        );
+-
+-                        count_visible += 1;
+-                    }
+-                }
+-            }
+-            let mesh_data = mb.build();
+-            debug!(
+-                "rendering: {}x visible {}x total [ver={}, idx={}]",
+-                count_visible,
+-                count_all,
+-                mesh_data.vertices.len(),
+-                mesh_data.indices.len()
+-            );
+-            drawing.meshbuilder = Some(mb.to_owned());
+-            DrawResult::Draw(
+-                DrawParam::new()
+-                    .dest([0.0, 0.0])
+-                    .scale([definition::SCALE as f32, definition::SCALE as f32])
+-                    .z(1),
+-            )
+-        } else {
+-            warn!("meshbuilder should've been set");
+-            DrawResult::Skip
+-        }
+-        // let drawing = self.drawing;
+-    }
+-
+diff --git resume resume
+deleted file mode 100644
+index e69de29..0000000
+diff --git src/components/component.rs src/components/component.rs
+index c55f30d..65b909b 100644
+--- src/components/component.rs
++++ src/components/component.rs
+@@ -0,0 +1 @@
++use crate::models::{window_context::WindowContext, bit_mode::{BitMask, BitmaskSetup}};
+@@ -22,0 +24,3 @@ pub trait Component {
++    fn get_mask(&self) -> BitMask {
++        BitMask::new(BitmaskSetup::All)
++    }
+@@ -28,20 +31,0 @@ pub trait Component {
+-pub struct WindowContext {
+-    pub size: Point2<u32>,
+-    pub track: TrackWindowContext,
+-}
+-
+-impl WindowContext {
+-    pub fn new(size: Point2<u32>, trackwinctx: Option<TrackWindowContext>) -> Self {
+-        WindowContext {
+-            size,
+-            track: trackwinctx.unwrap_or(TrackWindowContext::default()),
+-        }
+-    }
+-}
+-
+-impl Clone for WindowContext {
+-    fn clone(&self) -> Self {
+-        WindowContext::new(self.size, Some(self.track.clone()))
+-    }
+-}
+-
+@@ -54,9 +38,2 @@ impl<'a> BuildContext<'a> {
+-    pub fn new(
+-        ctx: Option<&'a Context>,
+-        canvas_size: Point2<u32>,
+-        trackwinctx: Option<TrackWindowContext>,
+-    ) -> Self {
+-        BuildContext {
+-            ctx,
+-            winctx: WindowContext::new(canvas_size, trackwinctx),
+-        }
++    pub fn new(ctx: Option<&'a Context>, winctx: WindowContext) -> Self {
++        BuildContext { ctx, winctx }
+@@ -79 +56,8 @@ impl Default for BuildContext<'_> {
+-            winctx: WindowContext::new(Point2 { x: 0, y: 0 }, None::<TrackWindowContext>),
++            winctx: WindowContext::new(
++                Point2 { x: 0, y: 0 },
++                None::<TrackWindowContext>,
++                None,
++                None,
++                None,
++                None,
++            ),
+diff --git src/components/component_render.rs src/components/component_render.rs
+index bc46231..e01fd22 100644
+--- src/components/component_render.rs
++++ src/components/component_render.rs
+@@ -7 +7,2 @@ use log::trace;
+-use super::{component::WindowContext, drawing::DrawingReference};
++use super::drawing::DrawingReference;
++use crate::models::window_context::WindowContext;
+diff --git src/components/draw_util.rs src/components/draw_util.rs
+index 0c17560..3ff7548 100644
+--- src/components/draw_util.rs
++++ src/components/draw_util.rs
+@@ -12,0 +13 @@ use super::{component::BuildContext, drawing::Drawing};
++use crate::models::window_context::WindowContext;
+@@ -14,4 +15 @@ use super::{component::BuildContext, drawing::Drawing};
+-pub struct DrawUtil {
+-    width: u32,
+-    height: u32,
+-}
++pub struct DrawUtil {}
+@@ -20,2 +18,2 @@ impl DrawUtil {
+-    pub fn new(width: u32, height: u32) -> Self {
+-        DrawUtil { width, height }
++    pub fn new() -> Self {
++        DrawUtil {}
+@@ -40 +38,2 @@ impl DrawUtil {
+-                    mb.line(&[start, end], 1.0, color);
++                    mb.line(&[start, end], 1.0, color)
++                        .expect("Failed to draw staff");
+@@ -49 +48 @@ impl DrawUtil {
+-                    .scale([sheet_component_const::SCALEF, sheet_component_const::SCALEF])
++                    .scale([build.winctx.scale, build.winctx.scale])
+@@ -57,10 +56,11 @@ impl DrawUtil {
+-    pub fn note_sheet<'a>(_draw: &mut Drawing, _note: &'a Note) {
+-        todo!()
+-    }
+-
+-    pub fn left_image<'a>(draw: &'a mut Drawing, _build: BuildContext, note: &'a Note) {
+-        //image requires manual scaling...
+-        //j
+-        let scaled_note =
+-            note.line * sheet_component_const::SCALE * sheet_component_const::NOTE_HEIGHT;
+-        let ledger_padding = 2 * sheet_component_const::SCALE * sheet_component_const::NOTE_HEIGHT;
++    pub fn left_image<'a>(
++        draw: &'a mut Drawing,
++        winctx: &'a WindowContext,
++        note: &'a Note,
++    ) -> DrawParam {
++        // image requires manual scaling...
++        // dependency scale;
++        let scaled_note = note.line * sheet_component_const::NOTE_HEIGHT;
++        // image displaying upscaling;
++        let scaled_note = scaled_note as f32 * winctx.scale;
++        let ledger_padding = 2.0 * winctx.scale * sheet_component_const::NOTE_HEIGHT as f32;
+@@ -71,2 +71 @@ impl DrawUtil {
+-                let scaled_height = image.height() * sheet_component_const::SCALE
+-                    - sheet_component_const::SCALE / 2;
++                let scaled_height = image.height() as f32 * winctx.scale - winctx.scale / 2.0;
+@@ -79 +78 @@ impl DrawUtil {
+-            .scale([sheet_component_const::SCALEF, sheet_component_const::SCALEF])
++            .scale([winctx.scale, winctx.scale])
+@@ -81,6 +79,0 @@ impl DrawUtil {
+-        draw.params = params;
+-    }
+-
+-    fn note<'a>(_draw: &'a mut Drawing, _build: BuildContext, _note: &'a Note) {
+-        todo!()
+-    }
+@@ -88,2 +81,2 @@ impl DrawUtil {
+-    fn rect<'a>(_draw: &'a mut Drawing, _build: BuildContext, _color: Color) {
+-        todo!()
++        draw.params = params;
++        params
+@@ -92,0 +86 @@ impl DrawUtil {
++#[allow(unused)]
+diff --git src/components/menu.rs src/components/menu.rs
+index 080475d..53aee5c 100644
+--- src/components/menu.rs
++++ src/components/menu.rs
+@@ -1,2 +1 @@
+-use async_trait::async_trait;
+-use ggez::context::Has;
++use super::drawing::Drawing;
+@@ -4,16 +3,2 @@ use ggez::context::Has;
+-use crate::models::{
+-    dialogable::StringDialogable,
+-    menu::{Menu as MenuModel, StringResult},
+-    record::Recording,
+-};
+-
+-pub struct MenuComponentData {}
+-
+-pub struct Menu {
+-    component_data: MenuComponentData,
+-}
+-
+-impl Default for Menu {
+-    fn default() -> Self {
+-        Self::new()
+-    }
++pub struct MenuComponentData {
++    pub drawing: Drawing
+@@ -22 +7 @@ impl Default for Menu {
+-impl Menu {
++impl MenuComponentData {
+@@ -24,30 +9 @@ impl Menu {
+-        Menu {
+-            component_data: MenuComponentData {},
+-        }
+-    }
+-}
+-
+-impl Has<MenuComponentData> for Menu {
+-    fn retrieve(&self) -> &MenuComponentData {
+-        &self.component_data
+-    }
+-}
+-
+-// impl Component for Menu {}
+-
+-#[async_trait]
+-impl MenuModel for Menu {
+-    async fn search_midi(&mut self, _dialog: StringDialogable) -> StringResult {
+-        unimplemented!()
+-    }
+-
+-    async fn save_recording(
+-        &mut self,
+-        _dialog: StringDialogable,
+-        _recording: Recording,
+-    ) -> StringResult {
+-        unimplemented!()
+-    }
+-
+-    fn set_volume(&mut self, _rate: f64) -> f64 {
+-        unimplemented!()
++        MenuComponentData { drawing: Drawing::default() }
+diff --git src/components/mod.rs src/components/mod.rs
+index bc6704a..09b9f4b 100644
+--- src/components/mod.rs
++++ src/components/mod.rs
+@@ -10,0 +11 @@ pub mod playmeter;
++pub mod quality_manager;
+@@ -13,0 +15,3 @@ pub mod track_manager;
++pub mod track_library;
++pub mod game_track;
++pub mod util;
+diff --git src/components/pallete.rs src/components/pallete.rs
+index 09f9f64..6b257c3 100644
+--- src/components/pallete.rs
++++ src/components/pallete.rs
+@@ -3 +3 @@ use ggez::graphics::Color;
+-const ALPHA: f32 = 0.065_484_546;
++// const ALPHA: f32 = 0.065_484_546;
+@@ -8 +8 @@ const DELTA: f32 = 0.978_171_8;
+-pub(crate) const DARK: Color = Color::new(ALPHA, ALPHA, ALPHA, 1.0);
++// pub(crate) const DARK: Color = Color::new(ALPHA, ALPHA, ALPHA, 1.0);
+diff --git src/components/playmeter.rs src/components/playmeter.rs
+index fdc185b..2182276 100644
+--- src/components/playmeter.rs
++++ src/components/playmeter.rs
+@@ -1 +1 @@
+-// use ggez::context::Has;
++use std::{cell::RefCell, time::Duration};
+@@ -3,5 +3,3 @@
+-// use super::{
+-//     component::{Component, ComponentObject, RenderUtilObject},
+-//     drawing::{self, DrawResult, Drawing},
+-// };
+-// use crate::models::{draw_util::DrawUtil, playmeter::PlayMeter};
++use ggez::graphics::{Color, DrawParam, PxScale, Text};
++use itertools::{iproduct, Itertools};
++use log::{trace, warn};
+@@ -9 +7,4 @@
+-// /// Draws player performance
++use crate::models::{
++    bit_mode::BitMask, game_mode::NOTES_MASK, note::Note, playmeter::PlayMeter,
++    render_util::RenderUtil,
++};
+@@ -11 +12,5 @@
+-// pub struct PlayMeterComponentData {}
++use super::{
++    component::{Component, ComponentObject},
++    drawing::{DrawResult, Drawing, RetrieveDrawing},
++    sheet::sheet_component_const::{self, Zindex},
++};
+@@ -13 +18,136 @@
+-// impl Component for PlayMeter {}
++fn remove_outbounds_pool(pool: &mut Vec<Note>, width: Duration, now: Duration) -> Vec<Note> {
++    let mut removed: Vec<Note> = vec![];
++
++    let mut i: i32 = 0;
++
++    while i < pool.len() as i32 {
++        let hwidth = width / 2;
++        let input_note = &pool[i as usize];
++        let note_trigger = input_note.trigger.expect("Note should've been triggered");
++        let trigger_start = if note_trigger > hwidth {
++            note_trigger - hwidth
++        } else {
++            Duration::from_secs(0)
++        };
++        let trigger_end = note_trigger + hwidth;
++        let in_bounds = now >= trigger_start && now < trigger_end;
++        if !in_bounds {
++            removed.push(pool.remove(i as usize));
++            i -= 1;
++        }
++        i += 1;
++    }
++    removed
++}
++
++pub fn remove_indexes(list: &mut Vec<Note>, indexes: &mut Vec<usize>) {
++    indexes.sort();
++    indexes.reverse();
++    for i in indexes {
++        let i = i.clone();
++        if list.len() == 0 {
++            break;
++        }
++        if i >= list.len() {
++            continue;
++        }
++        list.swap_remove(i);
++    }
++}
++
++pub struct PlayMeterComponentData {
++    drawing: Drawing,
++}
++
++impl PlayMeterComponentData {
++    pub fn new() -> Self {
++        Self {
++            drawing: Drawing::default(),
++        }
++    }
++}
++impl Component for PlayMeter {
++    fn get_name(&self) -> String {
++        String::from("[Play Meter]")
++    }
++
++    fn get_drawing(&self) -> RetrieveDrawing {
++        RetrieveDrawing::Ok(RefCell::new(self.component_data.drawing.clone()))
++    }
++
++    fn update(&mut self, canvas: RenderUtil) {
++        let removed_input = remove_outbounds_pool(
++            &mut self.unpaired_input_pool,
++            self.acceptance_range,
++            canvas.winctx.since_start,
++        );
++        let removed_track = remove_outbounds_pool(
++            &mut self.unpaired_track_pool,
++            self.acceptance_range,
++            canvas.winctx.since_start,
++        );
++
++        let subtracted = removed_input.len() + removed_track.len();
++        self.average_quality -= subtracted as f64;
++        //print pools length
++        trace!(
++            "input: {}, track: {}, quality: {}",
++            self.unpaired_input_pool.len(),
++            self.unpaired_track_pool.len(),
++            self.average_quality
++        );
++
++        let mut remove_input: Vec<usize> = vec![];
++        let mut remove_track: Vec<usize> = vec![];
++        //find matches
++        for comb in iproduct!(
++            0..self.unpaired_input_pool.len(),
++            0..self.unpaired_track_pool.len()
++        )
++        .unique()
++        {
++            let input = &self.unpaired_input_pool[comb.0];
++            let track = &self.unpaired_track_pool[comb.1];
++            if track.eq_to_input(input) {
++                warn!("found match");
++                self.average_quality += 1.0;
++                remove_input.push(comb.0);
++                remove_track.push(comb.1);
++            }
++        }
++
++        remove_track.sort();
++        remove_track.reverse();
++        for i in remove_track {
++            if self.unpaired_track_pool.len() == 0 {
++                break;
++            }
++            if i >= self.unpaired_track_pool.len() {
++                continue;
++            }
++            self.unpaired_track_pool.swap_remove(i);
++        }
++
++        let mut txt = Text::new(format!("\n\n\n\n\nQuality={}", self.average_quality));
++        txt.set_scale(PxScale::from(sheet_component_const::SCALEF * 6.0).round());
++        self.component_data.drawing.text = Some(txt);
++    }
++
++    fn draw(&self, canvas: RenderUtil) -> DrawResult {
++        DrawResult::Draw(
++            DrawParam::new()
++                .dest([100.0, 100.0])
++                .scale([canvas.winctx.scale, canvas.winctx.scale])
++                .color(Color::BLACK)
++                .z(Zindex::Debug.get()),
++        )
++    }
++
++    fn next(&self) -> Vec<ComponentObject> {
++        Vec::new()
++    }
++
++    fn get_mask(&self) -> BitMask {
++        NOTES_MASK
++    }
++}
+diff --git src/components/sheet/clef.rs src/components/sheet/clef.rs
+index 514efe3..e231f0c 100644
+--- src/components/sheet/clef.rs
++++ src/components/sheet/clef.rs
+@@ -1,6 +1 @@
+-use std::{cell::RefCell, path::Path};
+-
+-use ggez::{
+-    graphics::{Color, Image},
+-    Context,
+-};
++use std::cell::RefCell;
+@@ -7,0 +3,2 @@ use ggez::{
++use crate::components::util::image_from_optional;
++use crate::models::game_mode::NOTES_MASK;
+@@ -12 +9 @@ use crate::{
+-        drawing::{DrawResult, Drawing, RetrieveDrawing},
++        drawing::{DrawResult, Drawing, DrawingReference, RetrieveDrawing},
+@@ -14 +11 @@ use crate::{
+-    models::{note::Note, render_util::RenderUtil, sheet::clef::Clef},
++    models::{draw_state::DrawState, note::Note, render_util::RenderUtil, sheet::clef::Clef},
+@@ -19,15 +16 @@ pub struct ClefComponentData {
+-    filepath: Option<String>,
+-    drawing: Drawing,
+-}
+-
+-fn image_from_optional(ctx: &Context, path: Option<String>) -> Image {
+-    match path {
+-        Some(filepath) => {
+-            let imres = Image::from_path(ctx, Path::new(&filepath));
+-            match imres {
+-                Ok(image) => image,
+-                Err(_) => todo!(),
+-            }
+-        }
+-        None => Image::from_solid(ctx, 128, Color::GREEN),
+-    }
++    drawing: DrawingReference,
+@@ -42,2 +25,2 @@ impl ClefComponentData {
+-                drawing.image = Some(image_from_optional(ctx, filepath.clone()));
+-                DrawUtil::left_image(&mut drawing, build.clone(), note);
++                drawing.image = Some(image_from_optional(&ctx, filepath.clone()));
++                DrawUtil::left_image(&mut drawing, &build.winctx, note);
+@@ -48,2 +31 @@ impl ClefComponentData {
+-            filepath: filepath.clone(),
+-            drawing,
++            drawing: RefCell::new(drawing),
+@@ -59 +41,10 @@ impl Component for Clef {
+-        RetrieveDrawing::Ok(RefCell::new(self.component_data.drawing.clone()))
++        RetrieveDrawing::Ok(self.component_data.drawing.clone())
++    }
++    fn draw(&self, canvas: RenderUtil) -> DrawResult {
++        if canvas.winctx.state == DrawState::ScaleChange {
++            let mut drawing = self.component_data.drawing.borrow_mut();
++            let params = DrawUtil::left_image(&mut drawing, canvas.winctx, &self.note);
++            return DrawResult::Draw(params);
++        }
++        let drawing = self.component_data.drawing.borrow();
++        DrawResult::Draw(drawing.params)
+@@ -61,8 +52,2 @@ impl Component for Clef {
+-    fn draw(&self, _canvas: RenderUtil) -> DrawResult {
+-        DrawResult::Draw(
+-            // DrawParam::new()
+-            //     .dest([0.0, 0.0])
+-            //     .scale([sheet_component_const::SCALEF, sheet_component_const::SCALEF])
+-            //     .z(0),
+-            self.component_data.drawing.params,
+-        )
++    fn get_mask(&self) -> crate::models::bit_mode::BitMask {
++        NOTES_MASK
+diff --git src/components/sheet/form.rs src/components/sheet/form.rs
+index e544f73..0aabc01 100644
+--- src/components/sheet/form.rs
++++ src/components/sheet/form.rs
+@@ -2,0 +3 @@ use ggez::graphics::MeshBuilder;
++#[allow(unused)]
+@@ -3,0 +5 @@ pub(crate) const CENTER_PIECE: u16 = 0b000_101_000;
++#[allow(unused)]
+@@ -4,0 +7 @@ pub(crate) const BOTTOM_PIECE: u16 = 0b000_000_010;
++#[allow(unused)]
+@@ -5,0 +9 @@ pub(crate) const TOP_PIECE: u16 = 0b010_000_000;
++#[allow(unused)]
+diff --git src/components/sheet/sheet_component_const.rs src/components/sheet/sheet_component_const.rs
+index 5675572..09b5cba 100644
+--- src/components/sheet/sheet_component_const.rs
++++ src/components/sheet/sheet_component_const.rs
+@@ -1,3 +1,4 @@
+-pub(crate) const SCALE: u32 = 4;
+-pub(crate) const SCALEFF: f64 = SCALE as f64;
+-pub(crate) const SCALEF: f32 = SCALE as f32;
++pub(crate) const SCALE: f32 = 2.69;
++// pub(crate) const SCALEFF: f64 = SCALE as f64;
++pub const SCALEF: f32 = 4.0;
++pub(crate) const YOFFSET: u32 = 0;
+@@ -8 +9 @@ pub(crate) const TRIGER_NOTE_DIFF_RATIO: f64 = NOTE_OFFSET_RATIO - TRIGGER_OFFSE
+-pub(crate) const TRIGGER_WIDTH: u32 = 1;
++pub(crate) const _TRIGGER_WIDTH: u32 = 1;
+@@ -46,0 +48,2 @@ pub enum Zindex {
++    GameTrack,
++    TrackLibrary,
+diff --git src/components/sheet/staff.rs src/components/sheet/staff.rs
+index 34a269f..164d5ad 100644
+--- src/components/sheet/staff.rs
++++ src/components/sheet/staff.rs
+@@ -1 +1 @@
+-use std::cell::RefCell;
++
+@@ -9 +9 @@ use crate::{
+-        drawing::{DrawResult, Drawing, RetrieveDrawing},
++        drawing::{DrawResult, Drawing, DrawingReference, RetrieveDrawing},
+@@ -12 +12 @@ use crate::{
+-    models::{note::Note, render_util::RenderUtil, sheet::staff::Staff},
++    models::{note::Note, render_util::RenderUtil, sheet::staff::Staff, draw_state::DrawState, game_mode::NOTES_MASK},
+@@ -15,3 +14,0 @@ use crate::{
+-const LINES: i32 = 5;
+-const SPACES: i32 = 4;
+-
+@@ -19 +16 @@ pub struct StaffComponentData {
+-    drawing: Drawing,
++    drawing: DrawingReference,
+@@ -27 +24,3 @@ impl StaffComponentData {
+-        StaffComponentData { drawing }
++        StaffComponentData {
++            drawing: DrawingReference::new(drawing),
++        }
+@@ -43 +42 @@ impl Component for Staff {
+-        RetrieveDrawing::Ok(RefCell::new(self.component_data.drawing.clone()))
++        RetrieveDrawing::Ok(self.component_data.drawing.clone())
+@@ -45,8 +44,13 @@ impl Component for Staff {
+-    fn draw(&self, _canvas: RenderUtil) -> DrawResult {
+-        DrawResult::Draw(
+-            // DrawParam::new()
+-            //     .dest([0.0, 0.0])
+-            //     .scale([sheet_component_const::SCALEF, sheet_component_const::SCALEF])
+-            //     .z(0),
+-            self.component_data.drawing.params,
+-        )
++    fn draw(&self, canvas: RenderUtil) -> DrawResult {
++        if canvas.winctx.state == DrawState::ScaleChange {
++            let mut drawing = self.component_data.drawing.borrow_mut();
++            DrawUtil::staff_block(
++                &mut drawing,
++                BuildContext::new(None, canvas.winctx.clone()),
++                self.notes.iter().collect(),
++                pallete::DARKER_LIGHT,
++            );
++        }
++
++        let drawing = self.component_data.drawing.borrow();
++        DrawResult::Draw(drawing.params)
+@@ -57,0 +62,4 @@ impl Component for Staff {
++
++    fn get_mask(&self) -> crate::models::bit_mode::BitMask {
++        NOTES_MASK
++    }
+diff --git src/components/sheet/staff_system.rs src/components/sheet/staff_system.rs
+index da93ee8..b80da17 100644
+--- src/components/sheet/staff_system.rs
++++ src/components/sheet/staff_system.rs
+@@ -1,3 +1 @@
+-use std::cell::RefCell;
+-
+-use ggez::{graphics::MeshBuilder, mint::Point2};
++use ggez::graphics::MeshBuilder;
+@@ -10 +8 @@ use crate::{
+-        drawing::RetrieveDrawing,
++        drawing::{RetrieveDrawing, DrawingReference},
+@@ -13 +11 @@ use crate::{
+-    models::{note::Note, render_util::RenderUtil, sheet::staff_system::StaffSystem},
++    models::{note::Note, render_util::RenderUtil, sheet::staff_system::StaffSystem, draw_state::DrawState, game_mode::NOTES_MASK},
+@@ -18,3 +16 @@ pub struct StaffSystemComponentData {
+-    position: Point2<u32>,
+-    size: Point2<u32>,
+-    pub drawing: Drawing,
++    pub drawing: DrawingReference,
+@@ -41,5 +37 @@ impl StaffSystemComponentData {
+-        StaffSystemComponentData {
+-            position: Point2::from([0, 0]),
+-            size: Point2::from([0, 0]),
+-            drawing,
+-        }
++        StaffSystemComponentData { drawing: DrawingReference::new(drawing) }
+@@ -54 +46 @@ impl Component for StaffSystem {
+-        RetrieveDrawing::Ok(RefCell::new(self.component_data.drawing.clone()))
++        RetrieveDrawing::Ok(self.component_data.drawing.clone())
+@@ -56 +48,14 @@ impl Component for StaffSystem {
+-    fn draw(&self, _canvas: RenderUtil) -> DrawResult {
++    fn draw(&self, canvas: RenderUtil) -> DrawResult {
++        if canvas.winctx.state == DrawState::ScaleChange{
++            let mut drawing = self.component_data.drawing.borrow_mut();
++            DrawUtil::staff_block(
++                &mut drawing,
++                BuildContext::new(None, canvas.winctx.clone()),
++                self.notes.iter().collect(),
++                pallete::DARKER_LIGHT,
++            );
++            // drawing.meshbuilder = Some(MeshBuilder::new());
++            // DrawUtil::staff_block(&mut drawing, canvas.build, self.notes.iter().map(|n| n).collect(), pallete::LIGHT);
++        }
++
++        let drawing = self.component_data.drawing.borrow();
+@@ -58,5 +63 @@ impl Component for StaffSystem {
+-            // DrawParam::new()
+-            //     .dest([0.0, 0.0])
+-            //     .scale([sheet_component_const::SCALEF, sheet_component_const::SCALEF])
+-            //     .z(0),
+-            self.component_data.drawing.params,
++            drawing.params,
+@@ -72,0 +74,4 @@ impl Component for StaffSystem {
++
++    fn get_mask(&self) -> crate::models::bit_mode::BitMask {
++        NOTES_MASK
++    }
+diff --git src/components/sheet/track.rs src/components/sheet/track.rs
+index 93ee527..71721b0 100644
+--- src/components/sheet/track.rs
++++ src/components/sheet/track.rs
+@@ -0,0 +1,2 @@
++use std::collections::HashSet;
++
+@@ -5 +7 @@ use ggez::{
+-use log::{debug, warn};
++use log::debug;
+@@ -6,0 +9 @@ use log::{debug, warn};
++use crate::models::{game_mode::NOTES_MASK, window_context::WindowContext};
+@@ -9 +12 @@ use crate::{
+-        component::{BuildContext, Component, WindowContext},
++        component::{BuildContext, Component},
+@@ -11 +14 @@ use crate::{
+-        sheet::sheet_component_const::{self},
++        sheet::sheet_component_const,
+@@ -14,2 +17,2 @@ use crate::{
+-        clock::ClockFloat, midi::peripheral::MidiPeripheral, render_util::RenderUtil,
+-        sheet::SheetTrack,
++        clock::ClockFloat, draw_state::DrawState, midi::peripheral::MidiPeripheral, note::Note,
++        render_util::RenderUtil, sheet::SheetTrack,
+@@ -29,0 +33 @@ pub struct SheetTrackComponentData {
++    pub notes_on: HashSet<Note>,
+@@ -38,4 +42 @@ impl SheetTrackComponentData {
+-            update: ClockFloat {
+-                tick: 0.0,
+-                sec: 0.0,
+-            },
++            update: ClockFloat::new(),
+@@ -46,0 +48 @@ impl SheetTrackComponentData {
++            notes_on: HashSet::new(),
+@@ -51,7 +52,0 @@ impl SheetTrackComponentData {
+-fn sub_u32(a: u32, b: u32) -> u32 {
+-    if b >= a {
+-        u32::MIN
+-    } else {
+-        a - b
+-    }
+-}
+@@ -84,2 +79,2 @@ impl Component for SheetTrack {
+-        let width_px = canvas.winctx.size.x as f64 / sheet_component_const::SCALEFF;
+-        let height_px = canvas.winctx.size.y as f64 / sheet_component_const::SCALEFF;
++        let width_px = canvas.winctx.size.x as f64 / canvas.winctx.scale as f64;
++        let height_px = canvas.winctx.size.y as f64 / canvas.winctx.scale as f64;
+@@ -94,2 +89 @@ impl Component for SheetTrack {
+-        let global_note_offset_px =
+-            width_px * sheet_component_const::NOTE_OFFSET_RATIO * canvas.winctx.track.get_zoom();
++        let global_note_offset_px = width_px * sheet_component_const::NOTE_OFFSET_RATIO;
+@@ -103,6 +97 @@ impl Component for SheetTrack {
+-        //ZOOM !?!
+-        // let tick_render_length = last_tick as f64 * canvas.winctx.track.get_zoom();
+-        // let tick_render_round_length = tick_render_length.round() as u32;
+-        // let zoomed = tick_render_length / tick_to_px * sheet_component_const::SCALEF;
+-
+-        let delta_sec = canvas.delta.as_millis() as f64 / 1000.0;
++        let delta_sec = canvas.winctx.delta.as_millis() as f64 / 1000.0;
+@@ -112 +101 @@ impl Component for SheetTrack {
+-        debug!("zoom: {}", canvas.winctx.track.get_zoom());
++        debug!("zoom: {}", canvas.winctx.trackwinctx.get_zoom());
+@@ -118 +107 @@ impl Component for SheetTrack {
+-            canvas.winctx.track.get_zoom()
++            canvas.winctx.trackwinctx.get_zoom()
+@@ -120,6 +109,5 @@ impl Component for SheetTrack {
+-        self.component_data.update = ClockFloat {
+-            sec: delta_sec,
+-            tick: delta_tick,
+-        };
+-        self.time.sec += self.component_data.update.sec;
+-        self.time.tick += self.component_data.update.tick;
++        self.component_data.update = ClockFloat::new().set(delta_tick, delta_sec);
++        if canvas.winctx.state != DrawState::Pause {
++            self.time.sec += delta_sec;
++            self.time.tick += delta_tick;
++        }
+@@ -136 +124 @@ impl Component for SheetTrack {
+-        self.component_data.range = Some((0.5, 1.0));
++        self.component_data.range = Some((1.0, 3.0));
+@@ -150 +138,2 @@ impl Component for SheetTrack {
+-        );
++        )
++        .expect("Failed to draw line");
+@@ -172,2 +161,2 @@ impl Component for SheetTrack {
+-                    let note_diff_px =
+-                        target_diff_ticks / tick_to_px * canvas.winctx.track.get_zoom();
++
++                    let note_diff_px = target_diff_ticks / tick_to_px; // * canvas.winctx.track.get_zoom();
+@@ -182,0 +172,2 @@ impl Component for SheetTrack {
++                    //TODO: capture all hit_notes first:
++                    //TODO: so we can handle on&off trigger in same frame;
+@@ -184,13 +175,21 @@ impl Component for SheetTrack {
+-                        match note.on {
+-                            Some(note_state) => {
+-                                if note_state {
+-                                    let pairs = &self.track_pairs[track_index];
+-                                    let note_end_index = pairs[&note_index];
+-                                    let note_end = &track[note_end_index];
+-                                    //TODO change closest_key
+-                                    debug!("Note on: sent!");
+-                                    self.component_data
+-                                        .playback
+-                                        .note(note, note_end)
+-                                        .expect("Note on failed");
+-                                }
++                        if note.on.is_some() {
++                            let note = note.trigger(canvas.winctx.since_start);
++                            let note_state = note.on.unwrap();
++
++                            if note_state && !self.component_data.notes_on.contains(&note) {
++                                let pairs = &self.track_pairs[track_index];
++                                let note_end_index = pairs[&note_index];
++                                let note_end = &track[note_end_index];
++                                //TODO change closest_key
++                                debug!("Note on: sent!");
++                                self.component_data
++                                    .playback
++                                    .note(&note, note_end)
++                                    .expect("Note on failed");
++                                self.component_data.notes_on.insert(note.clone());
++                                time_now = Some(note.time.tick);
++                                self.reported.push(note.clone());
++                            } else if !note_state && self.component_data.notes_on.contains(&note) {
++                                self.component_data.notes_on.remove(&note);
++                                time_now = Some(note.time.tick);
++                                self.reported.push(note);
+@@ -198 +196,0 @@ impl Component for SheetTrack {
+-                            None => warn!("Note without information"),
+@@ -200 +197,0 @@ impl Component for SheetTrack {
+-                        time_now = Some(note.time.tick);
+@@ -213 +210,2 @@ impl Component for SheetTrack {
+-                    );
++                    )
++                    .expect("Failed to draw center left");
+@@ -218 +216,2 @@ impl Component for SheetTrack {
+-                    );
++                    )
++                    .expect("Failed to draw center right");
+@@ -223 +222,2 @@ impl Component for SheetTrack {
+-                    );
++                    )
++                    .expect("Failed to draw center up");
+@@ -228 +228,2 @@ impl Component for SheetTrack {
+-                    );
++                    )
++                    .expect("Failed to draw center down");
+@@ -249 +250 @@ impl Component for SheetTrack {
+-    fn draw(&self, _canvas: RenderUtil) -> DrawResult {
++    fn draw(&self, canvas: RenderUtil) -> DrawResult {
+@@ -253 +254 @@ impl Component for SheetTrack {
+-                .scale([sheet_component_const::SCALEF, sheet_component_const::SCALEF])
++                .scale([canvas.winctx.scale, canvas.winctx.scale])
+@@ -256,0 +258,4 @@ impl Component for SheetTrack {
++
++    fn get_mask(&self) -> crate::models::bit_mode::BitMask {
++        NOTES_MASK
++    }
+diff --git src/components/sheet/virtual_piano.rs src/components/sheet/virtual_piano.rs
+index 4ae4afc..c5a67f4 100644
+--- src/components/sheet/virtual_piano.rs
++++ src/components/sheet/virtual_piano.rs
+@@ -3 +3,4 @@ use crate::{
+-    models::sheet::{sheet_const::Accidentals, virtual_piano::VirtualPiano},
++    models::{
++        game_mode::NOTES_MASK,
++        sheet::{sheet_const::Accidentals, virtual_piano::VirtualPiano},
++    },
+@@ -7 +10 @@ use ggez::{
+-    graphics::{DrawMode, DrawParam, MeshBuilder, Rect, Text},
++    graphics::{DrawMode, DrawParam, MeshBuilder, Rect},
+@@ -10 +12,0 @@ use ggez::{
+-use log::trace;
+@@ -50 +51,0 @@ impl Component for VirtualPiano {
+-        let text = Text::new("Virtual Piano");
+@@ -62,2 +63,2 @@ impl Component for VirtualPiano {
+-            let canvas_width = canvas.winctx.size.x as f32 / sheet_component_const::SCALEF;
+-            let canvas_height = canvas.winctx.size.y as f32 / sheet_component_const::SCALEF;
++            let canvas_width = canvas.winctx.size.x as f32 / canvas.winctx.scale;
++            let canvas_height = canvas.winctx.size.y as f32 / canvas.winctx.scale;
+@@ -72 +73,2 @@ impl Component for VirtualPiano {
+-            );
++            )
++            .expect("Failed to draw piano padding");
+@@ -88 +90,2 @@ impl Component for VirtualPiano {
+-                );
++                )
++                .expect("Failed to draw piano white key");
+@@ -118 +121,2 @@ impl Component for VirtualPiano {
+-                    mb.line(&[start, end], 1.0, color);
++                    mb.line(&[start, end], 1.0, color)
++                        .expect("Failed to draw black key up");
+@@ -130 +134,2 @@ impl Component for VirtualPiano {
+-                    mb.line(&[start, end], 1.0, color);
++                    mb.line(&[start, end], 1.0, color)
++                        .expect("Failed to draw black key down");
+@@ -148,6 +153 @@ impl Component for VirtualPiano {
+-            let mesh = mb.build();
+-            trace!(
+-                "Drawing virtual piano[ver={}, idx={}]",
+-                mesh.vertices.len(),
+-                mesh.indices.len()
+-            );
++            let _mesh = mb.build();
+@@ -155 +154,0 @@ impl Component for VirtualPiano {
+-            drawing.text = Some(text);
+@@ -159 +158 @@ impl Component for VirtualPiano {
+-                    .scale([sheet_component_const::SCALEF, sheet_component_const::SCALEF])
++                    .scale([canvas.winctx.scale, canvas.winctx.scale])
+@@ -165,0 +165,4 @@ impl Component for VirtualPiano {
++
++    fn get_mask(&self) -> crate::models::bit_mode::BitMask {
++        NOTES_MASK
++    }
+diff --git src/components/track_manager.rs src/components/track_manager.rs
+index cb666d5..7ce1705 100644
+--- src/components/track_manager.rs
++++ src/components/track_manager.rs
+@@ -3 +3 @@ use log::debug;
+-use crate::models::{render_util::RenderUtil, track_manager::TrackManager};
++use crate::models::{game_mode::NOTES_MASK, render_util::RenderUtil, track_manager::TrackManager};
+@@ -23,0 +24,4 @@ impl Component for TrackManager {
++
++    fn get_mask(&self) -> crate::models::bit_mode::BitMask {
++        NOTES_MASK
++    }
+diff --git src/controllers/input/input_manager.rs src/controllers/input/input_manager.rs
+index 64d9e4b..f1fbc1d 100644
+--- src/controllers/input/input_manager.rs
++++ src/controllers/input/input_manager.rs
+@@ -1 +1,4 @@
+-use crate::models::{input::input_manager::InputManager, note::Note};
++use crate::models::{
++    input::input_manager::InputManager, note::Note, note_reporter::NoteReporter,
++    render_util::RenderUtil,
++};
+@@ -3,3 +6,7 @@ use crate::models::{input::input_manager::InputManager, note::Note};
+-impl InputManager {
+-    pub fn on_note(&mut self, note: &Note) {
+-        self.virtual_piano.on_note(note);
++impl NoteReporter for InputManager {
++    fn report(&mut self) -> Vec<Note> {
++        let notes = self.reported.to_owned();
++        self.reported = Vec::new();
++        notes
++    }
++}
+@@ -7 +14,9 @@ impl InputManager {
+-        self.playback.note_change(note);
++impl InputManager {
++    pub fn on_note(&mut self, note: &Note, canvas: RenderUtil) {
++        self.virtual_piano
++            .on_note(note)
++            .expect("Failed to play note");
++        self.playback
++            .note_change(note)
++            .expect("Failed to play note");
++        self.reported.push(note.trigger(canvas.winctx.since_start));
+diff --git src/controllers/input/keyboard_input.rs src/controllers/input/keyboard_input.rs
+index 8e1837b..83ae597 100644
+--- src/controllers/input/keyboard_input.rs
++++ src/controllers/input/keyboard_input.rs
+@@ -10 +10 @@ use crate::models::{
+-    sheet::sheet_const::{self, Accidentals},
++    sheet::sheet_const::{self, Accidentals}, game_mode::GameMode,
+@@ -51,0 +52,16 @@ impl KeyboardInputSource {
++            KeyCode::Space => {
++                return Some(MidiPlayInput::PauseStart(None));
++            },
++            KeyCode::Escape => {
++                return Some(MidiPlayInput::Restart);
++            },
++            KeyCode::Home => {
++                return Some(MidiPlayInput::ModeChange(GameMode::Menu));
++            },
++            KeyCode::Insert => {
++                return Some(MidiPlayInput::ModeChange(GameMode::Library));
++            },
++            KeyCode::F5 => {
++                return Some(MidiPlayInput::ModeChange(GameMode::Play("do_re_.mid".into())));
++            },
++
+@@ -94 +110 @@ impl KeyboardInputSource {
+-                    Some(accidental),
++                    Some(accidental.clone()),
+diff --git src/controllers/midi/peripheral.rs src/controllers/midi/peripheral.rs
+index 4561665..63c2501 100644
+--- src/controllers/midi/peripheral.rs
++++ src/controllers/midi/peripheral.rs
+@@ -1 +1 @@
+-use crate::models::midi::peripheral::MidiPeripheral;
++use crate::models::{midi::peripheral::MidiPeripheral, restartable::Restartable};
+@@ -18 +18 @@ impl MidiPeripheral {
+-        self.tick_played = 0;
++        self.restart().expect("Failed to restart peripheral");
+@@ -21,0 +22 @@ impl MidiPeripheral {
++
+@@ -38,0 +40 @@ impl MidiPeripheral {
++        let channel = self.channel.unwrap();
+@@ -40,2 +42,2 @@ impl MidiPeripheral {
+-        let note_start = note_start.clone();
+-        let note_end = note_end.clone();
++        let note_start = note_start.channel(channel);
++        let note_end = note_end.channel(channel);
+@@ -51 +53,2 @@ impl MidiPeripheral {
+-            });
++            })
++            .expect("Failed to spawn note thread");
+@@ -66 +69 @@ impl MidiPeripheral {
+-        match tx.send(Some(note.clone())) {
++        match tx.send(Some(note.channel(self.channel.unwrap()))) {
+@@ -71,0 +75,7 @@ impl MidiPeripheral {
++
++impl Restartable for MidiPeripheral {
++    fn restart(&mut self) -> Result<(), ()> {
++        self.tick_played = 0;
++        Ok(())
++    }
++}
+diff --git src/controllers/midi/playback.rs src/controllers/midi/playback.rs
+index 7516279..254a3a7 100644
+--- src/controllers/midi/playback.rs
++++ src/controllers/midi/playback.rs
+@@ -1,5 +1 @@
+-use std::{
+-    collections::HashSet,
+-    error::Error,
+-    thread::{self},
+-};
++use std::{collections::HashSet, error::Error, thread};
+@@ -55 +51,5 @@ impl MidiPlayback {
+-                                    .send(&[NOTE_ON, note.midi as u8, note.velocity as u8])
++                                    .send(&[
++                                        NOTE_ON + note.channel,
++                                        note.midi as u8,
++                                        note.velocity as u8,
++                                    ])
+@@ -58 +58,4 @@ impl MidiPlayback {
+-                                info!("Note on: {}, success: {}", note.midi, insert_success);
++                                info!(
++                                    "Note on: {}, channel: {}, success: {}",
++                                    note.midi, note.channel, insert_success
++                                );
+@@ -61 +64,5 @@ impl MidiPlayback {
+-                                    .send(&[NOTE_OFF, note.midi as u8, note.velocity as u8])
++                                    .send(&[
++                                        NOTE_OFF + note.channel,
++                                        note.midi as u8,
++                                        note.velocity as u8,
++                                    ])
+@@ -64 +71,4 @@ impl MidiPlayback {
+-                                info!("Note off: {}, success: {}", note.midi, remove_success);
++                                info!(
++                                    "Note off: {}, channel: {}, success: {}",
++                                    note.midi, note.channel, remove_success
++                                );
+diff --git src/controllers/midi/to_sheet.rs src/controllers/midi/to_sheet.rs
+index 1c539e4..ee0536e 100644
+--- src/controllers/midi/to_sheet.rs
++++ src/controllers/midi/to_sheet.rs
+@@ -101,4 +101,4 @@ fn _parse_smf<'a>(smf: midly::Smf<'a>) -> SheetTrack {
+-        let (mut dd, mut nn, mut cc, mut bb) = (0, 0, 0, 0);
+-        let mut key_sign_val: i8 = 0;
+-        let mut key_sign_bool = false;
+-        let mut midi_port = u7::new(0);
++        let (mut _dd, mut _nn, mut _cc, mut _bb) = (0, 0, 0, 0);
++        let mut _key_sign_val: i8 = 0;
++        let mut _key_sign_bool = false;
++        let mut _midi_port = u7::new(0);
+@@ -202 +202 @@ fn _parse_smf<'a>(smf: midly::Smf<'a>) -> SheetTrack {
+-                    MetaMessage::MidiPort(port) => midi_port = port,
++                    MetaMessage::MidiPort(port) => _midi_port = port,
+@@ -222 +222 @@ fn _parse_smf<'a>(smf: midly::Smf<'a>) -> SheetTrack {
+-                        (dd, nn, cc, bb) = (ndd, nnn, ncc, nbb);
++                        (_dd, _nn, _cc, _bb) = (ndd, nnn, ncc, nbb);
+@@ -225,2 +225,2 @@ fn _parse_smf<'a>(smf: midly::Smf<'a>) -> SheetTrack {
+-                        key_sign_val = sign;
+-                        key_sign_bool = signb;
++                        _key_sign_val = sign;
++                        _key_sign_bool = signb;
+diff --git src/controllers/mod.rs src/controllers/mod.rs
+index 6041fe1..53b61fc 100644
+--- src/controllers/mod.rs
++++ src/controllers/mod.rs
+@@ -3,0 +4 @@ pub mod playmeter;
++pub mod quality_manager;
+@@ -6,0 +8,3 @@ pub mod track_manager;
++pub mod midiplay;
++pub mod game_track;
++pub mod track_library;
+diff --git src/controllers/playmeter.rs src/controllers/playmeter.rs
+index da21d81..b752ac3 100644
+--- src/controllers/playmeter.rs
++++ src/controllers/playmeter.rs
+@@ -1 +1 @@
+-use crate::models::playmeter::{PlayMeter, QualityMeter};
++use crate::models::{note::Note, playmeter::PlayMeter};
+@@ -3,3 +3,4 @@ use crate::models::playmeter::{PlayMeter, QualityMeter};
+-impl QualityMeter for PlayMeter {
+-    fn compare(&mut self, _expected: u32, _received: u32) -> f64 {
+-        unimplemented!()
++impl PlayMeter {
++    pub fn measure(&self, input: &Note, expected: &Note) -> f64 {
++        (input.time.sec - expected.time.sec) / 100.0
++            + (self.average_quality - self.average_quality / 100.0)
+@@ -8,2 +9,3 @@ impl QualityMeter for PlayMeter {
+-    fn reset(&mut self) -> bool {
+-        unimplemented!()
++    pub fn capture(&mut self, input: Vec<Note>, track: Vec<Note>) {
++        self.unpaired_track_pool.extend(input);
++        self.unpaired_input_pool.extend(track);
+diff --git src/controllers/record.rs src/controllers/record.rs
+index b985464..b06c7ac 100644
+--- src/controllers/record.rs
++++ src/controllers/record.rs
+@@ -1,4 +1 @@
+-use std::fmt::Error;
+-
+-use crate::models::record::Recording;
+-
++use crate::models::{record::Recording, restartable::Restartable};
+@@ -7,4 +4 @@ impl Recording {
+-        unimplemented!()
+-    }
+-    pub fn iter(&self) {
+-        unimplemented!()
++        true
+@@ -12,2 +6,5 @@ impl Recording {
+-    pub fn write(&self, _filepath: String) -> Result<bool, Error> {
+-        unimplemented!()
++
++}
++impl Restartable for Recording{
++    fn restart(&mut self) -> Result<(), ()> {
++        Ok(())
+diff --git src/controllers/sheet/track.rs src/controllers/sheet/track.rs
+index b4181b3..da812e2 100644
+--- src/controllers/sheet/track.rs
++++ src/controllers/sheet/track.rs
+@@ -1,0 +2,3 @@ use crate::components::component::Component;
++use crate::models::clock::ClockFloat;
++use crate::models::note::Note;
++use crate::models::note_reporter::NoteReporter;
+@@ -2,0 +6 @@ use crate::models::render_util::RenderUtil;
++use crate::models::restartable::Restartable;
+@@ -4 +7,0 @@ use crate::models::sheet::SheetTrack;
+-use crate::models::trackeable::Trackeable;
+@@ -6,9 +9,5 @@ use crate::models::trackeable::Trackeable;
+-use std::ops::Range;
+-
+-impl Trackeable for SheetTrack {
+-    fn go_to(&mut self, _time: u32) -> u32 {
+-        unimplemented!()
+-    }
+-
+-    fn set_loop(&mut self, _range: Range<u32>) -> bool {
+-        unimplemented!()
++impl NoteReporter for SheetTrack {
++    fn report(&mut self) -> Vec<Note> {
++        let reported = self.reported.clone();
++        self.reported = Vec::new();
++        reported
+@@ -25,0 +25,9 @@ impl SheetTrack {
++
++impl Restartable for SheetTrack {
++    fn restart(&mut self) -> Result<(), ()> {
++        self.time = ClockFloat::new();
++        self.reported = Vec::new();
++        self.component_data.playback.restart()?;
++        Ok(())
++    }
++}
+diff --git src/controllers/sheet/track_window_ctx.rs src/controllers/sheet/track_window_ctx.rs
+index 8ca027b..63f64a2 100644
+--- src/controllers/sheet/track_window_ctx.rs
++++ src/controllers/sheet/track_window_ctx.rs
+@@ -4,7 +3,0 @@ impl TrackWindowContext {
+-    pub fn new(zoom: Option<f64>, range: Option<(f64, f64)>) -> Self {
+-        TrackWindowContext {
+-            zoom: zoom.unwrap_or(1.0),
+-            range,
+-        }
+-    }
+-
+@@ -28,15 +20,0 @@ impl TrackWindowContext {
+-
+-impl Clone for TrackWindowContext {
+-    fn clone(&self) -> Self {
+-        TrackWindowContext {
+-            zoom: self.zoom,
+-            range: self.range,
+-        }
+-    }
+-}
+-
+-impl Default for TrackWindowContext {
+-    fn default() -> Self {
+-        TrackWindowContext::new(None, None)
+-    }
+-}
+diff --git src/controllers/sheet/virtual_piano.rs src/controllers/sheet/virtual_piano.rs
+index 41da727..6815036 100644
+--- src/controllers/sheet/virtual_piano.rs
++++ src/controllers/sheet/virtual_piano.rs
+@@ -1,2 +1 @@
+-use crate::models::sheet::virtual_piano::VirtualPianoKeyHandler;
+-use crate::models::{note::Note, playmeter::QualityMeter, sheet::virtual_piano::VirtualPiano};
++use crate::models::{note::Note, sheet::virtual_piano::VirtualPiano};
+@@ -10,13 +8,0 @@ impl Default for VirtualPiano {
+-impl<Q> VirtualPianoKeyHandler<Q> for VirtualPiano
+-where
+-    Q: QualityMeter,
+-{
+-    fn note_on(&self, _comparator: Q) {
+-        unimplemented!()
+-    }
+-
+-    fn note_off(&self, _comparator: Q) {
+-        unimplemented!()
+-    }
+-}
+-
+@@ -29 +15 @@ impl VirtualPiano {
+-                self.notes[note_idx].naturality = note.naturality;
++                self.notes[note_idx].naturality = note.naturality.clone();
+diff --git src/controllers/track_manager.rs src/controllers/track_manager.rs
+index 31bcd3c..695422e 100644
+--- src/controllers/track_manager.rs
++++ src/controllers/track_manager.rs
+@@ -0,0 +1,3 @@
++use crate::models::note::Note;
++use crate::models::note_reporter::NoteReporter;
++use crate::models::restartable::Restartable;
+@@ -13,0 +17,13 @@ impl Trackeable for TrackManager {
++impl NoteReporter for TrackManager {
++    fn report(&mut self) -> Vec<Note> {
++        self.sheet_track.report()
++    }
++}
++
++impl Restartable for TrackManager {
++    fn restart(&mut self) -> Result<(), ()>{
++        self.sheet_track.restart()?;
++        Ok(())
++    }
++}
++
+@@ -16 +32 @@ impl TrackManager {
+-        self.sheet_track.component_data.winctx.track.clone()
++        self.sheet_track.component_data.winctx.trackwinctx.clone()
+diff --git src/lib.rs src/lib.rs
+index 70260ff..738a82e 100644
+--- src/lib.rs
++++ src/lib.rs
+@@ -0,0 +1,6 @@
++#![deny(clippy::all)]
++#![warn(clippy::pedantic)]
++#![warn(clippy::restriction)]
++#![warn(clippy::nursery)]
++#![warn(clippy::cargo)]
++
+@@ -3 +8,0 @@ pub mod controllers;
+-pub mod midiplay;
+@@ -8 +12,0 @@ pub mod tests;
+-pub use midiplay::MidiPlay;
+diff --git src/main.rs src/main.rs
+index 0c6506f..b880f62 100644
+--- src/main.rs
++++ src/main.rs
+@@ -0,0 +1 @@
++use midiplaylib::models::window_context::WindowContext;
+@@ -4,0 +6 @@ use midiplaylib::components::component::BuildContext;
++use midiplaylib::models::config;
+@@ -17 +19,6 @@ fn main() {
+-        .add_resource_path(path::PathBuf::from("./resources"))
++        .add_resource_path(path::PathBuf::from(config::RELATIVE_RESOURCES))
++        .window_mode(
++            ggez::conf::WindowMode::default()
++                .dimensions(800.0, 600.0)
++                .resizable(true),
++        )
+@@ -20,0 +28 @@ fn main() {
++    // ctx.gfx.window().
+@@ -26,2 +34,6 @@ fn main() {
+-    let buildctx = BuildContext::new(Some(&ctx), Point2::from([width, height]), None);
+-    let midi_play = midiplaylib::MidiPlay::new(buildctx, None);
++    let winctx = WindowContext::new(Point2::from([width, height]), None, None, None, None, None);
++    let buildctx = BuildContext::new(Some(&ctx), winctx);
++    let midi_play = midiplaylib::models::midiplay::MidiPlay::new(buildctx);
++
++    // event_loop.run(move |event, _, control_flow| control_flow.set_wait());
++
+diff --git src/midiplay.rs src/midiplay.rs
+deleted file mode 100644
+index 99c5615..0000000
+--- src/midiplay.rs
++++ /dev/null
+@@ -1,267 +0,0 @@
+-use std::time::Duration;
+-
+-use ggez::event::EventHandler;
+-use ggez::graphics;
+-use ggez::graphics::Canvas;
+-use ggez::graphics::{DrawParam, Mesh, MeshBuilder};
+-use ggez::input::keyboard;
+-use ggez::winit::event::VirtualKeyCode;
+-
+-use crate::components::component::WindowContext;
+-use crate::components::component_render;
+-use crate::components::drawing::{DrawResult, RetrieveDrawing};
+-use crate::components::sheet::sheet_component_const::Zindex;
+-use crate::components::{
+-    component::{BuildContext, Component, ComponentObject},
+-    pallete,
+-};
+-use crate::models::input::input::MidiPlayInput;
+-use crate::models::input::input_manager::InputManager;
+-use crate::models::midi::peripheral::MidiPeripheral;
+-use crate::models::midi::playback::MidiPlayback;
+-use crate::models::midi::to_sheet::MidiSheetFromFile;
+-use crate::models::render_util::RenderUtil;
+-use crate::models::sheet::from::SheetFromFile;
+-use crate::models::{pausable::Pausable, track_manager::TrackManager};
+-use ggez::mint::Point2;
+-use ggez::{Context, GameError, GameResult};
+-use log::{debug, info, trace, warn};
+-
+-pub struct MidiPlay {
+-    winctx: WindowContext,
+-    track: TrackManager,
+-    input: InputManager,
+-    playback: MidiPlayback,
+-    pause: bool,
+-}
+-
+-impl MidiPlay {
+-    pub fn new(mut buildctx: BuildContext, filepath: Option<String>) -> Self {
+-        let midi_parse = MidiSheetFromFile::new();
+-        let box_parse: Box<dyn SheetFromFile> = Box::new(midi_parse);
+-        let mut track = TrackManager::new(filepath, box_parse, buildctx.clone());
+-
+-        let playback = MidiPlayback::new(Some("<Main Playback>".into()));
+-        let input_peripheral = MidiPeripheral::from(&playback).name("<Input>".into());
+-        let play_peripheral = MidiPeripheral::from(&playback).name("<Music>".into());
+-        let input = InputManager::new(Some(input_peripheral));
+-
+-        let successful = track.set_track(
+-            // Some(String::from("mc_sweden.mid")),
+-            // Some(String::from("mc_sweden.mid")),
+-            Some(String::from("do_re_.mid")),
+-            RenderUtil::new(&buildctx.winctx, Duration::from_millis(0)),
+-            play_peripheral,
+-        );
+-
+-        match successful {
+-            Ok(track_window_context) => {
+-                buildctx.winctx.track = track_window_context;
+-                info!("Track Context Loaded");
+-            }
+-            Err(_e) => {
+-                warn!("Error loading track");
+-            }
+-        }
+-
+-        let mut newm = MidiPlay {
+-            track,
+-            input,
+-            winctx: buildctx.winctx,
+-            playback,
+-            pause: true,
+-        };
+-
+-        newm.resume();
+-
+-        newm
+-    }
+-
+-    pub async fn pick_track(&mut self, _filepath: &str) -> bool {
+-        unimplemented!();
+-    }
+-
+-    pub async fn quit(&mut self) -> bool {
+-        unimplemented!();
+-    }
+-
+-    pub fn draw_component(
+-        &self,
+-        component: &ComponentObject,
+-        render_util: RenderUtil,
+-        gfx: &Context,
+-        screen: &mut Canvas,
+-    ) {
+-        match component.draw(render_util) {
+-            DrawResult::Draw(params) => match component.get_drawing() {
+-                RetrieveDrawing::Ok(drawing) => {
+-                    trace!("Drawing: {}", component.get_name());
+-                    component_render::render_drawing(drawing, params, screen, gfx, &self.winctx)
+-                }
+-                RetrieveDrawing::Err(_) => (),
+-            },
+-            DrawResult::Skip => (),
+-        }
+-    }
+-
+-    pub fn handle_input(&mut self, input: MidiPlayInput) {
+-        info!("Input: {:?}", input);
+-        match input {
+-            MidiPlayInput::PauseStart(state_input) => {
+-                let pause = match state_input {
+-                    Some(state) => state,
+-                    None => !self.pause,
+-                };
+-                if pause {
+-                    self.pause();
+-                } else {
+-                    self.resume();
+-                }
+-            }
+-            MidiPlayInput::NoteKey(note) => {
+-                self.input.on_note(&note);
+-            }
+-        }
+-    }
+-
+-    pub fn grab_context(&mut self, ctx: &mut Context) -> WindowContext {
+-        let width = ctx.gfx.window().inner_size().width;
+-        let height = ctx.gfx.window().inner_size().height;
+-        trace!("Grabbing Canvas width={} height={}", width, height);
+-        WindowContext::new(
+-            Point2 {
+-                x: width,
+-                y: height,
+-            },
+-            Some(self.winctx.track.clone()),
+-        )
+-    }
+-}
+-
+-impl Pausable for MidiPlay {
+-    fn pause(&mut self) -> bool {
+-        let success = !self.pause;
+-        self.pause = true;
+-        success
+-    }
+-
+-    fn resume(&mut self) -> bool {
+-        let success = self.pause;
+-        self.pause = false;
+-        success
+-    }
+-}
+-
+-impl EventHandler for MidiPlay {
+-    fn mouse_wheel_event(&mut self, _ctx: &mut Context, _x: f32, _y: f32) -> Result<(), GameError> {
+-        self.winctx.track.zoom = (self.winctx.track.zoom + _y as f64 * 1e-2).clamp(0.0, 1.0);
+-        Ok(())
+-    }
+-
+-    fn on_error(
+-        &mut self,
+-        _ctx: &mut Context,
+-        _origin: ggez::event::ErrorOrigin,
+-        _e: GameError,
+-    ) -> bool {
+-        self.playback.close().expect("Failed to close playback");
+-        debug!("Error! and handle playback close");
+-        false
+-    }
+-    fn quit_event(&mut self, _ctx: &mut Context) -> Result<bool, GameError> {
+-        self.playback.close().expect("Failed to close playback");
+-        debug!("Quitting and handle playback close");
+-        Ok(false)
+-    }
+-
+-    fn key_down_event(
+-        &mut self,
+-        _ctx: &mut Context,
+-        input: keyboard::KeyInput,
+-        _repeated: bool,
+-    ) -> Result<(), GameError> {
+-        if _repeated {
+-            return Ok(());
+-        }
+-
+-        match self.input.keyboard.handle_keyboard_down(input) {
+-            Some(input) => self.handle_input(input),
+-            None => (),
+-        }
+-
+-        Ok(())
+-    }
+-
+-    fn key_up_event(
+-        &mut self,
+-        _ctx: &mut Context,
+-        _input: ggez::input::keyboard::KeyInput,
+-    ) -> Result<(), GameError> {
+-        info!("KeyUp: {:?}", _input);
+-
+-        match self.input.keyboard.handle_keyboard_up(_input) {
+-            Some(input) => self.handle_input(input),
+-            None => (),
+-        }
+-
+-        match _input.keycode {
+-            Some(keycode) => match keycode {
+-                VirtualKeyCode::Space => self.handle_input(MidiPlayInput::PauseStart(None)),
+-                _ => (),
+-            },
+-            None => (),
+-        }
+-        Ok(())
+-    }
+-
+-    fn update(&mut self, ctx: &mut Context) -> GameResult {
+-        let winctx = self.grab_context(ctx);
+-        let delta = ctx.time.delta();
+-        debug!("Delta: {:?}", delta);
+-        if !self.pause {
+-            self.track.update(RenderUtil::new(&winctx, delta));
+-        }
+-        Ok(())
+-    }
+-
+-    fn draw(&mut self, ctx: &mut Context) -> GameResult {
+-        let winctx = self.grab_context(ctx);
+-        let delta = ctx.time.delta();
+-        debug!("Delta: {:?}", delta);
+-        let mut canvas = graphics::Canvas::from_frame(ctx, pallete::LIGHTER_LIGHT);
+-        canvas.set_sampler(graphics::Sampler::nearest_clamp());
+-
+-        let mut mb = MeshBuilder::new();
+-        for i in (0..winctx.size.y).rev() {
+-            if i % 2 == 0 {
+-                continue;
+-            }
+-            mb.line(
+-                &[
+-                    Point2::from([0.0, i as f32]),
+-                    Point2::from([winctx.size.x as f32 / 10.0, i as f32]),
+-                ],
+-                1.0,
+-                pallete::DARK,
+-            )?;
+-        }
+-        let meshdata = Mesh::from_data(ctx, mb.build());
+-        canvas.draw(&meshdata, DrawParam::new().z(Zindex::Debug.get()));
+-
+-        let track_manager_obj: ComponentObject = &self.track;
+-        let input_manager_obj: ComponentObject = &self.input;
+-        let mut stack: Vec<ComponentObject> = vec![track_manager_obj, input_manager_obj];
+-        let mut counter = 0;
+-        while !stack.is_empty() {
+-            let comp: ComponentObject = stack.pop().expect("err negative index");
+-            let next: Vec<ComponentObject> = comp.next();
+-            if next.len() > 0 {
+-                stack.extend(next);
+-            }
+-            self.draw_component(&comp, RenderUtil::new(&winctx, delta), ctx, &mut canvas);
+-            counter += 1;
+-        }
+-        debug!("Updated[{}]", counter);
+-        canvas.finish(ctx)
+-    }
+-}
+diff --git src/models/clock.rs src/models/clock.rs
+index 864ffa9..c41b99d 100644
+--- src/models/clock.rs
++++ src/models/clock.rs
+@@ -1,3 +1,7 @@
+-pub struct Clock {
+-    pub sec: f64,
+-    pub tick: u32,
++use std::{default::Default, ops::Div};
++
++#[derive(Clone, Debug)]
++pub struct ClockAny<T> {
++    pub sec: T,
++    pub tick: T,
++    pub tick_per_sec: Option<T>,
+@@ -6,5 +10,6 @@ pub struct Clock {
+-impl Clone for Clock {
+-    fn clone(&self) -> Self {
+-        Clock {
+-            sec: self.sec,
+-            tick: self.tick,
++impl<T: Default + Clone + Div<Output = T>> ClockAny<T> {
++    pub fn new() -> Self {
++        ClockAny {
++            sec: T::default(),
++            tick: T::default(),
++            tick_per_sec: None,
+@@ -12,0 +18,17 @@ impl Clone for Clock {
++
++    pub fn sec(mut self, sec: T) -> Self {
++        self.sec = sec;
++        self
++    }
++
++    pub fn tick(mut self, tick: T) -> Self {
++        self.tick = tick;
++        self
++    }
++
++    pub fn set(mut self, tick: T, sec: T) -> Self {
++        self.tick = tick.clone();
++        self.sec = sec.clone();
++        self.tick_per_sec = Some(tick / sec);
++        self
++    }
+@@ -15 +37,3 @@ impl Clone for Clock {
+-pub struct ClockFloat {
++pub type ClockFloat = ClockAny<f64>;
++#[derive(Clone, Debug)]
++pub struct Clock {
+@@ -17 +41 @@ pub struct ClockFloat {
+-    pub tick: f64,
++    pub tick: u32,
+diff --git src/models/config.rs src/models/config.rs
+index c97e50e..c9bbb2a 100644
+--- src/models/config.rs
++++ src/models/config.rs
+@@ -1 +1,4 @@
+-pub(crate) const RELATIVE_RESOURCES: &str = "./resources/";
++pub const RELATIVE_RESOURCES: &str = "./resources/";
++pub const DEFAULT_COVER_FILEPATH: &str = "default_cover.png";
++pub const DEFAULT_COVER_SIZE: f32 = 64.0;
++pub const DEFAULT_COVER_FRAMED_SIZE: f32 = 72.0;
+diff --git src/models/dialogable.rs src/models/dialogable.rs
+index 93755fb..9c1cee9 100644
+--- src/models/dialogable.rs
++++ src/models/dialogable.rs
+@@ -1,10 +0,0 @@
+-use ggez::glam::bool;
+-use mockall::automock;
+-
+-use super::menu::StringResult;
+-
+-#[automock(
+-    type Title = String;
+-    type Path = String;
+-    type Success = StringResult;
+-)]
+@@ -21,2 +10,0 @@ pub trait Dialogable: Send {
+-pub type StringDialogable =
+-    Box<dyn Dialogable<Title = String, Path = String, Success = StringResult>>;
+diff --git src/models/input/input.rs src/models/input/input.rs
+index 6541f29..d3abc52 100644
+--- src/models/input/input.rs
++++ src/models/input/input.rs
+@@ -1 +1 @@
+-use crate::models::note::Note;
++use crate::models::{note::Note, game_mode::GameMode, bit_mode::UintGet};
+@@ -4,0 +5,3 @@ pub enum MidiPlayInput {
++    NextPlay,
++    PreviousPlay,
++    Restart,
+@@ -5,0 +9 @@ pub enum MidiPlayInput {
++    ModeChange(GameMode),
+@@ -11 +15 @@ impl fmt::Debug for MidiPlayInput {
+-            MidiPlayInput::PauseStart(_) => f.write_str("Pause/Start"),
++            MidiPlayInput::PauseStart(_) => f.write_str("#Pause/Start"),
+@@ -13 +17 @@ impl fmt::Debug for MidiPlayInput {
+-                f.write_str(format!("<{} @ {}>", note.midi, note.time.sec).as_str())
++                f.write_str(format!("#{} @ {}#", note.midi, note.time.sec).as_str())
+@@ -14,0 +19,4 @@ impl fmt::Debug for MidiPlayInput {
++            MidiPlayInput::NextPlay => f.write_str("#NextPlay"),
++            MidiPlayInput::PreviousPlay => f.write_str("#PreviousPlay"),
++            MidiPlayInput::Restart => f.write_str("#Restart"),
++            MidiPlayInput::ModeChange(mode) => f.write_str(format!("#ModeChange: {}#", mode.get()).as_str()),
+diff --git src/models/input/input_manager.rs src/models/input/input_manager.rs
+index e22bb4a..3508a40 100644
+--- src/models/input/input_manager.rs
++++ src/models/input/input_manager.rs
+@@ -1 +1,3 @@
+-use crate::models::{midi::peripheral::MidiPeripheral, sheet::virtual_piano::VirtualPiano};
++use crate::models::{
++    midi::peripheral::MidiPeripheral, note::Note, sheet::virtual_piano::VirtualPiano,
++};
+@@ -9,0 +12 @@ pub struct InputManager {
++    pub reported: Vec<Note>,
+@@ -18,0 +22 @@ impl InputManager {
++            reported: Vec::new(),
+diff --git src/models/menu.rs src/models/menu.rs
+index 8cc0c2a..440e248 100644
+--- src/models/menu.rs
++++ src/models/menu.rs
+@@ -1 +1 @@
+-use async_trait::async_trait;
++use crate::components::menu::MenuComponentData;
+@@ -3,4 +3,3 @@ use async_trait::async_trait;
+-use super::dialogable::StringDialogable;
+-use crate::models::record::Recording;
+-
+-pub type StringResult = Result<String, String>;
++pub struct Menu{
++    component_data: MenuComponentData,
++}
+@@ -8,9 +7,6 @@ pub type StringResult = Result<String, String>;
+-#[async_trait]
+-pub trait Menu {
+-    async fn search_midi(&mut self, dialog: StringDialogable) -> StringResult;
+-    async fn save_recording(
+-        &mut self,
+-        dialog: StringDialogable,
+-        recording: Recording,
+-    ) -> StringResult;
+-    fn set_volume(&mut self, rate: f64) -> f64;
++impl Menu {
++    pub fn new(component_data: Option<MenuComponentData>) -> Self {
++        Menu {
++            component_data: component_data.unwrap_or(MenuComponentData::new()),
++        }
++    }
+diff --git src/models/midi/peripheral.rs src/models/midi/peripheral.rs
+index 0304973..b61ecb9 100644
+--- src/models/midi/peripheral.rs
++++ src/models/midi/peripheral.rs
+@@ -6,0 +7 @@ use super::playback::MidiPlayback;
++#[derive(Clone)]
+@@ -10,0 +12 @@ pub struct MidiPeripheral {
++    pub channel: Option<u8>,
+@@ -18,0 +21 @@ impl MidiPeripheral {
++            channel: None,
+@@ -23,2 +26,8 @@ impl MidiPeripheral {
+-impl From<&MidiPlayback> for MidiPeripheral {
+-    fn from(playback: &MidiPlayback) -> Self {
++impl From<&mut MidiPlayback> for MidiPeripheral {
++    fn from(playback: &mut MidiPlayback) -> Self {
++        let free_idx = playback
++            .channels
++            .iter()
++            .position(|c| c.is_none())
++            .expect("No free channels");
++        playback.channels[free_idx] = Some(());
+@@ -28,0 +38 @@ impl From<&MidiPlayback> for MidiPeripheral {
++            channel: Some(free_idx as u8),
+diff --git src/models/midi/playback.rs src/models/midi/playback.rs
+index 0b0a2c3..217716a 100644
+--- src/models/midi/playback.rs
++++ src/models/midi/playback.rs
+@@ -10 +10 @@ pub struct MidiPlayback {
+-    // channels: Vec<u8>,
++    pub channels: [Option<()>; 16],
+@@ -13,2 +13 @@ pub struct MidiPlayback {
+-    // notes_on: Arc<Mutex<HashSet<Note>>>,
+-    tick_played: u32,
++    pub tick_played: u32,
+@@ -18,0 +18,2 @@ impl MidiPlayback {
++        let channels: [Option<()>; 16] = [Option::None; 16];
++
+@@ -19,0 +21 @@ impl MidiPlayback {
++            channels,
+@@ -22 +23,0 @@ impl MidiPlayback {
+-            // notes_on: Arc::new(Mutex::new(HashSet::new())),
+@@ -25 +26,3 @@ impl MidiPlayback {
+-        playback.open(opt_name.unwrap_or("MidiPlayback".into()));
++        playback
++            .open(opt_name.unwrap_or("MidiPlayback".into()))
++            .expect("Failed to open midi output");
+diff --git src/models/mod.rs src/models/mod.rs
+index c44beaf..c96f8a9 100644
+--- src/models/mod.rs
++++ src/models/mod.rs
+@@ -0,0 +1 @@
++pub mod midiplay;
+@@ -7,0 +9 @@ pub mod note;
++pub mod note_reporter;
+@@ -9,0 +12 @@ pub mod playmeter;
++pub mod quality_manager;
+@@ -14,0 +18,9 @@ pub mod trackeable;
++pub mod draw_state;
++pub mod user_settings;
++pub mod game_track;
++pub mod restartable;
++pub mod game_mode;
++pub mod track_library;
++pub mod build_context;
++pub mod window_context;
++pub mod bit_mode;
+diff --git src/models/note.rs src/models/note.rs
+index 2300615..1ff657a 100644
+--- src/models/note.rs
++++ src/models/note.rs
+@@ -9 +9 @@ use core::hash::Hash;
+-use std::hash::Hasher;
++use std::{hash::Hasher, time::Duration};
+@@ -10,0 +11 @@ use std::hash::Hasher;
++#[derive(Debug)]
+@@ -18,0 +20,2 @@ pub struct Note {
++    pub channel: u8,
++    pub trigger: Option<Duration>,
+@@ -48,0 +52,2 @@ impl Note {
++            channel: 0,
++            trigger: None,
+@@ -51,0 +57,18 @@ impl Note {
++    pub fn eq_to_input(&self, input: &Note) -> bool {
++        self.id == input.id
++            && self.on == input.on
++            && self.trigger.is_some() == input.trigger.is_some()
++    }
++
++    pub fn channel(&self, channel: u8) -> Self {
++        let mut this = self.clone();
++        this.channel = channel;
++        this
++    }
++
++    pub fn trigger(&self, time: Duration) -> Self {
++        let mut this = self.clone();
++        this.trigger = Some(time);
++        this
++    }
++
+@@ -99,13 +121,0 @@ impl Note {
+-        //
+-        // let id = intkey - sheet_const::MIDI_OFFSET;
+-        // let is_on = on && vel > 0;
+-        // let is_off = !on && vel == 0;
+-        // Note {
+-        //     id,
+-        //     midi: intkey,
+-        //     line: sheet_const::LAST_NOTE - id,
+-        //     time,
+-        //     naturality,
+-        //     velocity: vel,
+-        //     on: Some(on),
+-        // }
+@@ -122 +132 @@ impl Clone for Note {
+-            naturality: self.naturality,
++            naturality: self.naturality.clone(),
+@@ -124,0 +135,2 @@ impl Clone for Note {
++            channel: self.channel,
++            trigger: self.trigger.clone(),
+@@ -133 +145 @@ impl PartialEq for Note {
+-        self.id == other.id
++        self.id == other.id && self.channel == other.channel
+@@ -139,0 +152 @@ impl Hash for Note {
++        self.channel.hash(state);
+diff --git src/models/playmeter.rs src/models/playmeter.rs
+index a37fc37..bff324e 100644
+--- src/models/playmeter.rs
++++ src/models/playmeter.rs
+@@ -0,0 +1,4 @@
++use std::time::Duration;
++
++use crate::components::playmeter::PlayMeterComponentData;
++
+@@ -3,3 +7,19 @@ use super::note::Note;
+-pub trait QualityMeter {
+-    fn compare(&mut self, expected: u32, received: u32) -> f64;
+-    fn reset(&mut self) -> bool;
++pub const ACCEPTANCE_MS: u64 = 500;
++pub const ACCEPTANCE_DURATION: Duration = Duration::from_millis(ACCEPTANCE_MS);
++
++pub enum QualityMode {
++    //Strict Mode:
++    // * min value of: -inf;
++    // * max value of: note_count;
++    // * counts missed notes & missed inputs;
++    Strict,
++    //Normal Mode:
++    // * min value of: -note_count;
++    // * max value of: note_count;
++    // * counts missed notes & ignore missed inputs;
++    Normal,
++    //Loose Mode:
++    // * min value of: -note_count;
++    // * max value of: note_count;
++    // * ignore missed notes & counts missed inputs regardless of time as long as mantain the same order;
++    Loose,
+@@ -9,2 +29,7 @@ pub struct PlayMeter {
+-    average_quality: f64,
+-    history: Vec<Note>,
++    pub average_quality: f64,
++    pub unpaired_track_pool: Vec<Note>,
++    pub unpaired_input_pool: Vec<Note>,
++    pub component_data: PlayMeterComponentData,
++    //settings
++    pub quality_mode: QualityMode,
++    pub acceptance_range: Duration,
+@@ -22 +46,0 @@ impl PlayMeter {
+-            history: Vec::new(),
+@@ -23,0 +48,5 @@ impl PlayMeter {
++            quality_mode: QualityMode::Normal,
++            unpaired_track_pool: Vec::new(),
++            unpaired_input_pool: Vec::new(),
++            acceptance_range: ACCEPTANCE_DURATION,
++            component_data: PlayMeterComponentData::new(),
+diff --git src/models/record.rs src/models/record.rs
+index 128dc50..b95bf2c 100644
+--- src/models/record.rs
++++ src/models/record.rs
+@@ -1,3 +1 @@
+-pub struct Recording {
+-    samples: Vec<String>,
+-}
++pub struct Recording {}
+@@ -13 +11 @@ impl Recording {
+-        Recording { samples: vec![] }
++        Recording {}
+diff --git src/models/render_util.rs src/models/render_util.rs
+index d0be327..70685d2 100644
+--- src/models/render_util.rs
++++ src/models/render_util.rs
+@@ -1,3 +1 @@
+-use std::time::Duration;
+-
+-use crate::components::component::WindowContext;
++use crate::models::window_context::WindowContext;
+@@ -7 +4,0 @@ pub struct RenderUtil<'a> {
+-    pub delta: Duration,
+@@ -11,2 +8,2 @@ impl<'a> RenderUtil<'a> {
+-    pub fn new(winctx: &'a WindowContext, delta: Duration) -> Self {
+-        RenderUtil { winctx, delta }
++    pub fn new(winctx: &'a WindowContext) -> Self {
++        RenderUtil { winctx }
+@@ -18 +15 @@ impl<'a> Clone for RenderUtil<'a> {
+-        RenderUtil::new(self.winctx, self.delta)
++        RenderUtil::new(self.winctx)
+diff --git src/models/sheet/sheet_const.rs src/models/sheet/sheet_const.rs
+index 7772340..0bb07c5 100644
+--- src/models/sheet/sheet_const.rs
++++ src/models/sheet/sheet_const.rs
+@@ -6 +6 @@ use std::{
+-const LEDGER: u32 = 2;
++const _LEDGER: u32 = 2;
+@@ -9,3 +9,3 @@ pub(crate) const A: u32 = 0;
+-pub(crate) const B: u32 = 1;
+-pub(crate) const C: u32 = 2;
+-pub(crate) const D: u32 = 3;
++pub(crate) const _B: u32 = 1;
++pub(crate) const _C: u32 = 2;
++pub(crate) const _D: u32 = 3;
+@@ -13 +13 @@ pub(crate) const E: u32 = 4;
+-pub(crate) const F: u32 = 5;
++pub(crate) const _F: u32 = 5;
+@@ -18 +18 @@ pub(crate) const SPACES: u32 = 4;
+-pub(crate) const LEDGERS: u32 = LEDGER * 2;
++pub(crate) const _LEDGERS: u32 = _LEDGER * 2;
+@@ -20 +20 @@ pub(crate) const STAFF_SIZE: u32 = LINES + SPACES;
+-pub(crate) const STAFF_LEDGERS_SIZE: u32 = STAFF_SIZE + LEDGERS;
++pub(crate) const _STAFF_LEDGERS_SIZE: u32 = STAFF_SIZE + _LEDGERS;
+@@ -23,2 +23,2 @@ pub(crate) const NATURAL_NOTES: u32 = 7;
+-pub(crate) const ACCIDENTAL_NOTES: u32 = 5;
+-pub(crate) const NOTES: u32 = NATURAL_NOTES + ACCIDENTAL_NOTES;
++pub(crate) const _ACCIDENTAL_NOTES: u32 = 5;
++pub(crate) const _NOTES: u32 = NATURAL_NOTES + _ACCIDENTAL_NOTES;
+@@ -32 +32 @@ pub(crate) const LIMITING_INDEX: u32 = 8; //16;
+-pub(crate) const MIDDLE_C: u32 = get_id(C, 4);
++pub(crate) const _MIDDLE_C: u32 = get_id(_C, 4);
+@@ -41,0 +42 @@ pub const fn compute_range(start_note: u32, end_note: u32) -> Range<u32> {
++#[derive(Debug, Clone, PartialEq, )]
+@@ -48,14 +48,0 @@ pub enum Accidentals {
+-impl Clone for Accidentals {
+-    fn clone(&self) -> Self {
+-        *self
+-    }
+-}
+-impl Copy for Accidentals {}
+-
+-impl Eq for Accidentals {}
+-
+-impl PartialEq for Accidentals {
+-    fn eq(&self, other: &Self) -> bool {
+-        std::mem::discriminant(self) == std::mem::discriminant(other)
+-    }
+-}
+diff --git src/models/sheet/track.rs src/models/sheet/track.rs
+index 183cb9a..1d3f977 100644
+--- src/models/sheet/track.rs
++++ src/models/sheet/track.rs
+@@ -25,0 +26 @@ pub struct Track {
++    pub reported: Vec<Note>,
+@@ -53,4 +54,2 @@ impl Track {
+-            time: ClockFloat {
+-                sec: 0.0,
+-                tick: 0.0,
+-            },
++            time: ClockFloat::new(),
++            reported: Vec::new(),
+diff --git src/models/sheet/track_window_ctx.rs src/models/sheet/track_window_ctx.rs
+index ef7cacf..16865a2 100644
+--- src/models/sheet/track_window_ctx.rs
++++ src/models/sheet/track_window_ctx.rs
+@@ -0,0 +1 @@
++#[derive(Clone, Default)]
+@@ -3,0 +5,11 @@ pub struct TrackWindowContext {
++    pub note_count: usize,
++}
++
++impl TrackWindowContext {
++    pub fn new(note_count: usize, zoom: Option<f64>, range: Option<(f64, f64)>) -> Self {
++        TrackWindowContext {
++            note_count,
++            zoom: zoom.unwrap_or(1.0),
++            range,
++        }
++    }
+diff --git src/models/sheet/virtual_piano.rs src/models/sheet/virtual_piano.rs
+index 7a8f4cf..3318793 100644
+--- src/models/sheet/virtual_piano.rs
++++ src/models/sheet/virtual_piano.rs
+@@ -1,0 +2 @@ use crate::components::sheet::virtual_piano::VirtualPianoComponentData;
++use crate::models::note::Note;
+@@ -3,6 +3,0 @@ use crate::models::sheet::staff_system::StaffSystem;
+-use crate::models::{note::Note, playmeter::QualityMeter};
+-
+-pub trait VirtualPianoKeyHandler<Q: QualityMeter> {
+-    fn note_on(&self, comparator: Q);
+-    fn note_off(&self, comparator: Q);
+-}
+diff --git src/models/track_manager.rs src/models/track_manager.rs
+index 8d234a3..9e80cf1 100644
+--- src/models/track_manager.rs
++++ src/models/track_manager.rs
+@@ -57 +57,5 @@ impl TrackManager {
+-                let ctx = TrackWindowContext::new(None, Some(render_range));
++                let ctx = TrackWindowContext::new(
++                    sheet_track.track_pairs.len(),
++                    None,
++                    Some(render_range),
++                );
+@@ -75 +79,2 @@ impl TrackManager {
+-                    .note(&note_start, &note_end);
++                    .note(&note_start, &note_end)
++                    .expect("Failed to send note");
+diff --git src/models/trackeable.rs src/models/trackeable.rs
+index e24f014..5aded2c 100644
+--- src/models/trackeable.rs
++++ src/models/trackeable.rs
+@@ -7 +7 @@ pub trait Trackeable {
+-    fn go_to(&mut self, time: u32) -> u32;
++    fn go_to(&mut self, tick: u32) -> u32;
+diff --git todo.md todo.md
+deleted file mode 100644
+index 4993f4c..0000000
+--- todo.md
++++ /dev/null
+@@ -1,18 +0,0 @@
+-failures:
+-    tests::components::menu::force_volume
+-    tests::components::menu::save_empty_record
+-    tests::components::menu::save_record
+-    tests::components::menu::search_midi
+-    tests::components::menu::search_unexistent_midi
+-    tests::components::sheet::staff::draw
+-    tests::controllers::midi::input::bad_note_off
+-    tests::controllers::midi::input::bad_note_on
+-    tests::controllers::midi::input::good_note_off
+-    tests::controllers::midi::input::good_note_on
+-    tests::controllers::midi::to_sheet::converts
+-    tests::controllers::midi::to_sheet::converts_faulty
+-    tests::controllers::playmeter::compare
+-    tests::controllers::playmeter::reset
+-    tests::midiplay::quit
+-    tests::models::track_manager::fail_from_file_unexistent
+-    tests::models::track_manager::go_to_beggining
+\ No newline at end of file

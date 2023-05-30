@@ -1,6 +1,4 @@
-pub struct Recording {
-    samples: Vec<String>,
-}
+pub struct Recording {}
 
 impl Default for Recording {
     fn default() -> Self {
@@ -10,6 +8,6 @@ impl Default for Recording {
 
 impl Recording {
     pub fn new() -> Recording {
-        Recording { samples: vec![] }
+        Recording {}
     }
 }

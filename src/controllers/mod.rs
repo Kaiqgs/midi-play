@@ -1,6 +1,10 @@
 pub mod input;
 pub mod midi;
 pub mod playmeter;
+pub mod quality_manager;
 pub mod record;
 pub mod sheet;
 pub mod track_manager;
+pub mod midiplay;
+pub mod game_track;
+pub mod track_library;

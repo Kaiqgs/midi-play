@@ -1,18 +1,22 @@
+use std::collections::HashSet;
+
 use ggez::{
     graphics::{Color, DrawMode, DrawParam, FillOptions, MeshBuilder, PxScale, Rect, Text},
     mint::Point2,
 };
-use log::{debug, warn};
+use log::debug;
 
+use crate::models::build_context::BuildContext;
+use crate::models::{game_mode::NOTES_MASK, window_context::WindowContext};
 use crate::{
     components::{
-        component::{BuildContext, Component, WindowContext},
+        component::Component,
         drawing::{DrawResult, Drawing, DrawingReference, RetrieveDrawing},
-        sheet::sheet_component_const::{self},
+        sheet::sheet_component_const,
     },
     models::{
-        clock::ClockFloat, midi::peripheral::MidiPeripheral, render_util::RenderUtil,
-        sheet::SheetTrack,
+        clock::ClockFloat, draw_state::DrawState, midi::peripheral::MidiPeripheral, note::Note,
+        render_util::RenderUtil, sheet::SheetTrack,
     },
 };
 
@@ -27,6 +31,7 @@ pub struct SheetTrackComponentData {
     pub playback: MidiPeripheral,
     pub range: Option<(f64, f64)>,
     pub closest_key: u32,
+    pub notes_on: HashSet<Note>,
 }
 
 impl SheetTrackComponentData {
@@ -35,26 +40,17 @@ impl SheetTrackComponentData {
 
         SheetTrackComponentData {
             drawing: DrawingReference::new(drawing),
-            update: ClockFloat {
-                tick: 0.0,
-                sec: 0.0,
-            },
+            update: ClockFloat::new(),
             closest_key: 0,
             render_all: true,
             winctx: build.winctx,
             playback,
             range: None,
+            notes_on: HashSet::new(),
         }
     }
 }
 
-fn sub_u32(a: u32, b: u32) -> u32 {
-    if b >= a {
-        u32::MIN
-    } else {
-        a - b
-    }
-}
 /**
 Epic for performance:
 Chunkify whole track into a list of meshes from getgo;
@@ -68,7 +64,7 @@ impl Component for SheetTrack {
         RetrieveDrawing::Ok(self.component_data.drawing.clone())
     }
 
-    fn update(&mut self, canvas: RenderUtil) {
+    fn update(&mut self, reutil: RenderUtil) {
         let mut mb = MeshBuilder::new();
         let mut text = Text::new("debug display\n");
         let drawing = Drawing::default();
@@ -81,8 +77,8 @@ impl Component for SheetTrack {
             .get(&self.component_data.closest_key)
             .expect("No timing found");
 
-        let width_px = canvas.winctx.size.x as f64 / sheet_component_const::SCALEFF;
-        let height_px = canvas.winctx.size.y as f64 / sheet_component_const::SCALEFF;
+        let width_px = reutil.winctx.size.x as f64 / reutil.winctx.scale as f64;
+        let height_px = reutil.winctx.size.y as f64 / reutil.winctx.scale as f64;
         let last_tick = self.last_track_time.tick as f64;
         let last_sec = self.last_track_time.sec as f64;
 
@@ -91,8 +87,7 @@ impl Component for SheetTrack {
         let _sec_to_px = last_sec / width_px;
         let _px_to_sec = width_px / last_sec;
 
-        let global_note_offset_px =
-            width_px * sheet_component_const::NOTE_OFFSET_RATIO * canvas.winctx.track.get_zoom();
+        let global_note_offset_px = width_px * sheet_component_const::NOTE_OFFSET_RATIO;
         let trigger_pos_px = width_px * sheet_component_const::TRIGGER_OFFSET_RATIO;
         // let trigger_ofst_tick = last_tick * sheet_component_const::TRIGGER_OFFSET_RATIO;
 
@@ -100,29 +95,23 @@ impl Component for SheetTrack {
         let trigger_note_diff_sec = last_sec * sheet_component_const::TRIGER_NOTE_DIFF_RATIO;
         // let time_now_percent = (self.time.tick - trigger_ofst_tick) / last_tick; //TODO: stop when percentage >= 1
 
-        //ZOOM !?!
-        // let tick_render_length = last_tick as f64 * canvas.winctx.track.get_zoom();
-        // let tick_render_round_length = tick_render_length.round() as u32;
-        // let zoomed = tick_render_length / tick_to_px * sheet_component_const::SCALEF;
-
-        let delta_sec = canvas.delta.as_millis() as f64 / 1000.0;
+        let delta_sec = reutil.winctx.delta.as_millis() as f64 / 1000.0;
         let delta_tick = delta_sec / timing.sec_per_tick;
         let delta_px = delta_tick / tick_to_px;
 
-        debug!("zoom: {}", canvas.winctx.track.get_zoom());
+        debug!("zoom: {}", reutil.winctx.trackwinctx.get_zoom());
         debug!(
             "delta_sec={} delta_tick={} delta_px={} zoom={}",
             delta_sec,
             delta_tick,
             delta_px,
-            canvas.winctx.track.get_zoom()
+            reutil.winctx.trackwinctx.get_zoom()
         );
-        self.component_data.update = ClockFloat {
-            sec: delta_sec,
-            tick: delta_tick,
-        };
-        self.time.sec += self.component_data.update.sec;
-        self.time.tick += self.component_data.update.tick;
+        self.component_data.update = ClockFloat::new().set(delta_tick, delta_sec);
+        if reutil.winctx.state != DrawState::Pause {
+            self.time.sec += delta_sec;
+            self.time.tick += delta_tick;
+        }
         let trigerless_time_tick = self.time.tick - trigger_note_diff_tick;
         let trigerless_time_sec = self.time.sec - trigger_note_diff_sec;
 
@@ -133,7 +122,7 @@ impl Component for SheetTrack {
         text.set_scale(PxScale::from(sheet_component_const::SCALEF * 6.0).round());
         // text.set_font(String::from("LiberationMono-Regular"));
 
-        self.component_data.range = Some((0.5, 1.0));
+        self.component_data.range = Some((1.0, 3.0));
         mb.line(
             &[
                 Point2 {
@@ -147,7 +136,8 @@ impl Component for SheetTrack {
             ],
             1.0,
             Color::YELLOW,
-        );
+        )
+        .expect("Failed to draw line");
         // mb.rectangle(
         //     DrawMode::Fill(FillOptions::default()),
         //     Rect::new(0.0, 0.0, 100.0, 100.0),
@@ -169,8 +159,7 @@ impl Component for SheetTrack {
                 // || note_time >= start_render_tick && note_time < finish_render
                 {
                     let target_diff_ticks = note.time.tick as f64 - self.time.tick;
-                    let note_diff_px =
-                        target_diff_ticks / tick_to_px * canvas.winctx.track.get_zoom();
+                    let note_diff_px = target_diff_ticks / tick_to_px; // * reutil.winctx.track.get_zoom();
                     let local_note_ofst_px = note_diff_px;
 
                     let note_pos_x_px = local_note_ofst_px + global_note_offset_px;
@@ -180,24 +169,32 @@ impl Component for SheetTrack {
                     let note_pos_y = note.line * sheet_component_const::NOTE_HEIGHT;
                     let note_pos_y_px = note_pos_y as f32 + 0.5; // + 0.5 to center the note;
 
+                    //TODO: capture all hit_notes first:
+                    //TODO: so we can handle on&off trigger in same frame;
                     if is_target_hit {
-                        match note.on {
-                            Some(note_state) => {
-                                if note_state {
-                                    let pairs = &self.track_pairs[track_index];
-                                    let note_end_index = pairs[&note_index];
-                                    let note_end = &track[note_end_index];
-                                    //TODO change closest_key
-                                    debug!("Note on: sent!");
-                                    self.component_data
-                                        .playback
-                                        .note(note, note_end)
-                                        .expect("Note on failed");
-                                }
+                        if note.on.is_some() {
+                            let note = note.trigger(reutil.winctx.since_start);
+                            let note_state = note.on.unwrap();
+
+                            if note_state && !self.component_data.notes_on.contains(&note) {
+                                let pairs = &self.track_pairs[track_index];
+                                let note_end_index = pairs[&note_index];
+                                let note_end = &track[note_end_index];
+                                //TODO change closest_key
+                                debug!("Note on: sent!");
+                                self.component_data
+                                    .playback
+                                    .note(&note, note_end)
+                                    .expect("Note on failed");
+                                self.component_data.notes_on.insert(note.clone());
+                                time_now = Some(note.time.tick);
+                                self.reported.push(note.clone());
+                            } else if !note_state && self.component_data.notes_on.contains(&note) {
+                                self.component_data.notes_on.remove(&note);
+                                time_now = Some(note.time.tick);
+                                self.reported.push(note);
                             }
-                            None => warn!("Note without information"),
                         }
-                        time_now = Some(note.time.tick);
                     }
                     let mut color = Color::new(1.0, 0.0, 0.0, 0.5);
                     if !note.on.unwrap_or(true) {
@@ -210,22 +207,26 @@ impl Component for SheetTrack {
                         DrawMode::Fill(FillOptions::default()),
                         Rect::new(note_pos_x_px - 1.0, note_pos_y_px - 1.0, 1.0, 1.0),
                         color,
-                    );
+                    )
+                    .expect("Failed to draw center left");
                     mb.rectangle(
                         DrawMode::Fill(FillOptions::default()),
                         Rect::new(note_pos_x_px + 1.0, note_pos_y_px - 1.0, 1.0, 1.0),
                         color,
-                    );
+                    )
+                    .expect("Failed to draw center right");
                     mb.rectangle(
                         DrawMode::Fill(FillOptions::default()),
                         Rect::new(note_pos_x_px, note_pos_y_px, 1.0, 1.0),
                         color,
-                    );
+                    )
+                    .expect("Failed to draw center up");
                     mb.rectangle(
                         DrawMode::Fill(FillOptions::default()),
                         Rect::new(note_pos_x_px, note_pos_y_px - 2.0, 1.0, 1.0),
                         color,
-                    );
+                    )
+                    .expect("Failed to draw center down");
                     count_rendered += 1;
                 }
                 count_all += 1;
@@ -246,12 +247,16 @@ impl Component for SheetTrack {
         drawing.text = Some(text);
     }
 
-    fn draw(&self, _canvas: RenderUtil) -> DrawResult {
+    fn draw(&self, reutil: RenderUtil) -> DrawResult {
         DrawResult::Draw(
             DrawParam::new()
                 .dest([0.0, 0.0])
-                .scale([sheet_component_const::SCALEF, sheet_component_const::SCALEF])
+                .scale([reutil.winctx.scale, reutil.winctx.scale])
                 .z(Zindex::Note.get()),
         )
+    }
+
+    fn get_mask(&self) -> crate::models::bit_mode::BitMask {
+        NOTES_MASK
     }
 }

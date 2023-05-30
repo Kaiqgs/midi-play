@@ -1,18 +1,27 @@
-use ggez::{mint::Point2, Context};
+use crate::models::{
+    bit_mode::{BitMask, BitmaskSetup},
+    input::input::MidiPlayInput,
+};
 
 use super::drawing::{DrawResult, Drawing, DrawingReference, RetrieveDrawing};
-use crate::models::{render_util::RenderUtil, sheet::track_window_ctx::TrackWindowContext};
+use crate::models::render_util::RenderUtil;
 
+#[allow(unused_variables)]
 pub trait Component {
     fn get_name(&self) -> String {
         String::from("[Component]")
     }
-
-    fn update(&mut self, _canvas: RenderUtil) {
+    fn update(&mut self, reutil: RenderUtil) {// -> Option<MidiPlayInput> {
         ()
     }
-    fn draw(&self, _canvas: RenderUtil) -> DrawResult {
+    fn draw(&self, reutil: RenderUtil) -> DrawResult {
         DrawResult::Skip
+    }
+    fn handle_input(&mut self, input: MidiPlayInput) {
+        ()
+    }
+    fn request_input(&mut self) -> Option<MidiPlayInput> {
+        None
     }
     fn get_new_drawing(&self) -> Drawing {
         Drawing::default()
@@ -20,64 +29,14 @@ pub trait Component {
     fn get_drawing(&self) -> RetrieveDrawing {
         RetrieveDrawing::Ok(DrawingReference::new(self.get_new_drawing()))
     }
+    fn get_mask(&self) -> BitMask {
+        BitMask::new(BitmaskSetup::All)
+    }
     fn next(&self) -> Vec<ComponentObject> {
         Vec::new()
     }
-}
-
-pub struct WindowContext {
-    pub size: Point2<u32>,
-    pub track: TrackWindowContext,
-}
-
-impl WindowContext {
-    pub fn new(size: Point2<u32>, trackwinctx: Option<TrackWindowContext>) -> Self {
-        WindowContext {
-            size,
-            track: trackwinctx.unwrap_or(TrackWindowContext::default()),
-        }
-    }
-}
-
-impl Clone for WindowContext {
-    fn clone(&self) -> Self {
-        WindowContext::new(self.size, Some(self.track.clone()))
-    }
-}
-
-pub struct BuildContext<'a> {
-    pub ctx: Option<&'a Context>,
-    pub winctx: WindowContext,
-}
-
-impl<'a> BuildContext<'a> {
-    pub fn new(
-        ctx: Option<&'a Context>,
-        canvas_size: Point2<u32>,
-        trackwinctx: Option<TrackWindowContext>,
-    ) -> Self {
-        BuildContext {
-            ctx,
-            winctx: WindowContext::new(canvas_size, trackwinctx),
-        }
-    }
-}
-
-impl Clone for BuildContext<'_> {
-    fn clone(&self) -> Self {
-        Self {
-            ctx: self.ctx.clone(),
-            winctx: self.winctx.clone(),
-        }
-    }
-}
-
-impl Default for BuildContext<'_> {
-    fn default() -> Self {
-        BuildContext {
-            ctx: None,
-            winctx: WindowContext::new(Point2 { x: 0, y: 0 }, None::<TrackWindowContext>),
-        }
+    fn next_mut(&mut self) -> Vec<MutComponentObject> {
+        Vec::new()
     }
 }
 

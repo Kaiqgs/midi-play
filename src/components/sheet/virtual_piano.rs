@@ -1,13 +1,15 @@
 use crate::{
     components::sheet::sheet_component_const::Zindex,
-    models::sheet::{sheet_const::Accidentals, virtual_piano::VirtualPiano},
+    models::{
+        game_mode::NOTES_MASK,
+        sheet::{sheet_const::Accidentals, virtual_piano::VirtualPiano},
+    },
 };
 
 use ggez::{
-    graphics::{DrawMode, DrawParam, MeshBuilder, Rect, Text},
+    graphics::{DrawMode, DrawParam, MeshBuilder, Rect},
     mint::Point2,
 };
-use log::trace;
 
 use crate::{
     components::{
@@ -36,7 +38,7 @@ impl Component for VirtualPiano {
         "[Virtual Piano]".to_string()
     }
 
-    fn update(&mut self, _canvas: crate::models::render_util::RenderUtil) {
+    fn update(&mut self, _reutil: crate::models::render_util::RenderUtil) {
         ()
     }
 
@@ -44,10 +46,9 @@ impl Component for VirtualPiano {
         Ok(self.component_data.drawing.clone())
     }
 
-    fn draw(&self, canvas: crate::models::render_util::RenderUtil) -> DrawResult {
+    fn draw(&self, reutil: crate::models::render_util::RenderUtil) -> DrawResult {
         // return DrawResult::Skip;
         let drawing = Drawing::new_mesh(MeshBuilder::new());
-        let text = Text::new("Virtual Piano");
         let drawing_reference = DrawingReference::new(drawing);
         self.component_data.drawing.swap(&drawing_reference);
         let mut drawing = self.component_data.drawing.borrow_mut();
@@ -59,8 +60,8 @@ impl Component for VirtualPiano {
         const PIANO_SPACING_PX: u32 = 3;
 
         if let Some(mb) = drawing.meshbuilder.as_mut() {
-            let canvas_width = canvas.winctx.size.x as f32 / sheet_component_const::SCALEF;
-            let canvas_height = canvas.winctx.size.y as f32 / sheet_component_const::SCALEF;
+            let canvas_width = reutil.winctx.size.x as f32 / reutil.winctx.scale;
+            let canvas_height = reutil.winctx.size.y as f32 / reutil.winctx.scale;
             let position = canvas_width / 4.0;
             let width = WHITE_WIDTH_PX as f32;
             let padding = PIANO_SPACING_PX as f32;
@@ -69,7 +70,8 @@ impl Component for VirtualPiano {
                 DrawMode::fill(),
                 Rect::new(position - padding, 0.0, padding, canvas_height),
                 pallete::LIGHTER_DARK,
-            );
+            )
+            .expect("Failed to draw piano padding");
 
             for note in self.notes.iter() {
                 let scaled_note = note.line * sheet_component_const::NOTE_HEIGHT;
@@ -85,7 +87,8 @@ impl Component for VirtualPiano {
                     &[start, end],
                     sheet_component_const::NOTE_HEIGHT as f32,
                     color,
-                );
+                )
+                .expect("Failed to draw piano white key");
                 level -= 1;
                 // let start = Point2::from([0.0, level as f32]);
                 // let end = Point2::from([width, level as f32]);
@@ -115,7 +118,8 @@ impl Component for VirtualPiano {
                     };
                     let start = Point2::from([position, level as f32]);
                     let end = Point2::from([position + width, level as f32]);
-                    mb.line(&[start, end], 1.0, color);
+                    mb.line(&[start, end], 1.0, color)
+                        .expect("Failed to draw black key up");
                 }
                 if down {
                     level += 2;
@@ -127,7 +131,8 @@ impl Component for VirtualPiano {
                     };
                     let start = Point2::from([position, level as f32]);
                     let end = Point2::from([position + width, level as f32]);
-                    mb.line(&[start, end], 1.0, color);
+                    mb.line(&[start, end], 1.0, color)
+                        .expect("Failed to draw black key down");
                 }
 
                 //
@@ -145,22 +150,20 @@ impl Component for VirtualPiano {
             //     Rect::new(0.0, 0.0, 100.0, 100.0),
             //     Color::BLUE,
             // );
-            let mesh = mb.build();
-            trace!(
-                "Drawing virtual piano[ver={}, idx={}]",
-                mesh.vertices.len(),
-                mesh.indices.len()
-            );
+            let _mesh = mb.build();
             drawing.meshbuilder = Some(mb.to_owned());
-            drawing.text = Some(text);
             DrawResult::Draw(
                 DrawParam::new()
                     .dest([0.0, 0.0])
-                    .scale([sheet_component_const::SCALEF, sheet_component_const::SCALEF])
+                    .scale([reutil.winctx.scale, reutil.winctx.scale])
                     .z(Zindex::VirtualPiano.get()),
             )
         } else {
             DrawResult::Skip
         }
+    }
+
+    fn get_mask(&self) -> crate::models::bit_mode::BitMask {
+        NOTES_MASK
     }
 }

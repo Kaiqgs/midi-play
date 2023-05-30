@@ -1,4 +1,6 @@
-use crate::models::{midi::peripheral::MidiPeripheral, sheet::virtual_piano::VirtualPiano};
+use crate::models::{
+    midi::peripheral::MidiPeripheral, note::Note, sheet::virtual_piano::VirtualPiano,
+};
 
 use super::keyboard_input::KeyboardInputSource;
 
@@ -7,6 +9,7 @@ pub struct InputManager {
     // midi: MidiInputSource,
     pub virtual_piano: VirtualPiano,
     pub playback: MidiPeripheral,
+    pub reported: Vec<Note>,
 }
 
 impl InputManager {
@@ -16,6 +19,7 @@ impl InputManager {
             playback: playback.unwrap_or(default),
             keyboard: KeyboardInputSource::new(),
             virtual_piano: VirtualPiano::new(),
+            reported: Vec::new(),
         }
     }
 }

@@ -2,9 +2,10 @@ use ggez::{
     graphics::{Canvas, DrawParam, Image, Mesh, MeshBuilder, Text},
     Context,
 };
-use log::trace;
+use log::{info, trace};
 
-use super::{component::WindowContext, drawing::DrawingReference};
+use super::drawing::DrawingReference;
+use crate::models::window_context::WindowContext;
 
 fn draw_mesh_builder(
     mesh_builder: &Option<MeshBuilder>,
@@ -56,13 +57,20 @@ fn draw_image(image: &Option<Image>, _gfx: &Context, canvas: &mut Canvas, params
     }
 }
 
-fn draw_text(text: &Option<Text>, _gfx: &Context, canvas: &mut Canvas, _params: DrawParam) {
-    match text.as_ref() {
-        Some(text) => {
-            canvas.draw(text, DrawParam::new());
+fn draw_text(text: &Text, _gfx: &Context, canvas: &mut Canvas, params: DrawParam) {
+    match params.transform {
+        ggez::graphics::Transform::Values { dest, .. } => {
+            //anchor center by default
+            let text_measure = text.measure(_gfx).expect("text measure failed");
+            info!("text measure: {:?}", text_measure);
+            info!("dest: {:?}", dest);
+            let params = params
+                .dest([dest.x - text_measure.x/2.0, dest.y - text_measure.y/2.0]);
+            canvas.draw(text, params);
         }
-        None => (),
+        ggez::graphics::Transform::Matrix(_) => todo!(),
     }
+    // params.dest()
 }
 
 pub(crate) fn render_drawing(
@@ -75,5 +83,15 @@ pub(crate) fn render_drawing(
     let drawing = drawing_ref.borrow();
     draw_mesh(&drawing.mesh, &drawing.meshbuilder, gfx, canvas, params);
     draw_image(&drawing.image, gfx, canvas, params);
-    draw_text(&drawing.text, gfx, canvas, params);
+    match drawing.text {
+        Some(ref text) => draw_text(text, gfx, canvas, params),
+        None => (),
+    };
+    if drawing.texts.len() == drawing.texts_params.len() {
+        trace!("Drawing texts: {}", drawing.texts.len());
+        for i in 0..drawing.texts.len() {
+            let opttxt = drawing.texts.get(i).expect("Failed to get text");
+            draw_text(opttxt, gfx, canvas, drawing.texts_params[i]);
+        }
+    }
 }

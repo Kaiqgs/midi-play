@@ -1,7 +1,5 @@
-use crate::{
-    components::{component::BuildContext, sheet::staff::StaffComponentData},
-    models::note::Note,
-};
+use crate::{components::sheet::staff::StaffComponentData, models::note::Note};
+use crate::models::build_context::BuildContext;
 
 use super::{clef::Clef, sheet_const};
 
@@ -22,12 +20,5 @@ impl Staff {
             notes,
             component_data: data.unwrap_or(StaffComponentData::new(notesref, build)),
         }
-    }
-}
-
-impl Default for Staff {
-    fn default() -> Self {
-        let treble = Clef::new_treble(None);
-        Self::new(treble, None, BuildContext::default())
     }
 }
