@@ -17,7 +17,7 @@ pub trait Component {
     fn draw(&self, reutil: RenderUtil) -> DrawResult {
         DrawResult::Skip
     }
-    fn handle_input(&mut self, input: MidiPlayInput) {
+    fn handle_input(&mut self, input: MidiPlayInput, reutil: RenderUtil) {
         ()
     }
     fn request_input(&mut self) -> Option<MidiPlayInput> {

@@ -48,6 +48,7 @@ pub enum Zindex {
     Trigger,
     GameTrack,
     TrackLibrary,
+    SelectedGameTrack,
 }
 
 impl Zindex {

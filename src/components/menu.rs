@@ -139,7 +139,7 @@ impl Component for Menu {
         BitMask::default().allow(GameMode::Menu)
     }
 
-    fn handle_input(&mut self, input: MidiPlayInput) {
+    fn handle_input(&mut self, input: MidiPlayInput, reutil: crate::models::render_util::RenderUtil) {
         match input {
             MidiPlayInput::NextOption => {
                 self.component_data.option_selected =

@@ -104,7 +104,7 @@ impl MidiPlay {
             MidiPlayInput::ModeChange(mode) => {
                 match &mode {
                     GameMode::Play(track) => {
-                        self.pick_track(reutil, track.filepath.clone());
+                        self.pick_track(reutil.clone(), track.filepath.clone());
                     }
                     _ => (),
                 };
@@ -122,7 +122,7 @@ impl MidiPlay {
         ];
 
         MidiPlay::iterate_components(self.game_mode.clone(), stack, |component| {
-            component.handle_input(input.clone());
+            component.handle_input(input.clone(), reutil.clone());
             // self.handle_input(input.clone(), reutil)
         });
     }

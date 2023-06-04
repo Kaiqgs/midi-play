@@ -25,3 +25,4 @@ pub mod build_context;
 pub mod window_context;
 pub mod bit_mode;
 pub mod user_interface;
+pub mod animation;

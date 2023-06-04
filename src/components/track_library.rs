@@ -1,4 +1,4 @@
-use std::f64::consts::PI;
+use std::{f32::consts::PI, time::Duration, usize};
 
 use ggez::{
     conf,
@@ -11,12 +11,9 @@ use ggez::{
 };
 use log::{info, warn};
 
-use crate::{
-    components::util::mapf64,
-    models::{
-        bit_mode::BitMask, config, game_mode::GameMode, input::input::MidiPlayInput,
-        track_library::TrackLibrary,
-    },
+use crate::models::{
+    animation::Animation, bit_mode::BitMask, config, game_mode::GameMode,
+    input::input::MidiPlayInput, render_util::RenderUtil, track_library::TrackLibrary,
 };
 
 use super::{
@@ -27,14 +24,80 @@ use super::{
 
 pub struct TrackLibraryComponentData {
     pub drawing: Drawing,
-    // pub default_cover: Image,
-    // pub covers: HashMap<String, Image>
+    pub switch_track_animation: Animation,
+    pub last_selection: Duration,
+    pub hover_angle_pad: f32,
 }
+
+pub struct TrackCircle {
+    pub hover_angle: f32,
+    pub angle_per_track: f32,
+    pub center: Point2<f32>,
+    pub radius: f32,
+    pub start_angle: f32,
+    pub hovered_start_angle: f32,
+    pub stop_angle: f32,
+}
+
+pub const TRACK_DURATION_MS: u64 = 250;
 
 impl TrackLibraryComponentData {
     pub fn new() -> TrackLibraryComponentData {
         TrackLibraryComponentData {
+            switch_track_animation: Animation::new(
+                Duration::default(),
+                Duration::default(),
+                0.0,
+                0.0,
+            ),
             drawing: Drawing::default(),
+            last_selection: Duration::default(),
+            hover_angle_pad: PI / 8.0,
+        }
+    }
+
+    fn compute_circle(
+        &self,
+        reutil: RenderUtil,
+        track_count: usize,
+        hover_track: usize,
+    ) -> TrackCircle {
+        let screen_size = reutil.winctx.get_scaled_size();
+        let center_y = screen_size.y as f32 / 2.0;
+        let center_x = screen_size.x as f32 / 2.0;
+
+        // let circle_multi = 1.75;
+        // let circle_center = Point2::from([center_x, center_y]);
+        let circle_center = Point2::from([center_x, screen_size.y as f32]);
+        let circle_radius = screen_size.x as f32/ 2.0;
+
+        // let start_angle = 3.0 * PI / 4.0;
+        // let stop_angle = PI / 4.0;
+        let up_hemisphere = true; //TODO: put in signature
+        let upside_angle = if up_hemisphere { PI } else { 0.0 };
+        let half_tracks = track_count / 2;
+        let hover_length = hover_track as i32 - half_tracks as i32;
+        let start_angle = PI / 6.0 + upside_angle;
+        let stop_angle = 5.0 * PI / 6.0 + upside_angle;
+        // let start_angle = 0.0;
+        // let stop_angle = PI;
+        //TODO: inteporlate the f*3#@ out of this
+        let anglength = stop_angle - start_angle;
+        let angle_per_track = anglength / track_count as f32;
+        let hover_angle = hover_length as f32 * angle_per_track;
+
+        let hovered_angle = self
+            .switch_track_animation
+            .animated(reutil.winctx.since_start);
+        let hovered_start_angle = start_angle - hovered_angle + angle_per_track / 2.0;
+        TrackCircle {
+            hover_angle,
+            center: circle_center,
+            radius: circle_radius,
+            angle_per_track,
+            start_angle,
+            stop_angle,
+            hovered_start_angle,
         }
     }
 }
@@ -45,45 +108,29 @@ impl Component for TrackLibrary {
     }
 
     fn update(&mut self, reutil: crate::models::render_util::RenderUtil) {
-        let screen_size = reutil.winctx.get_scaled_size();
-        let center_y = screen_size.y as f32 / 2.0;
-        let center_x = screen_size.x as f32 / 2.0;
-
-        let track_count = self.tracks.len();
-
-        // let circle_multi = 1.75;
-        let circle_center = Point2::from([center_x, center_y]);
-        let circle_radius = screen_size.x as f32 / 4.0;
-
+        let circle =
+            self.component_data
+                .compute_circle(reutil.clone(), self.tracks.len(), self.hover_track);
         let mut mb = MeshBuilder::new();
         let _circle = mb.circle(
             DrawMode::Stroke(StrokeOptions::default()),
-            circle_center,
-            circle_radius,
+            circle.center,
+            circle.radius,
             0.1,
             Color::BLACK,
         );
-
-        // let start_angle = 3.0 * PI / 4.0;
-        // let stop_angle = PI / 4.0;
-        let up_hemisphere = true;
-        let upside_angle = if up_hemisphere { PI } else { 0.0 };
-        let half_tracks = self.tracks.len() / 2;
-        let hover_length = self.hover_track as i32 - half_tracks as i32;
-        let mut start_angle = PI / 6.0 + upside_angle;
-        let stop_angle = 5.0 * PI / 6.0 + upside_angle;
-        // let start_angle = 0.0;
-        // let stop_angle = PI;
-        //TODO: inteporlate the f*3#@ out of this
-        let anglength = stop_angle - start_angle;
-        let angle_per_track = anglength / track_count as f64;
-        start_angle -= hover_length as f64 * angle_per_track;
+        // let delta = reutil.winctx.delta.as_millis() as f64 / 1000.0;
         // stop_angle += hover_length as f64 * angle_per_track;
-        let mut angle = start_angle + angle_per_track / 2.0;
+        // self.component_data.last_angle
+        let mut angle = circle.hovered_start_angle - self.component_data.hover_angle_pad;
         for (i, track) in self.tracks.iter_mut().enumerate() {
-            let x = circle_center.x + circle_radius * angle.cos() as f32
+            let is_hover = i == self.hover_track;
+            if is_hover {
+                angle += self.component_data.hover_angle_pad;
+            }
+            let x = circle.center.x + circle.radius * angle.cos() as f32
                 - config::DEFAULT_COVER_SIZE / 2.0;
-            let y = circle_center.y + circle_radius * angle.sin() as f32
+            let y = circle.center.y + circle.radius * angle.sin() as f32
                 - config::DEFAULT_COVER_SIZE / 2.0;
             let topleft = Point2::from([x, y]);
             let rect = Rect {
@@ -92,20 +139,27 @@ impl Component for TrackLibrary {
                 w: config::DEFAULT_COVER_SIZE,
                 h: config::DEFAULT_COVER_SIZE,
             };
-            let color = if i == self.hover_track {
+            let color = if is_hover {
                 Color::from_rgba(32, 200, 32, 200)
             } else {
                 Color::from_rgba(0, 0, 0, 128)
             };
+            if is_hover {
+                angle += self.component_data.hover_angle_pad;
+            }
             mb.rectangle(Stroke(StrokeOptions::default()), rect, color)
                 .expect("Failed to draw rectangle");
             match &mut track.component_data {
                 Some(component) => {
-                    angle += angle_per_track;
+                    angle += circle.angle_per_track;
                     component.drawing.params = DrawParam::new()
                         .dest(reutil.winctx.from_scale(topleft))
                         .scale([reutil.winctx.scale, reutil.winctx.scale])
-                        .z(Zindex::GameTrack.get());
+                        .z(if is_hover {
+                            Zindex::SelectedGameTrack.get()
+                        } else {
+                            Zindex::GameTrack.get()
+                        });
                     info!(
                         "Track {} at {:?} at scale {:?}",
                         track.name,
@@ -118,16 +172,15 @@ impl Component for TrackLibrary {
                 }
             };
         }
-
         let start_angle = 0.0;
         let stop_angle = 2.0 * PI;
         let sample_size: usize = 300;
         angle = stop_angle;
-        let angle_per_track = (stop_angle - start_angle) / sample_size as f64;
+        let angle_per_track = (stop_angle - start_angle) / sample_size as f32;
         for i in 0..sample_size {
             let topleft = Point2::from([
-                angle.cos() as f32 * circle_radius + circle_center.x,
-                angle.sin() as f32 * circle_radius + circle_center.y,
+                angle.cos() as f32 * circle.radius + circle.center.x,
+                angle.sin() as f32 * circle.radius + circle.center.y,
             ]);
             angle += angle_per_track;
             // let rect = Rect::new(
@@ -144,78 +197,6 @@ impl Component for TrackLibrary {
             mb.circle(DrawMode::stroke(1.0), topleft, 1.0, 1.0, color)
                 .expect("Failed to draw circle");
         }
-
-        //
-        // let tracks_per_row = screen_size.x / config::DEFAULT_COVER_SIZE;
-        // let mut horizontal_spacing = 0.0;
-        //
-        // if tracks_per_row >= self.tracks.len() as f32 {
-        //     let width = screen_size.x as f32;
-        //     let total_cover_width = config::DEFAULT_COVER_SIZE * self.tracks.len() as f32;
-        //     // horizontal_spacing = screen_size.x / config::DEFAULT_COVER_SIZE;
-        //     // screen is big enough to fit all the tracks
-        //     horizontal_spacing = (width - total_cover_width) / (self.tracks.len() as f32 + 1.0);
-        // }
-        //
-        // let texts: Vec<Text> = vec![];
-        // let txtparams: Vec<DrawParam> = vec![];
-        //
-        // for (i, track) in self.tracks.iter_mut().enumerate() {
-        //     let x =
-        //         horizontal_spacing + (i as f32 * (config::DEFAULT_COVER_SIZE + horizontal_spacing));
-        //     // let xrel = x / screen_size.x as f32;
-        //     // info!("xrel: {}", xrel);
-        //     // let xrad = (xrel * 2.0 - 1.0) * PI / 2.0;
-        //     let xrad = mapf64(
-        //         (x + config::DEFAULT_COVER_SIZE / 2.0) as f64,
-        //         -screen_size.x as f64,
-        //         (screen_size.x * 2.0) as f64,
-        //         -PI / 2.0,
-        //         3.0 * PI / 2.0,
-        //         // 0.0,
-        //         // PI,
-        //         // -PI / 2.0,
-        //     );
-        //     info!("xrad: {}", xrad);
-        //     info!("xsin: {}", xrad.sin());
-        //
-        //     let y = center_y - (config::DEFAULT_COVER_SIZE / 2.0)
-        //         + reutil.winctx.size.y as f32 / 32.0 * -xrad.sin() as f32;
-        //
-        //     // let dx = x - circle_center.x;
-        //     // let dy = y - circle_center.y;
-        //     // let dist = (dx * dx + dy * dy).sqrt();
-        //     // let angle = dy.atan2(dx);
-        //
-        //     let topleft = Point2::from([x, y]);
-        //     let rect = Rect {
-        //         x,
-        //         y,
-        //         w: config::DEFAULT_COVER_SIZE,
-        //         h: config::DEFAULT_COVER_SIZE,
-        //     };
-        //     let color = if i == self.hover_track {
-        //         Color::from_rgba(32, 200, 32, 200)
-        //     } else {
-        //         Color::from_rgba(0, 0, 0, 128)
-        //     };
-        //     mb.rectangle(Stroke(StrokeOptions::default()), rect, color)
-        //         .expect("Failed to draw rectangle");
-        //
-        //     match &mut track.component_data {
-        //         Some(component) => {
-        //             component.drawing.params = DrawParam::new()
-        //                 .dest(reutil.winctx.from_scale(topleft))
-        //                 .scale([reutil.winctx.scale, reutil.winctx.scale])
-        //                 .z(Zindex::GameTrack.get());
-        //         }
-        //
-        //         None => {
-        //             warn!("Failed to get component data for track: {}", track.name);
-        //         }
-        //     };
-        // }
-
         self.component_data.drawing.params = DrawParam::new()
             .scale([reutil.winctx.scale, reutil.winctx.scale])
             .z(Zindex::TrackLibrary.get());
@@ -244,13 +225,54 @@ impl Component for TrackLibrary {
         BitMask::default().allow(GameMode::Library)
     }
 
-    fn handle_input(&mut self, input: MidiPlayInput) {
+    fn handle_input(&mut self, input: MidiPlayInput, reutil: RenderUtil) {
         match input {
             MidiPlayInput::NextOption => {
-                self.hover_track = (self.hover_track + 1) % self.tracks.len();
+                let last_delta = reutil.winctx.since_start - self.component_data.last_selection;
+                if self
+                    .component_data
+                    .switch_track_animation
+                    .finished(reutil.winctx.since_start)
+                {
+                    self.hover_track = (self.hover_track + 1) % self.tracks.len();
+                    let new_angle = self
+                        .component_data
+                        .compute_circle(reutil.clone(), self.tracks.len(), self.hover_track)
+                        .hover_angle;
+                    self.component_data.switch_track_animation = Animation::new(
+                        reutil.winctx.since_start,
+                        Duration::from_millis(
+                            last_delta.as_millis().min(TRACK_DURATION_MS as u128) as u64,
+                        ),
+                        self.component_data.switch_track_animation.end,
+                        new_angle,
+                    );
+                }
+                self.component_data.last_selection = reutil.winctx.since_start;
             }
             MidiPlayInput::PreviousOption => {
-                self.hover_track = (self.hover_track + self.tracks.len() - 1) % self.tracks.len();
+                let last_delta = reutil.winctx.since_start - self.component_data.last_selection;
+                if self
+                    .component_data
+                    .switch_track_animation
+                    .finished(reutil.winctx.since_start)
+                {
+                    self.hover_track =
+                        (self.hover_track + self.tracks.len() - 1) % self.tracks.len();
+                    let new_angle = self
+                        .component_data
+                        .compute_circle(reutil.clone(), self.tracks.len(), self.hover_track)
+                        .hover_angle;
+                    self.component_data.switch_track_animation = Animation::new(
+                        reutil.winctx.since_start,
+                        Duration::from_millis(
+                            last_delta.as_millis().min(TRACK_DURATION_MS as u128) as u64,
+                        ),
+                        self.component_data.switch_track_animation.end,
+                        new_angle,
+                    );
+                }
+                self.component_data.last_selection = reutil.winctx.since_start;
             }
             MidiPlayInput::SelectOption => {
                 self.selected_track = Some(self.hover_track);
@@ -259,6 +281,9 @@ impl Component for TrackLibrary {
             MidiPlayInput::ModeChange(_) => {
                 self.selected_track = None;
                 self.playing_track = None;
+            }
+            MidiPlayInput::BackOption => {
+                self.import();
             }
             _ => {}
         }

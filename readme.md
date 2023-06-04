@@ -1,0 +1,14 @@
+- [X] zoom in scale
+- [X] accept_resizes
+- [X] game state paused
+- [X] restart song
+- [X] Bit encoding for mode filtering
+- [ ] B.1 fix bug: where last track on track library is blurred
+- [ ] B.2 fix bug: where some mids are not parsed correctly
+- [ ] .1 as dev: understand how note_count, note_height impact scale
+- [ ] .2 as user: import mids to library
+- [ ] .3 as user: delete mid from library
+- [ ] .4 as dev: render notes partially and optimize by chunk
+- [ ] .5 as dev: understand latency and physical piano input
+- [ ] .6 - as user: see smooth animations lerping;
+	- [ ] .a - interp track library

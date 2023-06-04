@@ -21,3 +21,5 @@ tokio = { version = "1.22.0", features = ["rt", "macros"] }
 async-trait = "0.1.59"
 sha2 = "0.10.6"
 rfd = "0.11.4"
+lerp = "0.4.0"
+ezing = "0.2.1"

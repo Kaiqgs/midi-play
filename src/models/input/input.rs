@@ -33,7 +33,7 @@ impl fmt::Debug for MidiPlayInput {
                 f.write_str(format!("#ModeChange: {}#", mode.get()).as_str())
             }
             MidiPlayInput::SelectOption => f.write_str("#SelectOption"),
-            MidiPlayInput::BackOption => todo!(),
+            MidiPlayInput::BackOption => f.write_str("#BackOption"),
         }
     }
 }
