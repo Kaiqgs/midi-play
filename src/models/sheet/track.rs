@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use ggez::graphics::MeshBuilder;
 
-use crate::models::build_context::BuildContext;
 use crate::{
     components::{drawing::Drawing, sheet::track::SheetTrackComponentData},
     models::{
@@ -39,7 +38,7 @@ impl Track {
             None => {
                 let mut drawing = Drawing::default();
                 drawing.meshbuilder = Some(MeshBuilder::new());
-                SheetTrackComponentData::new(drawing, BuildContext::default())
+                SheetTrackComponentData::new(drawing)
             }
         };
 

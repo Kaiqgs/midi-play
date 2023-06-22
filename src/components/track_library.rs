@@ -1,15 +1,14 @@
 use std::{f32::consts::PI, time::Duration, usize};
 
 use ggez::{
-    conf,
     graphics::{
         Color,
         DrawMode::{self, Stroke},
-        DrawParam, MeshBuilder, Rect, StrokeOptions, Text,
+        DrawParam, MeshBuilder, Rect, StrokeOptions,
     },
     mint::Point2,
 };
-use log::{info, warn};
+use log::{trace, warn};
 
 use crate::models::{
     animation::Animation, bit_mode::BitMask, config, game_mode::GameMode,
@@ -63,13 +62,13 @@ impl TrackLibraryComponentData {
         hover_track: usize,
     ) -> TrackCircle {
         let screen_size = reutil.winctx.get_scaled_size();
-        let center_y = screen_size.y as f32 / 2.0;
+        let _center_y = screen_size.y as f32 / 2.0;
         let center_x = screen_size.x as f32 / 2.0;
 
         // let circle_multi = 1.75;
         // let circle_center = Point2::from([center_x, center_y]);
         let circle_center = Point2::from([center_x, screen_size.y as f32]);
-        let circle_radius = screen_size.x as f32/ 2.0;
+        let circle_radius = screen_size.x as f32 / 2.0;
 
         // let start_angle = 3.0 * PI / 4.0;
         // let stop_angle = PI / 4.0;
@@ -149,28 +148,21 @@ impl Component for TrackLibrary {
             }
             mb.rectangle(Stroke(StrokeOptions::default()), rect, color)
                 .expect("Failed to draw rectangle");
-            match &mut track.component_data {
-                Some(component) => {
-                    angle += circle.angle_per_track;
-                    component.drawing.params = DrawParam::new()
-                        .dest(reutil.winctx.from_scale(topleft))
-                        .scale([reutil.winctx.scale, reutil.winctx.scale])
-                        .z(if is_hover {
-                            Zindex::SelectedGameTrack.get()
-                        } else {
-                            Zindex::GameTrack.get()
-                        });
-                    info!(
-                        "Track {} at {:?} at scale {:?}",
-                        track.name,
-                        topleft,
-                        reutil.winctx.from_scale(topleft)
-                    );
-                }
-                None => {
-                    warn!("Failed to get component data for track: {}", track.name);
-                }
-            };
+
+            angle += circle.angle_per_track;
+            track.component_data.drawing.params = DrawParam::new()
+                .dest(reutil.winctx.from_scale(topleft))
+                .scale([reutil.winctx.scale, reutil.winctx.scale])
+                .z(if is_hover {
+                    Zindex::SelectedGameTrack.get()
+                } else {
+                    Zindex::GameTrack.get()
+                });
+            trace!(
+                "Track at {:?} at scale {:?}",
+                topleft,
+                reutil.winctx.from_scale(topleft)
+            );
         }
         let start_angle = 0.0;
         let stop_angle = 2.0 * PI;
@@ -283,7 +275,7 @@ impl Component for TrackLibrary {
                 self.playing_track = None;
             }
             MidiPlayInput::BackOption => {
-                self.import();
+                self.import(reutil);
             }
             _ => {}
         }
@@ -297,6 +289,7 @@ impl Component for TrackLibrary {
         self.playing_track = self.selected_track;
         match self.selected_track {
             Some(track_idx) => {
+                warn!("Playing track {}", self.tracks[track_idx].filepath);
                 let game_mode = GameMode::Play(self.tracks[track_idx].clone());
                 Some(MidiPlayInput::ModeChange(game_mode))
             }

@@ -26,3 +26,5 @@ pub mod window_context;
 pub mod bit_mode;
 pub mod user_interface;
 pub mod animation;
+pub mod game_track_metadata;
+pub mod new_game_track;

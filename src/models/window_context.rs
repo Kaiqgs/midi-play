@@ -1,10 +1,10 @@
 use std::time::Duration;
 
-use ggez::mint::Point2;
+use ggez::{mint::Point2, graphics::Image};
 
 use crate::components::sheet::sheet_component_const;
 
-use super::{draw_state::DrawState, sheet::track_window_ctx::TrackWindowContext};
+use super::{draw_state::DrawState, sheet::track_window_ctx::TrackWindowContext, config};
 
 #[derive(Clone)]
 pub struct WindowContext {
@@ -15,6 +15,9 @@ pub struct WindowContext {
     pub scale: f32,
     pub yoffset: f32,
     pub state: DrawState,
+    pub resources_folder: String,
+    pub default_cover: Option<Image>
+    // pub 
 }
 
 impl WindowContext {
@@ -25,6 +28,8 @@ impl WindowContext {
         since_start: Option<Duration>,
         scale: Option<f32>,
         state: Option<DrawState>,
+        resources_folder: Option<String>,
+        default_cover: Option<Image>,
     ) -> Self {
         WindowContext {
             size,
@@ -34,6 +39,8 @@ impl WindowContext {
             scale: scale.unwrap_or(sheet_component_const::SCALE as f32),
             yoffset: sheet_component_const::YOFFSET as f32,
             state: state.unwrap_or(DrawState::Ok),
+            resources_folder: resources_folder.unwrap_or(config::RELATIVE_RESOURCES.into()),
+            default_cover
         }
     }
 

@@ -7,7 +7,7 @@ use crate::models::{
     },
     midi::midi_const,
     note::Note,
-    sheet::sheet_const::{self, Accidentals}, game_mode::GameMode, game_track::EMPTY_TRACK,
+    sheet::sheet_const::{self, Accidentals}, game_mode::GameMode, game_track::GameTrack, 
 };
 use ggez::input::keyboard::KeyCode;
 use log::info;
@@ -62,7 +62,7 @@ impl KeyboardInputSource {
                 return Some(MidiPlayInput::ModeChange(GameMode::Library));
             },
             KeyCode::F5 => {
-                return Some(MidiPlayInput::ModeChange(GameMode::Play(EMPTY_TRACK)));
+                return Some(MidiPlayInput::ModeChange(GameMode::Play(GameTrack::default())));
             },
             KeyCode::Right => {
                 return Some(MidiPlayInput::NextOption);

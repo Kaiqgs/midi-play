@@ -2,7 +2,7 @@ use ggez::{
     graphics::{Canvas, DrawParam, Image, Mesh, MeshBuilder, Text},
     Context,
 };
-use log::{info, trace};
+use log::trace;
 
 use super::drawing::DrawingReference;
 use crate::models::window_context::WindowContext;
@@ -62,10 +62,8 @@ fn draw_text(text: &Text, _gfx: &Context, canvas: &mut Canvas, params: DrawParam
         ggez::graphics::Transform::Values { dest, .. } => {
             //anchor center by default
             let text_measure = text.measure(_gfx).expect("text measure failed");
-            info!("text measure: {:?}", text_measure);
-            info!("dest: {:?}", dest);
-            let params = params
-                .dest([dest.x - text_measure.x/2.0, dest.y - text_measure.y/2.0]);
+            let params =
+                params.dest([dest.x - text_measure.x / 2.0, dest.y - text_measure.y / 2.0]);
             canvas.draw(text, params);
         }
         ggez::graphics::Transform::Matrix(_) => todo!(),

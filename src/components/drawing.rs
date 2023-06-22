@@ -23,9 +23,9 @@ impl Drawing {
         }
     }
 
-    pub fn new_image(image: Option<Image>) -> Self {
+    pub fn new_image(image: Image) -> Self {
         Drawing {
-            image,
+            image: Some(image),
             ..Default::default()
         }
     }

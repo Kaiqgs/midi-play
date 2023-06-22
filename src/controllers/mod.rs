@@ -8,3 +8,4 @@ pub mod track_manager;
 pub mod midiplay;
 pub mod game_track;
 pub mod track_library;
+pub mod new_game_track;

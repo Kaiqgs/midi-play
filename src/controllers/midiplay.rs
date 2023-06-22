@@ -4,6 +4,7 @@ use crate::components::drawing::{DrawResult, RetrieveDrawing};
 use crate::components::{component::ComponentObject, pallete};
 use crate::models::draw_state::DrawState;
 use crate::models::game_mode::GameMode;
+use crate::models::game_track::GameTrack;
 use crate::models::input::input::MidiPlayInput;
 use crate::models::midiplay::MidiPlay;
 use crate::models::pausable::Pausable;
@@ -11,11 +12,12 @@ use crate::models::render_util::RenderUtil;
 use crate::models::restartable::Restartable;
 use crate::models::window_context::WindowContext;
 use ggez::event::EventHandler;
+use ggez::filesystem::Filesystem;
 use ggez::graphics::{self, Canvas};
 use ggez::input::keyboard;
 use ggez::mint::Point2;
 use ggez::{Context, GameError, GameResult};
-use log::{debug, info, trace};
+use log::{debug, info, trace, warn};
 
 impl Restartable for MidiPlay {
     fn restart(&mut self) -> Result<(), ()> {
@@ -25,15 +27,20 @@ impl Restartable for MidiPlay {
     }
 }
 impl MidiPlay {
-    pub fn pick_track(&mut self, reutil: RenderUtil, filepath: String) -> bool {
+    pub fn pick_track(&mut self, reutil: RenderUtil, game_track: &mut GameTrack, fs: &Filesystem) -> bool {
         // let winctx = self.grab_context(ctx)
         // let peripheral = MidiPeripheral::from(&mut self.playback).name("<Music>".into());
         let peripheral = self.track.sheet_track.component_data.playback.reuse();
         // self.track.sheet_track.component_data.playback.close();
         // peripheral.restart().expect("Failed to restart peripheral");
+        warn!("Picked track: {}", game_track.filepath);
         let successful = self
             .track
-            .set_track(Some(filepath), reutil, peripheral);
+            .set_track(Some(game_track), reutil, peripheral, fs);
+        if successful.is_err() {
+            warn!("Failed to set track due to error: {:?}", successful.err());
+            return false;
+        }
         self.quality.set_track(successful.as_ref().unwrap().clone());
         true
     }
@@ -101,10 +108,10 @@ impl MidiPlay {
                 self.input.on_note(&note, reutil.clone());
             }
             MidiPlayInput::Restart => self.restart().expect("Restart failed"),
-            MidiPlayInput::ModeChange(mode) => {
-                match &mode {
+            MidiPlayInput::ModeChange(mut mode) => {
+                match &mut mode {
                     GameMode::Play(track) => {
-                        self.pick_track(reutil.clone(), track.filepath.clone());
+                        self.pick_track(reutil.clone(), track, &ctx.fs);
                     }
                     _ => (),
                 };

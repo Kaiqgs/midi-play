@@ -1,5 +1,3 @@
-use log::debug;
-
 pub type BitType = u64;
 pub trait UintGet {
     fn get(&self) -> BitType;

@@ -2,6 +2,7 @@ use super::game_track::GameTrack;
 
 pub(crate) const _RECENT_MAX: usize = 10;
 
+#[allow(dead_code)]
 pub struct UserSettings {
     _recent: Vec<GameTrack>,
     mute_track: bool,

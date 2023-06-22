@@ -1,10 +1,13 @@
 use std::ops::Range;
 
-use super::{bit_mode::{BitMask, UintGet}, game_track::{GameTrack, EMPTY_TRACK}};
+use super::{
+    bit_mode::{BitMask, UintGet},
+    game_track::GameTrack,
+};
 
-pub const EMPTY_PLAY: GameMode = GameMode::Play(EMPTY_TRACK);
-pub const EMPTY_PRACTICE: GameMode = GameMode::Practice(EMPTY_TRACK, None);
-pub const EMPTY_REPLAY: GameMode = GameMode::Replay(EMPTY_TRACK, String::new());
+// pub const EMPTY_PLAY: GameMode = GameMode::Play(EMPTY_TRACK);
+// pub const EMPTY_PRACTICE: GameMode = GameMode::Practice(EMPTY_TRACK, None);
+// pub const EMPTY_REPLAY: GameMode = GameMode::Replay(EMPTY_TRACK, String::new());
 
 pub const NOTES_MASK: BitMask = BitMask::default()
     .set_bit(0, true)

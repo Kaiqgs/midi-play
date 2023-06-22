@@ -10,7 +10,7 @@ use crate::models::track_manager::TrackManager;
 use crate::models::user_settings::UserSettings;
 use crate::models::window_context::WindowContext;
 
-use super::game_mode::{GameMode, self};
+use super::game_mode::GameMode;
 use super::input::input::MidiPlayInput;
 use super::render_util::RenderUtil;
 use super::user_interface::UserInterface;
@@ -40,15 +40,21 @@ impl MidiPlay {
         let input = InputManager::new(Some(input_peripheral));
         let quality = QualityManager::new();
 
+        bctx.ctx.unwrap().fs.print_all();
         track
-            .set_track(None, RenderUtil::new(&bctx.winctx), play_peripheral)
+            .set_track(
+                None,
+                RenderUtil::new(&bctx.winctx),
+                play_peripheral,
+                &bctx.ctx.unwrap().fs,
+            )
             .expect("Failed to set track");
 
         // let default_track = String::from("mc_sweden.mid");
         // let default_track = String::from("do_re_.mid");
         // let game_mode = GameMode::default();
         // let game_mode = GameMode::Play("mc_sweden.mid".into());
-        let game_mode = GameMode::Menu;
+        // let game_mode = GameMode::Menu;
         let game_mode = GameMode::Library;
         //// DISABLING FOR TEST WITH TRACK LIBRARY
         // let default_track = &track_library.tracks[0].filepath;

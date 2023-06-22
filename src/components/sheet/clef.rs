@@ -1,5 +1,7 @@
 use std::cell::RefCell;
 
+use log::warn;
+
 use crate::components::util::image_from_optional;
 use crate::models::build_context::BuildContext;
 use crate::models::game_mode::NOTES_MASK;
@@ -26,7 +28,9 @@ impl ClefComponentData {
                 drawing.image = Some(image_from_optional(&ctx, filepath.clone()));
                 DrawUtil::left_image(&mut drawing, &build.winctx, note);
             }
-            None => (),
+            None => {
+                warn!("No build context found, cannot draw clef symbol")
+            }
         };
         ClefComponentData {
             drawing: RefCell::new(drawing),

@@ -1,5 +1,5 @@
 use std::sync::Once;
-pub(crate) const REFERENCE_MID: &str = "mc_sweden.mid";
+pub(crate) const _REFERENCE_MID: &str = "mc_sweden.mid";
 pub(crate) const _REFERENCE_UNEXISTENT_MID: &str = "never_existing.mid";
 
 static INIT: Once = Once::new();

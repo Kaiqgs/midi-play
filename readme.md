@@ -3,12 +3,27 @@
 - [X] game state paused
 - [X] restart song
 - [X] Bit encoding for mode filtering
-- [ ] B.1 fix bug: where last track on track library is blurred
-- [ ] B.2 fix bug: where some mids are not parsed correctly
-- [ ] .1 as dev: understand how note_count, note_height impact scale
-- [ ] .2 as user: import mids to library
-- [ ] .3 as user: delete mid from library
-- [ ] .4 as dev: render notes partially and optimize by chunk
-- [ ] .5 as dev: understand latency and physical piano input
-- [ ] .6 - as user: see smooth animations lerping;
-	- [ ] .a - interp track library
+- [ ] B#1 fix bug: where last track on track library is blurred
+- [ ] B#2 fix bug: where some mids are not parsed correctly
+- [ ] B#3 fix bug: where resources_folder have weird prefix characters
+- [ ] B#4 fix bug: where track library does not properly center on even number of tracks;
+- [ ] #1 as dev: understand how note_count, note_height impact scale
+- [ ] #2 as user: import mids to library
+- [ ] #3 as user: delete mid from library
+- [ ] #4 as dev: render notes partially and optimize by chunk
+- [ ] #5 as dev: understand latency and physical piano input
+- [X] #6 - as user: see smooth animations lerping;
+	- [X] .a - interp track library
+- [X] #7 - as user: import songs/tracks from outside;
+	- [X] .a - as user: import any simple mid
+	- [X] .b - as user: import complex mids (mid track);
+		- complex mids have cover art, metadata, difficulty and are rankeable;
+- [o] #8 - as dev: clean TODO's
+- [o] #9 - as dev: clean warnings and strict code
+- [ ] #10 - as user: reflect imported songs without restarting (minor)
+- [ ] #11 - as user: see track names in track library;
+- [ ] #12 - as dev: review all expect() calls, replace with Result return if appropriate
+- [ ] #13 - as user: see track library circle in any aspect ratio
+	- [ ] .a - as user: see elipse
+	- [ ] .b - as user: see circle
+		- shift and scale

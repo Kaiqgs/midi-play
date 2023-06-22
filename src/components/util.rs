@@ -48,7 +48,7 @@ pub fn image_from_optional(ctx: &Context, path: Option<String>) -> Image {
             let imres = Image::from_path(ctx, Path::new(&filepath));
             match imres {
                 Ok(image) => image,
-                Err(_) => todo!(),
+                Err(_) => Image::from_solid(ctx, 128, Color::GREEN),
             }
         }
         None => Image::from_solid(ctx, 128, Color::GREEN),

@@ -1,5 +1,4 @@
 use std::collections::{HashMap, HashSet};
-use std::fs;
 use std::path::Path;
 
 use crate::models::clock::Clock;
@@ -9,6 +8,8 @@ use crate::models::note::Note;
 use crate::models::sheet::from::SheetFromFile;
 use crate::models::sheet::staff_system::StaffSystem;
 use crate::models::sheet::{from::SheetTransformer, SheetTrack};
+use ggez::filesystem::Filesystem;
+use ggez::GameError;
 use log::{debug, trace, warn};
 use midly::{
     num::{u15, u24, u7},
@@ -272,14 +273,27 @@ impl SheetTransformer for MidiSheetTransformer {
 }
 
 impl SheetFromFile for MidiSheetFromFile {
-    fn parse(&mut self, filepath: String) -> SheetTrack {
-        //TODO: make ./resources not hardcoded;
-        let resource_path = "./resources/".to_owned() + &filepath;
-        debug!("MidiSheetFrom: {}", resource_path);
-        let path = Path::new(&resource_path);
-        let bytes = fs::read(path).unwrap();
+    fn parse(&mut self, filepath: &Path, fs: &Filesystem) -> Result<SheetTrack, GameError> {
+        let path = Path::new(&"/").join(filepath);
+        warn!("Path: {:?}", path.display());
+        fs.log_all();
+        let file = fs.open(path).expect("Failed to open file.");
+        let mut bytes = vec![];
+        let resulting_bytes = match file {
+            ggez::filesystem::File::VfsFile(mut f) => f.read_to_end(&mut bytes)?,
+        };
+        warn!("Bytes: {:?} {:?}", bytes.len(), resulting_bytes);
+        self.parse_bytes(&bytes)
+    }
+
+    fn parse_bytes(&mut self, bytes: &[u8]) -> Result<SheetTrack, GameError> {
         self.bytes = bytes.to_vec();
-        let smf = Smf::parse(&self.bytes).unwrap();
-        _parse_smf(smf)
+        let smf = Smf::parse(&self.bytes);
+        if smf.is_err() {
+            return Err(GameError::ResourceLoadError(
+                "Failed to parse midi file.".into(),
+            ));
+        }
+        Ok(_parse_smf(smf.unwrap()))
     }
 }

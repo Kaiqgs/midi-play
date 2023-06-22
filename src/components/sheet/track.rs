@@ -6,8 +6,7 @@ use ggez::{
 };
 use log::debug;
 
-use crate::models::build_context::BuildContext;
-use crate::models::{game_mode::NOTES_MASK, window_context::WindowContext};
+use crate::models::game_mode::NOTES_MASK;
 use crate::{
     components::{
         component::Component,
@@ -26,7 +25,6 @@ use super::sheet_component_const::Zindex;
 pub struct SheetTrackComponentData {
     pub drawing: DrawingReference,
     pub update: ClockFloat,
-    pub winctx: WindowContext,
     pub render_all: bool,
     pub playback: MidiPeripheral,
     pub range: Option<(f64, f64)>,
@@ -35,7 +33,7 @@ pub struct SheetTrackComponentData {
 }
 
 impl SheetTrackComponentData {
-    pub fn new(drawing: Drawing, build: BuildContext) -> Self {
+    pub fn new(drawing: Drawing) -> Self {
         let playback = MidiPeripheral::new(String::from("<SheetTrack Playback>"));
 
         SheetTrackComponentData {
@@ -43,7 +41,6 @@ impl SheetTrackComponentData {
             update: ClockFloat::new(),
             closest_key: 0,
             render_all: true,
-            winctx: build.winctx,
             playback,
             range: None,
             notes_on: HashSet::new(),
